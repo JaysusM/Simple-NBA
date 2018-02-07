@@ -1,5 +1,5 @@
 name: simple_nba
-description: A new Flutter project.
+description: Simple NBA scoreboard
 
 dependencies:
   http: "^0.11.3+16"
