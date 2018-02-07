@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 Future<String> _loadData(String url) async { return (await (http.read(url))); }
 
 Future loadData() {
-  var url = "http://data.nba.net/10s/prod/v1/20180205/scoreboard.json";
+  var url = "http://data.nba.net/10s/prod/v1/20180206/scoreboard.json";
   return game.setGames(_loadData(url));
 }
 

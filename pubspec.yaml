@@ -3,6 +3,7 @@ description: A new Flutter project.
 
 dependencies:
   http: "^0.11.3+16"
+  image: "^1.1.29"
   flutter:
     sdk: flutter
 
@@ -25,6 +26,37 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - assets/DET.png
+    - assets/MIN.png
+    - assets/POR.png
+    - assets/GSW.png
+    - assets/TOR.png
+    - assets/CLE.png
+    - assets/BOS.png
+    - assets/PHI.png
+    - assets/LAL.png
+    - assets/ATL.png
+    - assets/ORL.png
+    - assets/MEM.png
+    - assets/HOU.png
+    - assets/BKN.png
+    - assets/MIL.png
+    - assets/NYK.png
+    - assets/WAS.png
+    - assets/OKC.png
+    - assets/PHX.png
+    - assets/DAL.png
+    - assets/UTA.png
+    - assets/SAS.png
+    - assets/CHI.png
+    - assets/NOP.png
+    - assets/MIA.png
+    - assets/IND.png
+    - assets/SAC.png
+    - assets/DEN.png
+    - assets/CHA.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
