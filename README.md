@@ -5,7 +5,7 @@
 Is a flutter-made app. It will show statistics and scoreboard for all NBA matches.
 That information will be taken from a JSON file provided by [data.nba.net](http://data.nba.net/) website.
 
-While tap on a match card, it will show more information about the match.
+When tapping on a match card, it will show more information about the match.
 
 # Screenshots
 

@@ -17,33 +17,33 @@ class mainWidget extends StatelessWidget {
     return new Scaffold(
         appBar: new AppBar(
             title: new Text("Simple NBA"),
-            backgroundColor: Colors.red,
-            actions: <Widget>[new Container(
-                child: new Icon(Icons.refresh, color: Colors.white, size: 30.0),
-                padding: new EdgeInsets.only(right: 20.0)
-            )
-            ]
+            backgroundColor: new Color.fromRGBO(255, 25, 25, 0.8)
         ),
-        body: new Center(
-            child: new Container(
-                child: new FutureBuilder(
-                    future: loadData(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<dynamic> response) {
-                      if (!response.hasData)
-                        return new Text("Loading...");
-                      else {
-                        games = response.data;
-                        return new ListView(
-                            children: getWidgetFromGame(games)
-                        );
-                      }
-                    }
-                ),
-                padding: new EdgeInsets.all(8.0)
-            )
+        body: new RefreshIndicator(child:
+          new Center(
+             child: new FutureBuilder(
+                future: loadData(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<dynamic> response) {
+                  if (!response.hasData)
+                    return loadingScreen();
+                  else {
+                    games = response.data;
+                    return new Container(
+                      child: new ListView(
+                        children: getWidgetFromGame(games)
+                      ),
+                      padding: new EdgeInsets.all(8.0)
+                    );
+                  }
+                }
+             )
         ),
-      backgroundColor: Colors.orangeAccent
+        onRefresh: () async {
+          games = await loadData();
+        }
+      ),
+      backgroundColor: new Color.fromRGBO(40, 40, 190, 1.0)
     );
   }
 }

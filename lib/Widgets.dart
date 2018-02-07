@@ -2,34 +2,32 @@ import 'package:flutter/material.dart';
 import 'Games.dart';
 
 class gameCard extends StatefulWidget {
-  gameCard(team home, team away) {
+  gameCard(game g) {
     _title = new Center(
         child: new Text(
-            "${home.tricode} (${home.score} - ${away.score}) ${away.tricode}",
-            style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)));
-    _assetHomeLogo = new AssetImage('assets/${home.tricode.toUpperCase()}.png');
-    _assetAwayLogo = new AssetImage('assets/${away.tricode.toUpperCase()}.png');
-    _home = home;
-    _away = away;
+            "${g.home.tricode} (${g.home.score} - ${g.visitor.score}) ${g.visitor.tricode}",
+            style: new TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: (g.active) ? Colors.redAccent : Colors.black)));
+    _assetHomeLogo = new AssetImage('assets/${g.home.tricode.toUpperCase()}.png');
+    _assetAwayLogo = new AssetImage('assets/${g.visitor.tricode.toUpperCase()}.png');
+    _Game = g;
   }
 
   AssetImage _assetHomeLogo, _assetAwayLogo;
   Widget _title;
-  team _home, _away;
+  game _Game;
 
   createState() =>
-      new tapCard(_assetHomeLogo, _title, _assetAwayLogo, _home, _away);
+      new tapCard(_assetHomeLogo, _title, _assetAwayLogo, _Game);
 }
 
 class tapCard extends State<gameCard> {
 
-  tapCard(this._home, this._title, this._away, this._homeInstance,
-      this._awayInstance);
+  tapCard(this._home, this._title, this._away, this._game);
 
   AssetImage _home, _away;
   Widget _title;
   double _size = 30.0;
-  team _homeInstance, _awayInstance;
+  game _game;
   bool tapped = false;
 
   @override
@@ -53,7 +51,7 @@ class tapCard extends State<gameCard> {
                 ),
                 padding: new EdgeInsets.only(bottom: 10.0,
                     top: 10.0)
-            )
+            ),
         )
     );
   }
@@ -91,14 +89,16 @@ class tapCard extends State<gameCard> {
               new Row(
                   children: <Widget>[
                     new Container(
-                      child: new Text("${_homeInstance.win} - ${_homeInstance.loss}"),
-                      padding: new EdgeInsets.only(right: 50.0, left:5.0)),
+                      child: new Text("${_game.home.win} - ${_game.home.loss}"),
+                      padding: new EdgeInsets.only(right: 30.0, left:5.0)),
+                    new Text("${_game.period}Q"),
                     new Container(
-                      child: new Text("${_awayInstance.win} - ${_awayInstance.loss}"),
-                      padding: new EdgeInsets.only(left: 50.0, right: 5.0)
+                      child: new Text("${_game.visitor.win} - ${_game.visitor.loss}"),
+                      padding: new EdgeInsets.only(left: 30.0, right: 5.0)
                     )
                   ]
-              )
+              ),
+              getSpecialPlayer()
             ])
       ];
     }
@@ -106,15 +106,31 @@ class tapCard extends State<gameCard> {
 
 }
 
+Widget getSpecialPlayer()
+{
+  return null;
+}
+
 
 List<Widget> getWidgetFromGame(List<game> games) {
   List<Widget> gameCards = new List<Widget>();
 
   for (game g in games) {
-    gameCards.add(new gameCard(g.home, g.visitor));
+    gameCards.add(new gameCard(g));
   }
 
   return gameCards;
 }
 
-
+Widget loadingScreen()
+{
+  return new Container(
+      decoration: new BoxDecoration(
+          image: new DecorationImage(
+              image: new AssetImage("assets/NBA.png"),
+              fit: BoxFit.fitHeight
+          )
+      ),
+      child: null
+  );
+}

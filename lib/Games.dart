@@ -33,14 +33,18 @@ class game
       games.add(new game(
           decodGame["arena"]["city"],
           decodGame["arena"]["name"],
+          decodGame["isGameActivated"],
+          decodGame["period"]["current"],
           new team(decodGame["vTeam"]["triCode"],
               decodGame["vTeam"]["win"],
               decodGame["vTeam"]["loss"],
-              decodGame["vTeam"]["score"]),
+              decodGame["vTeam"]["score"],
+              decodGame["vTeam"]["teamId"]),
           new team(decodGame["hTeam"]["triCode"],
               decodGame["hTeam"]["win"],
               decodGame["hTeam"]["loss"],
-              decodGame["hTeam"]["score"])));
+              decodGame["hTeam"]["score"],
+              decodGame["hTeam"]["teamId"])));
     }
 
     return await games;
@@ -49,12 +53,19 @@ class game
   String _city, _arena;
   //DateTime _date;
   team home, visitor;
+  bool _active;
+  int _period;
 
   game(this._city, this._arena,
+      this._active, this._period,
       //this._date,
       this.home, this.visitor);
 
   //DateTime get date => _date;
+
+  bool get active => _active;
+
+  int get period => _period;
 
   String get city => _city;
 
@@ -81,13 +92,15 @@ class team
   String _tricode;
   int _win, _loss;
   int _score;
+  int _id;
 
   team(tricode, win,
-      loss, score)
+      loss, score, id)
     : _tricode = tricode,
       _win = int.parse(win),
       _loss = int.parse(loss),
-      _score = _getScore(score);
+      _score = _getScore(score),
+      _id = int.parse(id);
 
   String get tricode => _tricode;
 
@@ -97,13 +110,11 @@ class team
 
   int get score => _score;
 
-  set score(int value) {
-    _score = value;
-  }
+  int get id => _id;
 
   @override
   String toString() {
-    return '{ tricode: $_tricode,  win: $_win,  loss: $_loss,  score: $_score}';
+    return '{ tricode: $_tricode, id: $_id,  win: $_win,  loss: $_loss,  score: $_score}';
   }
 
 
