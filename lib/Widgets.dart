@@ -97,8 +97,7 @@ class tapCard extends State<gameCard> {
                       padding: new EdgeInsets.only(left: 30.0, right: 5.0)
                     )
                   ]
-              ),
-              getSpecialPlayer()
+              )
             ])
       ];
     }

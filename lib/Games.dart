@@ -1,17 +1,23 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
+import 'dart:io';
 
 //Return decoded JSON from url web into String
 Future<String> _loadData(String url) async { return (await (http.read(url))); }
 
-Future loadData() async {
+/*Future loadData() async {
   var prefix = "http://data.nba.net/10s/";
   var today = prefix + "prod/v1/today.json";
   var decod = JSON.decode(await _loadData(today));
   var url = decod["links"]["todayScoreboard"];
 
   return game.setGames(_loadData(prefix+url));
+}*/
+
+Future loadData() async
+{
+  return game.setGames(_loadData("http://192.168.1.12:8000/Documents/GitHub/simple_nba/lib/scoreboard.json"));
 }
 
 class game
