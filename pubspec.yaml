@@ -27,6 +27,11 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  fonts:
+    - family: Mono
+      fonts:
+      - asset: assets/MonoFont.ttf
+
   assets:
     - assets/DET.png
     - assets/MIN.png

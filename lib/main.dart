@@ -28,7 +28,7 @@ class mainWidget extends State<mainApp> {
             title: new Text("Simple NBA"),
             backgroundColor: new Color.fromRGBO(255, 25, 25, 0.8)),
         body: new RefreshIndicator(
-            child: new Center(child: checkRefresh()), onRefresh: _refresh),
+            child: checkRefresh(), onRefresh: _refresh),
         backgroundColor: new Color.fromRGBO(245, 245, 245, 1.0));
   }
 
@@ -62,7 +62,8 @@ class mainWidget extends State<mainApp> {
               gameCards = getWidgetFromGame(response.data);
               return new Container(
                   child: new ListView(children: gameCards),
-                  padding: new EdgeInsets.all(8.0));
+                  padding: new EdgeInsets.all(8.0)
+              );
             }
           });
     } else {
