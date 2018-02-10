@@ -185,7 +185,8 @@ class team
   String get name => _fullName;
   String get tricode => _tricode;
   String get conference => _conference;
-  String get winLoss => _win + " - " + _loss;
+  String get winLoss => _win + " - " + _loss + "   %" +
+      (double.parse(_win)/(double.parse(_loss)+double.parse(_win))).toStringAsPrecision(3);
 
   void setWinLoss(String win, String loss)
   {

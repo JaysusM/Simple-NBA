@@ -112,7 +112,8 @@ class tapCard extends State<gameCard> {
                 top: 98.0,
                 right: 40.0),
             new Positioned(
-                child: new Text((_game.active) ? "" : _game.time,
+                child: new Text(
+                    (!_game.active || _game.clock == "FINAL") ? "" : _game.time,
                     style: new TextStyle(
                         fontSize: 17.0,
                         color: Colors.black,
@@ -158,40 +159,43 @@ class standingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Card(
-        child: new Container(
-            child: new Column(
-              children: <Widget>[
-                new SizedBox(
-                  child: new Stack(
-                    children: <Widget>[
-                      new Positioned(
-                          child: new Image(
-                              image: new AssetImage(
-                                  "assets/${_mainTeam.tricode.toUpperCase()}.png"),
-                              height: 30.0,
-                              width: 30.0),
-                          left: 10.0),
-
-                      new Positioned(child: new Text(
-                      _mainTeam.name.substring(_mainTeam.name.lastIndexOf(" ")),
-                      style: new TextStyle( fontWeight: FontWeight.bold, fontSize: 20.0)),
-                      left: 50.0,
-                      top: 5.0),
-                      new Positioned(
-                          child: new Text(_mainTeam.winLoss,
+      child: new Container(
+          child: new Column(
+            children: <Widget>[
+              new SizedBox(
+                child: new Stack(
+                  children: <Widget>[
+                    new Positioned(
+                        child: new Image(
+                            image: new AssetImage("assets/${_mainTeam.tricode
+                                    .toUpperCase()}.png"),
+                            height: 30.0,
+                            width: 30.0),
+                        left: 10.0),
+                    new Positioned(
+                        child: new Text(_mainTeam.tricode,
                             style: new TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 23.0),
-                          ),
-                          right: 20.0,
-                      top: 3.0),
-                    ],
-                  ),
-                  height: 30.0,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20.0,
+                                fontFamily: 'Default')),
+                        left: 50.0,
+                        top: 5.0),
+                    new Positioned(
+                        child: new Text(
+                          _mainTeam.winLoss,
+                          style: new TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 23.0),
+                        ),
+                        right: 10.0,
+                        top: 3.0),
+                  ],
                 ),
-              ],
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-            ),
-            padding: new EdgeInsets.all(8.0)),
+                height: 30.0,
+              ),
+            ],
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+          ),
+          padding: new EdgeInsets.all(8.0)),
       color: _color,
     );
   }
@@ -202,27 +206,64 @@ getWidgetFromStandings(List<List<team>> standings) {
 
   var auxIt = standings.iterator;
 
- while(auxIt.moveNext()) {
-   int counter = -1;
-   var it = auxIt.current.iterator;
-   Color playoffBackground = Colors.orangeAccent;
+  while (auxIt.moveNext()) {
+    int counter = -1;
+    var it = auxIt.current.iterator;
+    Color playoffBackground = new Color.fromRGBO(230, 230, 230, 1.0);
 
-   List<Widget> widgets = new List<Widget>();
+    List<Widget> widgets = new List<Widget>();
 
-   while (it.moveNext()) {
-     counter++;
-     if (counter > 8)
-       playoffBackground = Colors.white;
+    while (it.moveNext()) {
+      counter++;
+      if (counter >= 8) playoffBackground = Colors.white;
 
-     widgets.add(new standingCard(it.current, playoffBackground));
-   }
+      widgets.add(new standingCard(it.current, playoffBackground));
+    }
 
-  tabs.add(new Tab(child: new ListView(
-   children: widgets,
-   padding: new EdgeInsets.all(8.0),
-  )));
+    widgets.insert(0, standingInfo());
 
- }
+    tabs.add(new Tab(
+        child: new ListView(
+      children: widgets,
+      padding: new EdgeInsets.all(8.0),
+    )));
+  }
 
   return tabs;
+}
+
+Widget standingInfo() {
+  return new Card(
+    child: new Container(
+        child: new Column(
+          children: <Widget>[
+            new SizedBox(
+              child: new Stack(
+                children: <Widget>[
+                  new Positioned(
+                      child: new Text("CODE",
+                          style: new TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20.0,
+                              fontFamily: 'Default')),
+                      left: 50.0,
+                      top: 5.0),
+                  new Positioned(
+                      child: new Text(
+                        "W - L    %RATIO",
+                        style: new TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 23.0),
+                      ),
+                      right: 8.0,
+                      top: 3.0),
+                ],
+              ),
+              height: 30.0,
+            ),
+          ],
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+        ),
+        padding: new EdgeInsets.all(8.0)),
+    color: new Color.fromRGBO(20, 20, 20, 0.30),
+  );
 }

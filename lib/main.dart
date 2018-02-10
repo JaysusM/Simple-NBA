@@ -39,7 +39,7 @@ class mainWidget extends State<mainApp> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-            title: new Text("Simple NBA"),
+            title: new Text("Simple NBA", style: new TextStyle(fontFamily: 'Defaut', fontSize: 25.0),),
             backgroundColor: new Color.fromRGBO(255, 25, 25, 0.8)),
         bottomNavigationBar: new Material(
           child: new TabBar(tabs: <Tab>[
@@ -91,13 +91,13 @@ class mainWidget extends State<mainApp> with SingleTickerProviderStateMixin {
               gameCards = getWidgetFromGame(response.data);
               return new Container(
                   child: new ListView(children: gameCards),
-                  padding: new EdgeInsets.all(8.0));
+                  padding: new EdgeInsets.only(left: 8.0, right: 8.0));
             }
           });
     } else {
       return new Container(
           child: new ListView(children: gameCards),
-          padding: new EdgeInsets.all(8.0));
+          padding: new EdgeInsets.only(left: 8.0, right: 8.0));
     }
   }
 
