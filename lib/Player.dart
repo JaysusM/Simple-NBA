@@ -1,6 +1,5 @@
 import 'package:http/http.dart' as http;
 
-
 class player
 {
   String _name, _teamId;

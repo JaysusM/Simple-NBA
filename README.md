@@ -11,4 +11,10 @@ When tapping on a match card, it will show more information about the match.
 
 <img src="https://github.com/JaysusM/Simple-NBA/blob/master/screenshots/firstView.png" align="left" height="600" width="320" hspace="40">
 
-<img src="https://github.com/JaysusM/Simple-NBA/blob/master/screenshots/tap.png" align="left" height="600" width="320">
+<img src="https://github.com/JaysusM/Simple-NBA/blob/master/screenshots/matches.png" align="left" height="600" width="320" hspace="40">
+
+<img src="https://github.com/JaysusM/Simple-NBA/blob/master/screenshots/matches2.png" align="left" height="600" width="320" hspace="40">
+
+<img src="https://github.com/JaysusM/Simple-NBA/blob/master/screenshots/standings.png" align="left" height="600" width="320" hspace="40">
+
+<img src="https://github.com/JaysusM/Simple-NBA/blob/master/screenshots/standings2.png" align="left" height="600" width="320" hspace="40">

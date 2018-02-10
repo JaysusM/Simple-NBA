@@ -10,16 +10,37 @@ Future loadData() async {
   var today = prefix + "prod/v1/today.json";
   var decod = JSON.decode(await _loadData(today));
   var url = decod["links"]["todayScoreboard"];
-
   return game.setGames(_loadData(prefix+url));
+}
+
+Future loadTeams() async {
+  var url = "http://data.nba.net/prod/v1/2017/teams.json";
+  return team.setTeams(await _loadData(url));
+}
+
+Future loadStandings(List<team> teams) async {
+  var url = "http://data.nba.net/prod/v1/current/standings_conference.json";
+  return team.setStandings(await _loadData(url), teams);
+}
+
+Iterable<int> inRange(int supInf) sync* {
+for (int i = 0; i < supInf; i++)
+yield i;
 }
 
 class game
 {
 
-  static Iterable<int> _inRange(int supInf) sync* {
-    for (int i = 0; i < supInf; i++)
-      yield i;
+  static String setCurrentStartTime(String time)
+  {
+    var startTime = DateTime.parse(time);
+    var offset = new DateTime.now().timeZoneOffset;
+    startTime = startTime.add(offset);
+    var hour = startTime.toString().substring(11, 16);
+    if(int.parse(hour.substring(0,2)) > 12)
+      return (int.parse(hour.substring(0,2))-12).toString()+hour.substring(3)+" PM";
+    else
+      return hour+" AM";
   }
 
   static Future<List<game>> setGames(Future<String> s) async
@@ -27,87 +48,98 @@ class game
     List<game> games = new List<game>();
     var decod = JSON.decode(await s);
 
-    for(int i in _inRange(decod["numGames"]))
+    for(int i in inRange(decod["numGames"]))
     {
       var decodGame = decod["games"][i];
       games.add(new game(
           decodGame["arena"]["city"],
           decodGame["arena"]["name"],
           decodGame["isGameActivated"],
-          decodGame["period"]["current"],
+          decodGame["period"]["current"].toString(),
           decodGame["clock"],
-          new team(decodGame["vTeam"]["triCode"],
+          decodGame["startTimeUTC"],
+          new scoreboardTeam(
+              decodGame["vTeam"]["teamId"],
+              decodGame["vTeam"]["triCode"],
               decodGame["vTeam"]["win"],
               decodGame["vTeam"]["loss"],
-              decodGame["vTeam"]["score"],
-              decodGame["vTeam"]["teamId"]),
-          new team(decodGame["hTeam"]["triCode"],
+              decodGame["vTeam"]["score"]),
+          new scoreboardTeam(
+              decodGame["hTeam"]["teamId"],
+              decodGame["hTeam"]["triCode"],
               decodGame["hTeam"]["win"],
               decodGame["hTeam"]["loss"],
               decodGame["hTeam"]["score"],
-              decodGame["hTeam"]["teamId"])));
+              )));
     }
 
     return await games;
   }
 
   String _city, _arena;
-  //DateTime _date;
-  team visitor, home;
+  String _hour;
+  scoreboardTeam visitor, home;
   bool _active;
-  int _period;
-  String _minutes, _seconds;
+  String _period;
+  String _clock;
 
   game(this._city, this._arena,
-      this._active, this._period,
+      this._active, String period,
       String clock,
-      //this._date,
+      String date,
       this.visitor, this.home)
   {
-    if(clock.contains(":")) {
-      List<String> timer = (clock + ":").split(":");
-      _minutes = timer[0];
-      _seconds = timer[1];
-    } else if (clock.contains(".")){
-      List<String> timer = (clock + ".").split(".");
-      _minutes = timer[0];
-      _seconds = timer[1];
-    } else {
-      _minutes = "0";
-      _seconds = "00";
+    this._hour = setCurrentStartTime(date);
+
+    if(!_active && int.parse(period) >= 4)
+      _clock = "FINAL";
+    else if(!_active)
+      _clock = "--:--";
+    else if(clock.isEmpty)
+      _clock = "12:00";
+    else
+      _clock = clock;
+
+    List<String> _formatScores = format(home.score, visitor.score);
+    home.setScore(_formatScores[0]);
+    visitor.setScore(_formatScores[1]);
+
+    if(int.parse(period) > 4)
+      this._period = "OT";
+    else
+      this._period = period+"Q";
     }
 
-    //Visual format, that will keep score simetric to keep widget's width
-    if(visitor.score.length > home.score.length || visitor.score.length < 2)
-        home.setScore(home.score+" ");
-    if(visitor.score.length < home.score.length)
-        visitor.setScore(" " + visitor.score);
+    //Format score to 3 digits - 3 digits (_ _ _ - _ _ _)
+  List<String> format(String homeScore, String visitorScore)
+  {
+    if(homeScore.length < 3)
+      return format (homeScore+" ", visitorScore);
+    if(visitorScore.length < 3)
+      return format (homeScore, " "+visitorScore);
 
+    List<String> scores = new List<String>();
+    scores.addAll([homeScore, visitorScore]);
+    return scores;
   }
 
-  //DateTime get date => _date;
-
   bool get active => _active;
-
-  int get period => _period;
-
+  String get period => _period;
   String get city => _city;
-
   get arena => _arena;
-
-  get minutes => _minutes;
-  get seconds => _seconds;
+  String get clock => _clock;
+  String get time => _hour;
 
   @override
   String toString() {
-    return "{ City: " + _city //+ ", date: " + _date.toString()
+    return "{ City: " + _city
         + ", home: " + visitor.toString() + ", visitor: " + home.toString() + "}";
   }
 
 
 }
 
-class team
+class scoreboardTeam
 {
   static int _getScore(String score)
   {
@@ -121,29 +153,107 @@ class team
   String _score;
   int _id;
 
-  team(tricode, win,
-      loss, score, id)
-    : _tricode = tricode,
-      _win = int.parse(win),
-      _score = score.toString(),
-      _loss = int.parse(loss),
-      _id = int.parse(id);
+  scoreboardTeam(id, tricode, win, loss, score)
+  {
+    _tricode = tricode;
+    _win = int.parse(win);
+    _loss = int.parse(loss);
+    _score = _getScore(score).toString();
+    _id = int.parse(id);
+  }
 
   String get tricode => _tricode;
-
   int get win => _win;
-
   get loss => _loss;
-
   String get score => _score;
-
   setScore (String score) { _score = score; }
-
   int get id => _id;
 
   @override
   String toString() {
     return '{ tricode: $_tricode, id: $_id,  win: $_win,  loss: $_loss,  score: $_score}';
   }
+}
 
+class team
+{
+  team(this._id, this._fullName, this._tricode, this._conference);
+
+  String _id, _fullName, _tricode, _conference, _win, _loss;
+
+  String get id => _id;
+  String get name => _fullName;
+  String get tricode => _tricode;
+  String get conference => _conference;
+  String get winLoss => _win + " - " + _loss;
+
+  void setWinLoss(String win, String loss)
+  {
+    _win = win;
+    _loss = loss;
+  }
+
+  static List<team> setTeams(String response)
+  {
+    var teams = JSON.decode(response)["league"]["standard"];
+    List<team> teamList = new List<team>();
+
+    for(int i in inRange(41))
+    {
+      var currentTeam = teams[i];
+      if(currentTeam["isNBAFranchise"])
+      {
+        teamList.add(new team(currentTeam["teamId"], currentTeam["fullName"],
+            currentTeam["tricode"], currentTeam["confName"]));
+      }
+    }
+    return teamList;
+  }
+
+  /*
+  TODO This will have lower complexity using a bdd
+  TODO wait until SQFLITE reach version 1.0 (or at least reach a stable version) or create your own
+  TODO MySQL/Oracle hosted in the cloud
+  */
+  static List<List<team>> setStandings(String response, List<team> teams)
+  {
+    List<List<team>> standingList = new List<List<team>>();
+    var standings = JSON.decode(response)["league"]["standard"]["conference"];
+    var conferenceS = standings["east"];
+    for(int i in inRange(2))
+    {
+      List<team> innerList = new List<team>();
+      if(i > 0)
+        conferenceS = standings["west"];
+
+      for(int j in inRange(15))
+      {
+        var it = teams.iterator;
+        while(it.moveNext())
+        {
+            team current = it.current;
+            if(current.id == conferenceS[j]["teamId"])
+            {
+              current.setWinLoss(conferenceS[j]["win"], conferenceS[j]["loss"]);
+              innerList.add(current);
+              break;
+            }
+        }
+      }
+      standingList.add(innerList);
+    }
+    return standingList;
+  }
+
+  @override
+  String toString() {
+    return 'team{_id: $_id, _fullName: $_fullName, _tricode: $_tricode, _conference: $_conference}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is team &&
+              runtimeType == other.runtimeType &&
+              _id == other._id;
 }
