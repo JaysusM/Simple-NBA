@@ -171,19 +171,19 @@ class standingCard extends StatelessWidget {
                               height: 30.0,
                               width: 30.0),
                           left: 10.0),
-                      new Positioned(
-                          child: new Text(
-                            _mainTeam.name,
-                            style: new TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20.0),
-                          ),
-                          left: 45.0),
+
+                      new Positioned(child: new Text(
+                      _mainTeam.name.substring(_mainTeam.name.lastIndexOf(" ")),
+                      style: new TextStyle( fontWeight: FontWeight.bold, fontSize: 20.0)),
+                      left: 50.0,
+                      top: 5.0),
                       new Positioned(
                           child: new Text(_mainTeam.winLoss,
                             style: new TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20.0),
+                                fontWeight: FontWeight.bold, fontSize: 23.0),
                           ),
-                          right: 20.0),
+                          right: 20.0,
+                      top: 3.0),
                     ],
                   ),
                   height: 30.0,

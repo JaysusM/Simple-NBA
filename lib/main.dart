@@ -13,10 +13,9 @@ class mainApp extends StatefulWidget {
 
 class mainWidget extends State<mainApp> with SingleTickerProviderStateMixin {
   List<Widget> gameCards = new List<Widget>();
-  bool refresh;
-  bool start;
+  bool refresh, start, standingsLoaded;
   TabController _controllerMain;
-  TabController _controllerStandings;
+  var standingsContent;
 
   @override
   void initState() {
@@ -33,6 +32,7 @@ class mainWidget extends State<mainApp> with SingleTickerProviderStateMixin {
   mainWidget() {
     refresh = false;
     start = false;
+    standingsLoaded = false;
   }
 
   @override
@@ -105,7 +105,11 @@ class mainWidget extends State<mainApp> with SingleTickerProviderStateMixin {
     return new FutureBuilder(
         future: loadTeams(),
         builder: (BuildContext context, AsyncSnapshot<dynamic> responseTeams) {
-          if (!responseTeams.hasData) {
+          if (standingsLoaded)
+            return new Container(
+                child: new standingsScroll(standingsContent),
+                padding: new EdgeInsets.only(top: 8.0));
+          else if (!responseTeams.hasData) {
             return loadingScreen();
           } else {
             return new FutureBuilder(
@@ -117,9 +121,10 @@ class mainWidget extends State<mainApp> with SingleTickerProviderStateMixin {
                   else if (!responseStandings.hasData) {
                     return loadingScreen();
                   } else {
-                    var standings =
+                    standingsLoaded = true;
+                    standingsContent =
                         getWidgetFromStandings(responseStandings.data);
-                    return new standingsScroll(standings);
+                    return new standingsScroll(standingsContent);
                   }
                 });
           }
@@ -159,13 +164,11 @@ class standingsState extends State with SingleTickerProviderStateMixin {
         bottomNavigationBar: new Material(
           child: new TabBar(tabs: <Widget>[
             new Tab(
-                child: new Icon(Icons.keyboard_arrow_left,
-                    size: 40.0, color: Colors.white)),
+                child: new Text("EAST", style: new TextStyle(fontSize: 15.0))),
             new Tab(
-                child: new Icon(Icons.keyboard_arrow_right,
-                    size: 40.0, color: Colors.white))
+                child: new Text("WEST", style: new TextStyle(fontSize: 15.0)))
           ], controller: _controller),
-          color: Colors.black,
+          color: Colors.red,
         ),
         body: new TabBarView(children: _standings, controller: _controller));
   }
