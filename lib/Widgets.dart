@@ -70,7 +70,7 @@ class tapCard extends State<gameCard> {
     } else {
       this._size = 100.0;
       return new SizedBox(
-        height: 200.0,
+        height: 150.0,
         width: 200.0,
         child: new Stack(
           children: <Widget>[
@@ -90,7 +90,7 @@ class tapCard extends State<gameCard> {
                       color: (_game.active) ? Colors.red : Colors.black)),
               top: 34.0,
               left: MediaQuery.of(context).size.width / 2 -
-                  (((20.0 * _game.clock.length) / 2) + 12.0),
+                  (((20.0 * 4) / 2) + 12.0),
             ),
             new Positioned(
                 child: new Text("${_game.period} ${_game.clock}",
@@ -100,7 +100,7 @@ class tapCard extends State<gameCard> {
                         fontFamily: 'Mono')),
                 top: 70.0,
                 left: MediaQuery.of(context).size.width / 2 -
-                    (((20.0 * _game.clock.length) / 2) + 8.0)),
+                    (((20.0 * 4) / 2) + 8.0)),
             new Positioned(
                 child: new Text("${_game.visitor.win}-${_game.visitor.loss}",
                     style: new TextStyle(fontSize: 17.0, color: Colors.black)),
@@ -113,14 +113,14 @@ class tapCard extends State<gameCard> {
                 right: 40.0),
             new Positioned(
                 child: new Text(
-                    (!_game.active || _game.clock == "FINAL") ? "" : _game.time,
+                    (_game.active || (!_game.active && _game.clock == "FINAL")) ? "" : _game.time,
                     style: new TextStyle(
                         fontSize: 17.0,
                         color: Colors.black,
                         fontFamily: "Mono")),
                 top: 6.0,
                 left: MediaQuery.of(context).size.width / 2 -
-                    (((20.0 * _game.clock.length) / 2) + 4.0))
+                    (((20.0 * 4) / 2) + 4.0))
           ],
         ),
       );
@@ -147,7 +147,8 @@ Widget loadingScreen() {
       decoration: new BoxDecoration(
           image: new DecorationImage(
               image: new AssetImage("assets/NBA.png"), fit: BoxFit.fitHeight)),
-      child: null);
+      child: null
+  );
 }
 
 class standingCard extends StatelessWidget {
@@ -195,7 +196,7 @@ class standingCard extends StatelessWidget {
             ],
             crossAxisAlignment: CrossAxisAlignment.stretch,
           ),
-          padding: new EdgeInsets.all(8.0)),
+          padding: new EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 2.0)),
       color: _color,
     );
   }
