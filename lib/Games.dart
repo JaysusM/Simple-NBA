@@ -67,8 +67,6 @@ class game
     return "{ City: " + _city
         + ", home: " + visitor.toString() + ", visitor: " + home.toString() + "}";
   }
-
-
 }
 
 class scoreboardTeam

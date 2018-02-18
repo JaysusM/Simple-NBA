@@ -5,160 +5,168 @@ import 'dart:async';
 import 'Data.dart';
 
 void main() {
-  runApp(new MaterialApp(home: new dataLoaderWidget()));
+  runApp(new MaterialApp(home: new mainFrame()));
 }
 
-class dataLoaderWidget extends StatelessWidget {
-  var _gameCards, _standingsCards;
-
-  @override
-  Widget build(BuildContext context) {
-    return new FutureBuilder(
-        future: loadData(),
-        builder: (BuildContext context, AsyncSnapshot<dynamic> response) {
-          if (response.hasError) {
-            print(response.error);
-          } else if (!response.hasData)
-            return loadingScreen();
-          else {
-            _gameCards = getWidgetFromGame(response.data);
-            return new FutureBuilder(
-                future: loadStandings(loadTeams()),
-                builder:
-                    (BuildContext context, AsyncSnapshot<dynamic> response) {
-                  if (response.hasError) {
-                    print(response.error);
-                  } else if (!response.hasData)
-                    return loadingScreen();
-                  else {
-                    this._standingsCards =
-                        getWidgetFromStandings(response.data);
-                    return new designWidget(_gameCards, _standingsCards);
-                  }
-                });
-          }
-        });
-  }
+class mainFrame extends StatefulWidget {
+  createState() => new mainFrameState();
 }
 
-class designWidget extends StatefulWidget {
-  List<Widget> _gameCards, _standingsCards;
-
-  designWidget(this._gameCards, this._standingsCards);
-
-  createState() => new designWidgetState(_gameCards, _standingsCards);
-}
-
-class designWidgetState extends State<designWidget>
+class mainFrameState extends State<mainFrame>
     with SingleTickerProviderStateMixin {
-  List<Widget> _gameCards = new List<Widget>();
-  List<Widget> _standingsContent = new List<Widget>();
-  TabController _controllerMain;
-
-  designWidgetState(this._gameCards, this._standingsContent);
+  TabController _mainNavigationController;
+  List<Widget> _standingsWidgets;
+  List<game> _calendarData;
 
   @override
   void initState() {
     super.initState();
-    _controllerMain = new TabController(vsync: this, length: 2);
+    _mainNavigationController = new TabController(vsync: this, length: 2);
   }
 
   @override
   void dispose() {
-    _controllerMain.dispose();
+    _mainNavigationController.dispose();
     super.dispose();
   }
 
   Widget build(BuildContext context) {
+      return new FutureBuilder(
+          future: loadGames(),
+          builder: (BuildContext context, AsyncSnapshot response) {
+            if (response.hasError)
+              return _throwError(response);
+            else if (!response.hasData)
+              return loadingScreen();
+            else {
+              _calendarData = response.data;
+              return new FutureBuilder(
+                  future: loadStandings(loadTeams()),
+                  builder: (BuildContext context, AsyncSnapshot response) {
+                    if (response.hasError)
+                      return _throwError(response);
+                    else if (!response.hasData)
+                      return loadingScreen();
+                    else {
+                      _standingsWidgets = getWidgetFromStandings(response.data);
+                      return setInfo();
+                    }
+                  });
+            }
+          });
+  }
+
+  Widget setInfo() {
     return new Scaffold(
         appBar: new AppBar(
-            title: new Text(
-              "Simple NBA",
-              style: new TextStyle(fontFamily: 'Defaut', fontSize: 25.0),
-            ),
-            backgroundColor: new Color.fromRGBO(255, 25, 25, 0.8)),
+            title: new Title(
+                color: Colors.white,
+                child: new Text("Simple NBA",
+                    style: new TextStyle(fontFamily: "Default")))),
         bottomNavigationBar: new Material(
           child: new TabBar(tabs: <Tab>[
-            new Tab(icon: new Icon(Icons.calendar_today, size: 30.0)),
-            new Tab(icon: new Icon(Icons.assessment, size: 30.0))
-          ], controller: _controllerMain),
+            new Tab(icon: new Icon(Icons.calendar_today, size: 40.0)),
+            new Tab(icon: new Icon(Icons.assessment, size: 40.0))
+          ], controller: _mainNavigationController),
           color: Colors.red,
         ),
-        body: new TabBarView(children: <Widget>[
-          new calendarTab(this._gameCards),
-          new standingsScroll(this._standingsContent)
-        ], controller: _controllerMain),
-        backgroundColor: new Color.fromRGBO(245, 245, 245, 1.0));
+        body: new TabBarView(
+          children: <Widget>[
+            new calendarTab(_calendarData),
+            standingsTab(_standingsWidgets)
+          ],
+          controller: _mainNavigationController,
+        ));
   }
 }
 
-class standingsScroll extends StatefulWidget {
-  standingsScroll(this._standings);
-
-  List<Widget> _standings;
-
-  createState() => new standingsState(_standings);
+Widget standingsTab(List<Widget> standings) {
+  return new Container(
+    child: new standingsWidgetView(standings),
+    color: Colors.grey,
+  );
 }
 
-class standingsState extends State with SingleTickerProviderStateMixin {
-  standingsState(this._standings);
+Widget _throwError(AsyncSnapshot response) {
+  return new Directionality(
+      textDirection: TextDirection.ltr,
+      child: new Container(
+          child: new Center(
+              child: new Text(
+                  "Error loading data (check your connection): \n ${response
+                      .error
+                      .toString()}",
+                  style: new TextStyle(height: 15.0))),
+          color: Colors.grey,
+          padding: new EdgeInsets.all(10.0)));
+}
 
+class standingsWidgetView extends StatefulWidget {
   List<Widget> _standings;
-  TabController _controller;
+
+  standingsWidgetView(this._standings);
+
+  createState() => new standingsWidgetViewState(_standings);
+}
+
+class standingsWidgetViewState extends State
+    with SingleTickerProviderStateMixin {
+  List<Widget> _standings;
+
+  standingsWidgetViewState(this._standings);
+
+  Widget build(BuildContext context) {
+    return new DefaultTabController(
+        length: 2,
+        child: new Scaffold(
+          appBar: new AppBar(
+            title: new TabBar(tabs: <Tab>[
+              new Tab(child: new Text("EAST")),
+              new Tab(child: new Text("WEST"))
+            ]),
+          ),
+          body: new TabBarView(children: _standings),
+        ));
+  }
+}
+
+class calendarTab extends StatefulWidget
+{
+  List<game> games;
+  calendarTab(this.games);
+
+  State<StatefulWidget> createState() => new calendarTabState();
+}
+
+class calendarTabState extends State<calendarTab>
+{
+
+  List<game> _games;
+  Timer timer;
+
+  Widget build(BuildContext context) {
+     return new ListView(
+       children: _games.map((game) => new gameCard(game)).toList(),
+     );
+  }
+
+  @override
+  void dispose()
+  {
+    super.dispose();
+    timer.cancel();
+  }
 
   @override
   void initState() {
+    _games = widget.games;
     super.initState();
-    _controller = new TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-        bottomNavigationBar: new Material(
-          child: new TabBar(tabs: <Widget>[
-            new Tab(
-                child: new Text("EAST", style: new TextStyle(fontSize: 15.0))),
-            new Tab(
-                child: new Text("WEST", style: new TextStyle(fontSize: 15.0)))
-          ], controller: _controller),
-          color: Colors.red,
-        ),
-        body: new TabBarView(children: _standings, controller: _controller));
-  }
-}
-
-class calendarTab extends StatefulWidget {
-  var _gameCards;
-
-  calendarTab(this._gameCards);
-
-  createState() => new calendarTabStatus(_gameCards);
-}
-
-class calendarTabStatus extends State<calendarTab> {
-  List<Widget> _gameCards;
-
-  calendarTabStatus(this._gameCards);
-
-  Widget build(BuildContext context) {
-    return new RefreshIndicator(child:
-    new Container(
-        child: new ListView(children: _gameCards)),
-        onRefresh: _refresh);
-  }
-
-  _refresh() async {
-    List<game> newContent = await loadData();
-    setState(() {
-      _gameCards = getWidgetFromGame(newContent);
+    timer = new Timer.periodic(new Duration(seconds: 20), (Timer timer) async {
+      List<game> newContent = await loadGames();
+      this.setState(() {
+        _games = newContent;
+      });
     });
-    return new Future<Null>.value();
   }
+
 }

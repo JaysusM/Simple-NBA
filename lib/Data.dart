@@ -8,13 +8,11 @@ Future<String> _loadData(String url) async {
   return (await (http.read(url)));
 }
 
-Future loadData() async {
-  /*var prefix = "http://data.nba.net/10s/";
+Future loadGames() async {
+  var prefix = "http://data.nba.net/10s/";
   var today = prefix + "prod/v1/today.json";
   var decod = JSON.decode(await _loadData(today));
-  var url = decod["links"]["todayScoreboard"];*/
-  var prefix = "";
-  var url = "http://192.168.1.12:8000/Downloads/scoreboard.json";
+  var url = decod["links"]["todayScoreboard"];
   return setGames(_loadData(prefix + url));
 }
 

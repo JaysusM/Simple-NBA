@@ -30,7 +30,10 @@ flutter:
   fonts:
     - family: Mono
       fonts:
-      - asset: assets/MonoFont.ttf
+      - asset: assets/fonts/MonoFont.ttf
+    - family: Default
+      fonts:
+      - asset: assets/fonts/Default.ttf
 
   assets:
     - assets/DET.png
