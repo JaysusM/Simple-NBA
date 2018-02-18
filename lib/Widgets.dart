@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'Games.dart';
 
 class gameCard extends StatefulWidget {
-  gameCard(game g) {
+  gameCard(game g){
     _title = new Center(
         child: new Text(
             "${g.visitor.tricode} ${g.visitor.score}-${g.home.score} ${g
@@ -12,27 +12,25 @@ class gameCard extends StatefulWidget {
                 fontWeight: FontWeight.bold,
                 color: (g.active) ? Colors.red : Colors.black,
                 fontFamily: 'Mono')));
+
     _assetHomeLogo =
-        new AssetImage('assets/${g.visitor.tricode.toUpperCase()}.png');
+      new AssetImage('assets/${g.visitor.tricode.toUpperCase()}.png');
     _assetAwayLogo =
-        new AssetImage('assets/${g.home.tricode.toUpperCase()}.png');
-    _Game = g;
+    new AssetImage('assets/${g.home.tricode.toUpperCase()}.png');
+
+    _game = g;
   }
 
   AssetImage _assetHomeLogo, _assetAwayLogo;
   Widget _title;
-  game _Game;
+  game _game;
 
-  createState() => new tapCard(_assetHomeLogo, _title, _assetAwayLogo, _Game);
+  State<gameCard> createState() => new tapCard();
 }
 
 class tapCard extends State<gameCard> {
-  tapCard(this._home, this._title, this._away, this._game);
 
-  AssetImage _home, _away;
-  Widget _title;
   double _size = 30.0;
-  game _game;
   bool tapped = false;
 
   @override
@@ -58,11 +56,11 @@ class tapCard extends State<gameCard> {
       return new Row(
         children: <Widget>[
           new Container(
-              child: new Image(image: _home, height: _size, width: _size),
+              child: new Image(image: widget._assetHomeLogo, height: _size, width: _size),
               padding: new EdgeInsets.only(right: 10.0, left: 10.0)),
-          _title,
+          widget._title,
           new Container(
-              child: new Image(image: _away, height: _size, width: _size),
+              child: new Image(image: widget._assetAwayLogo, height: _size, width: _size),
               padding: new EdgeInsets.only(right: 10.0, left: 10.0))
         ],
         mainAxisAlignment: MainAxisAlignment.center,
@@ -70,57 +68,57 @@ class tapCard extends State<gameCard> {
     } else {
       this._size = 100.0;
       return new SizedBox(
-        height: 200.0,
+        height: 150.0,
         width: 200.0,
         child: new Stack(
           children: <Widget>[
             new Positioned(
-                child: new Image(image: _home, height: _size, width: _size),
+                child: new Image(image: widget._assetHomeLogo, height: _size, width: _size),
                 left: 10.0),
             new Positioned(
-              child: new Image(image: _away, height: _size, width: _size),
+              child: new Image(image: widget._assetAwayLogo, height: _size, width: _size),
               right: 10.0,
             ),
             new Positioned(
-              child: new Text("${_game.visitor.score}-${_game.home.score}",
+              child: new Text("${widget._game.visitor.score}-${widget._game.home.score}",
                   style: new TextStyle(
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Mono',
                       fontSize: 24.0,
-                      color: (_game.active) ? Colors.red : Colors.black)),
+                      color: (widget._game.active) ? Colors.red : Colors.black)),
               top: 34.0,
               left: MediaQuery.of(context).size.width / 2 -
-                  (((20.0 * _game.clock.length) / 2) + 12.0),
+                  (((20.0 * 4) / 2) + 12.0),
             ),
             new Positioned(
-                child: new Text("${_game.period} ${_game.clock}",
+                child: new Text("${widget._game.period} ${widget._game.clock}",
                     style: new TextStyle(
                         fontSize: 20.0,
-                        color: (_game.active) ? Colors.red : Colors.black,
+                        color: (widget._game.active) ? Colors.red : Colors.black,
                         fontFamily: 'Mono')),
                 top: 70.0,
                 left: MediaQuery.of(context).size.width / 2 -
-                    (((20.0 * _game.clock.length) / 2) + 8.0)),
+                    (((20.0 * 4) / 2) + 8.0)),
             new Positioned(
-                child: new Text("${_game.visitor.win}-${_game.visitor.loss}",
+                child: new Text("${widget._game.visitor.win}-${widget._game.visitor.loss}",
                     style: new TextStyle(fontSize: 17.0, color: Colors.black)),
                 top: 98.0,
                 left: 40.0),
             new Positioned(
-                child: new Text("${_game.home.win}-${_game.home.loss}",
+                child: new Text("${widget._game.home.win}-${widget._game.home.loss}",
                     style: new TextStyle(fontSize: 17.0, color: Colors.black)),
                 top: 98.0,
                 right: 40.0),
             new Positioned(
                 child: new Text(
-                    (!_game.active || _game.clock == "FINAL") ? "" : _game.time,
+                    (widget._game.active || (!widget._game.active && widget._game.clock == "FINAL")) ? "" : widget._game.time,
                     style: new TextStyle(
                         fontSize: 17.0,
                         color: Colors.black,
                         fontFamily: "Mono")),
                 top: 6.0,
                 left: MediaQuery.of(context).size.width / 2 -
-                    (((20.0 * _game.clock.length) / 2) + 4.0))
+                    (((20.0 * 4) / 2) + 4.0))
           ],
         ),
       );
@@ -132,22 +130,13 @@ Widget getSpecialPlayer() {
   return null;
 }
 
-List<Widget> getWidgetFromGame(List<game> games) {
-  List<Widget> gameCards = new List<Widget>();
-
-  for (game g in games) {
-    gameCards.add(new gameCard(g));
-  }
-
-  return gameCards;
-}
-
 Widget loadingScreen() {
   return new Container(
       decoration: new BoxDecoration(
           image: new DecorationImage(
-              image: new AssetImage("assets/NBA.png"), fit: BoxFit.fitHeight)),
-      child: null);
+              image: new AssetImage("assets/NBA.png"), fit: BoxFit.contain)),
+      child: null
+  );
 }
 
 class standingCard extends StatelessWidget {
@@ -195,7 +184,7 @@ class standingCard extends StatelessWidget {
             ],
             crossAxisAlignment: CrossAxisAlignment.stretch,
           ),
-          padding: new EdgeInsets.all(8.0)),
+          padding: new EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 2.0)),
       color: _color,
     );
   }
