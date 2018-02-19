@@ -15,7 +15,7 @@ class gameCard extends StatefulWidget {
 
     final String noTeam = 'assets/noteam.png';
     String visitorLogo = 'assets/${g.visitor.tricode.toUpperCase()}.png';
-    String homeLogo = 'assets/${g.visitor.tricode.toUpperCase()}.png';
+    String homeLogo = 'assets/${g.home.tricode.toUpperCase()}.png';
 
     //TODO If we don't have picture in our assets must we provide it default one using noteam.png
     _assetVisitorLogo = new AssetImage(visitorLogo);
