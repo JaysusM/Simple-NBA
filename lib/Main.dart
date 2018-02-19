@@ -3,12 +3,19 @@ import 'Games.dart';
 import 'Widgets.dart';
 import 'dart:async';
 import 'Data.dart';
+import 'DatabaseCreation.dart';
 
 void main() {
   runApp(new MaterialApp(home: new mainFrame()));
 }
 
 class mainFrame extends StatefulWidget {
+
+  mainFrame()
+  {
+    startDB();
+  }
+
   createState() => new mainFrameState();
 }
 
@@ -31,29 +38,29 @@ class mainFrameState extends State<mainFrame>
   }
 
   Widget build(BuildContext context) {
-      return new FutureBuilder(
-          future: loadGames(),
-          builder: (BuildContext context, AsyncSnapshot response) {
-            if (response.hasError)
-              return _throwError(response);
-            else if (!response.hasData)
-              return loadingScreen();
-            else {
-              _calendarData = response.data;
-              return new FutureBuilder(
-                  future: loadStandings(loadTeams()),
-                  builder: (BuildContext context, AsyncSnapshot response) {
-                    if (response.hasError)
-                      return _throwError(response);
-                    else if (!response.hasData)
-                      return loadingScreen();
-                    else {
-                      _standingsWidgets = getWidgetFromStandings(response.data);
-                      return setInfo();
-                    }
-                  });
-            }
-          });
+    return new FutureBuilder(
+        future: loadGames(),
+        builder: (BuildContext context, AsyncSnapshot response) {
+          if (response.hasError)
+            return _throwError(response);
+          else if (!response.hasData)
+            return loadingScreen();
+          else {
+            _calendarData = response.data;
+            return new FutureBuilder(
+                future: loadStandings(),
+                builder: (BuildContext context, AsyncSnapshot response) {
+                  if (response.hasError)
+                    return _throwError(response);
+                  else if (!response.hasData)
+                    return loadingScreen();
+                  else {
+                    _standingsWidgets = getWidgetFromStandings(response.data);
+                    return setInfo();
+                  }
+                });
+          }
+        });
   }
 
   Widget setInfo() {
@@ -130,29 +137,26 @@ class standingsWidgetViewState extends State
   }
 }
 
-class calendarTab extends StatefulWidget
-{
+class calendarTab extends StatefulWidget {
   List<game> games;
+
   calendarTab(this.games);
 
   State<StatefulWidget> createState() => new calendarTabState();
 }
 
-class calendarTabState extends State<calendarTab>
-{
-
+class calendarTabState extends State<calendarTab> {
   List<game> _games;
   Timer timer;
 
   Widget build(BuildContext context) {
-     return new ListView(
-       children: _games.map((game) => new gameCard(game)).toList(),
-     );
+    return new ListView(
+      children: _games.map((game) => new gameCard(game)).toList(),
+    );
   }
 
   @override
-  void dispose()
-  {
+  void dispose() {
     super.dispose();
     timer.cancel();
   }
@@ -168,5 +172,4 @@ class calendarTabState extends State<calendarTab>
       });
     });
   }
-
 }

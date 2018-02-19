@@ -4,6 +4,8 @@ description: Simple NBA scoreboard
 dependencies:
   http: "^0.11.3+16"
   image: "^1.1.29"
+  sqflite: "^0.6.2+2"
+  path_provider: "^0.3.1"
   flutter:
     sdk: flutter
 
@@ -67,6 +69,7 @@ flutter:
     - assets/CHA.png
     - assets/NBA.png
     - assets/LAC.png
+    - assets/noteam.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -16,14 +16,15 @@ Future loadGames() async {
   return setGames(_loadData(prefix + url));
 }
 
+@Deprecated("Not used anymore")
 Future loadTeams() async {
   var url = "http://data.nba.net/prod/v1/2017/teams.json";
-  return team.setTeams(await _loadData(url));
+  return Team.setTeams(await _loadData(url));
 }
 
-Future loadStandings(Future<List<team>> teams) async {
+Future loadStandings() async {
   var url = "http://data.nba.net/prod/v1/current/standings_conference.json";
-  return team.setStandings(await _loadData(url), await teams);
+  return Team.setStandingsFromDB(await _loadData(url));
 }
 
 String setCurrentStartTime(String time) {

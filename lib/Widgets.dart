@@ -13,15 +13,18 @@ class gameCard extends StatefulWidget {
                 color: (g.active) ? Colors.red : Colors.black,
                 fontFamily: 'Mono')));
 
-    _assetHomeLogo =
-      new AssetImage('assets/${g.visitor.tricode.toUpperCase()}.png');
-    _assetAwayLogo =
-    new AssetImage('assets/${g.home.tricode.toUpperCase()}.png');
+    final String noTeam = 'assets/noteam.png';
+    String visitorLogo = 'assets/${g.visitor.tricode.toUpperCase()}.png';
+    String homeLogo = 'assets/${g.visitor.tricode.toUpperCase()}.png';
 
-    _game = g;
-  }
+    //TODO If we don't have picture in our assets must we provide it default one using noteam.png
+    _assetVisitorLogo = new AssetImage(visitorLogo);
+    _assetHomeLogo = new AssetImage(homeLogo);
 
-  AssetImage _assetHomeLogo, _assetAwayLogo;
+      _game = g;
+    }
+
+  AssetImage _assetVisitorLogo, _assetHomeLogo;
   Widget _title;
   game _game;
 
@@ -56,11 +59,11 @@ class tapCard extends State<gameCard> {
       return new Row(
         children: <Widget>[
           new Container(
-              child: new Image(image: widget._assetHomeLogo, height: _size, width: _size),
+              child: new Image(image: widget._assetVisitorLogo, height: _size, width: _size),
               padding: new EdgeInsets.only(right: 10.0, left: 10.0)),
           widget._title,
           new Container(
-              child: new Image(image: widget._assetAwayLogo, height: _size, width: _size),
+              child: new Image(image: widget._assetHomeLogo, height: _size, width: _size),
               padding: new EdgeInsets.only(right: 10.0, left: 10.0))
         ],
         mainAxisAlignment: MainAxisAlignment.center,
@@ -73,10 +76,10 @@ class tapCard extends State<gameCard> {
         child: new Stack(
           children: <Widget>[
             new Positioned(
-                child: new Image(image: widget._assetHomeLogo, height: _size, width: _size),
+                child: new Image(image: widget._assetVisitorLogo, height: _size, width: _size),
                 left: 10.0),
             new Positioned(
-              child: new Image(image: widget._assetAwayLogo, height: _size, width: _size),
+              child: new Image(image: widget._assetHomeLogo, height: _size, width: _size),
               right: 10.0,
             ),
             new Positioned(
@@ -140,7 +143,7 @@ Widget loadingScreen() {
 }
 
 class standingCard extends StatelessWidget {
-  team _mainTeam;
+  Team _mainTeam;
   Color _color;
 
   standingCard(this._mainTeam, this._color);
@@ -190,7 +193,7 @@ class standingCard extends StatelessWidget {
   }
 }
 
-getWidgetFromStandings(List<List<team>> standings) {
+getWidgetFromStandings(List<List<Team>> standings) {
   List<Widget> tabs = new List<Widget>();
 
   var auxIt = standings.iterator;
