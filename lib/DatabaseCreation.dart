@@ -61,5 +61,8 @@ import 'package:path_provider/path_provider.dart';
         ('World','World','East','East','World',1,0,'World',1610616844,'WLD','world')"""
         );
       });
+
+
+      db.close();
     }
   }

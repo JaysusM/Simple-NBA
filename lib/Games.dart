@@ -10,16 +10,16 @@ for (int i = 0; i < supInf; i++)
 yield i;
 }
 
-class game
+class Game
 {
   String _city, _arena;
   String _hour;
-  scoreboardTeam visitor, home;
+  ScoreboardTeam visitor, home;
   bool _active;
   String _period;
   String _clock;
 
-  game(this._city, this._arena,
+  Game(this._city, this._arena,
       this._active, String period,
       String clock,
       String date,
@@ -73,7 +73,7 @@ class game
   }
 }
 
-class scoreboardTeam
+class ScoreboardTeam
 {
   static int _getScore(String score)
   {
@@ -87,7 +87,7 @@ class scoreboardTeam
   String _score;
   int _id;
 
-  scoreboardTeam(id, tricode, win, loss, score)
+  ScoreboardTeam(id, tricode, win, loss, score)
   {
     _tricode = tricode;
     _win = int.parse(win);
@@ -146,62 +146,8 @@ class Team
       conference = standings["east"];
       standingList.add(temporary);
     }
-    return standingList;
-  }
 
-  @Deprecated("Not used anymore")
-  void setWinLoss(String win, String loss)
-  {
-    _win = win;
-    _loss = loss;
-  }
-
-  @Deprecated("Now using SQFLITE to get teams to reduce complexity")
-  static List<Team> setTeams(String response)
-  {
-    var teams = JSON.decode(response)["league"]["standard"];
-    List<Team> teamList = new List<Team>();
-
-    for(int i in inRange(41))
-    {
-      var currentTeam = teams[i];
-      if(currentTeam["isNBAFranchise"])
-      {
-        teamList.add(new Team(currentTeam["teamId"], currentTeam["fullName"],
-            currentTeam["tricode"], currentTeam["confName"]));
-      }
-    }
-    return teamList;
-  }
-
-  @Deprecated("Now using SQFLITE to reduce complexity")
-  static List<List<Team>> setStandings(String response, List<Team> teams)
-  {
-    List<List<Team>> standingList = new List<List<Team>>();
-    var standings = JSON.decode(response)["league"]["standard"]["conference"];
-    var conferenceS = standings["east"];
-    for(int i in inRange(2))
-    {
-      List<Team> innerList = new List<Team>();
-      if(i > 0)
-        conferenceS = standings["west"];
-
-      for(int j in inRange(15))
-      {
-        var it = teams.iterator;
-        while(it.moveNext())
-        {
-            Team current = it.current;
-            if(current.id == conferenceS[j]["teamId"])
-            {
-              current.setWinLoss(conferenceS[j]["win"], conferenceS[j]["loss"]);
-              innerList.add(current);
-              break;
-            }
-        }
-      }
-      standingList.add(innerList);
-    }
+    db.close();
     return standingList;
   }
 
@@ -216,4 +162,7 @@ class Team
           other is Team &&
               runtimeType == other.runtimeType &&
               _id == other._id;
+
+  @override
+  int get hashCode => _id.hashCode;
 }

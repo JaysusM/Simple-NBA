@@ -4,26 +4,26 @@ import 'Widgets.dart';
 import 'dart:async';
 import 'Data.dart';
 import 'DatabaseCreation.dart';
+import 'dart:collection';
 
 void main() {
-  runApp(new MaterialApp(home: new mainFrame()));
+  runApp(new MaterialApp(home: new MainFrame()));
 }
 
-class mainFrame extends StatefulWidget {
-
-  mainFrame()
-  {
+class MainFrame extends StatefulWidget {
+  MainFrame() {
+    //We create db if it doesn't exist
     startDB();
   }
 
-  createState() => new mainFrameState();
+  createState() => new MainFrameState();
 }
 
-class mainFrameState extends State<mainFrame>
+class MainFrameState extends State<MainFrame>
     with SingleTickerProviderStateMixin {
   TabController _mainNavigationController;
   List<Widget> _standingsWidgets;
-  List<game> _calendarData;
+  List<Game> _calendarData;
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class mainFrameState extends State<mainFrame>
 
   Widget build(BuildContext context) {
     return new FutureBuilder(
-        future: loadGames(),
+        future: loadGames(new DateTime.now().toUtc()),
         builder: (BuildContext context, AsyncSnapshot response) {
           if (response.hasError)
             return _throwError(response);
@@ -69,7 +69,8 @@ class mainFrameState extends State<mainFrame>
             title: new Title(
                 color: Colors.white,
                 child: new Text("Simple NBA",
-                    style: new TextStyle(fontFamily: "Default")))),
+                    style: new TextStyle(fontFamily: "Default"))),
+            elevation: 0.0),
         bottomNavigationBar: new Material(
           child: new TabBar(tabs: <Tab>[
             new Tab(icon: new Icon(Icons.calendar_today, size: 40.0)),
@@ -79,7 +80,7 @@ class mainFrameState extends State<mainFrame>
         ),
         body: new TabBarView(
           children: <Widget>[
-            new calendarTab(_calendarData),
+            new CalendarTab(_calendarData),
             standingsTab(_standingsWidgets)
           ],
           controller: _mainNavigationController,
@@ -89,7 +90,7 @@ class mainFrameState extends State<mainFrame>
 
 Widget standingsTab(List<Widget> standings) {
   return new Container(
-    child: new standingsWidgetView(standings),
+    child: new StandingsWidgetView(standings),
     color: Colors.grey,
   );
 }
@@ -108,19 +109,19 @@ Widget _throwError(AsyncSnapshot response) {
           padding: new EdgeInsets.all(10.0)));
 }
 
-class standingsWidgetView extends StatefulWidget {
-  List<Widget> _standings;
+class StandingsWidgetView extends StatefulWidget {
+  final List<Widget> _standings;
 
-  standingsWidgetView(this._standings);
+  StandingsWidgetView(this._standings);
 
-  createState() => new standingsWidgetViewState(_standings);
+  createState() => new StandingsWidgetViewState(_standings);
 }
 
-class standingsWidgetViewState extends State
+class StandingsWidgetViewState extends State
     with SingleTickerProviderStateMixin {
   List<Widget> _standings;
 
-  standingsWidgetViewState(this._standings);
+  StandingsWidgetViewState(this._standings);
 
   Widget build(BuildContext context) {
     return new DefaultTabController(
@@ -131,45 +132,102 @@ class standingsWidgetViewState extends State
               new Tab(child: new Text("EAST")),
               new Tab(child: new Text("WEST"))
             ]),
+            flexibleSpace: new Container(color: Colors.white, height: 0.15),
           ),
           body: new TabBarView(children: _standings),
         ));
   }
 }
 
-class calendarTab extends StatefulWidget {
-  List<game> games;
+class CalendarTab extends StatefulWidget {
+  final List<Game> games;
 
-  calendarTab(this.games);
+  CalendarTab(this.games);
 
-  State<StatefulWidget> createState() => new calendarTabState();
+  State<StatefulWidget> createState() => new CalendarTabState();
 }
 
-class calendarTabState extends State<calendarTab> {
-  List<game> _games;
-  Timer timer;
+class CalendarTabState extends State<CalendarTab> {
+  List<Game> _games;
+  Timer _timer;
+  DateTime _currentDate = new DateTime.now().toUtc();
+  final DateTime _utcDate = new DateTime.now().toUtc();
+
+  /*
+  TODO create new ordered data structure map and insert
+  TODO searched dates to reduce complexity
+  */
 
   Widget build(BuildContext context) {
-    return new ListView(
-      children: _games.map((game) => new gameCard(game)).toList(),
+    return new Scaffold(
+        appBar: new AppBar(
+            title: new SizedBox(
+              child: new Stack(
+                children: <Widget>[
+                  new Positioned(
+                      child: new IconButton(
+                          icon: new Icon(Icons.arrow_back_ios,
+                              color: Colors.white),
+                          onPressed: () {
+                            _changeDate(-1);
+                          }),
+                      left: 5.0,
+                      top: 5.0),
+                  new Center(
+                      child: new Text("${_currentDate.year} - ${numberFormatTwoDigit(_currentDate
+                          .month.toString())} - ${numberFormatTwoDigit(_currentDate.day.toString())}")),
+                  new Positioned(
+                      child: new IconButton(
+                          icon: new Icon(Icons.arrow_forward_ios,
+                              color: Colors.white),
+                          onPressed: () {
+                            _changeDate(1);
+                          }),
+                      right: 5.0,
+                      top: 5.0)
+                ],
+              ),
+            ),
+            flexibleSpace: new Container(height: 0.15, color: Colors.white)),
+        body: (_games.isNotEmpty)
+            ? new ListView(
+                children: _games.map((game) => new GameCard(game)).toList(),
+              )
+            : new Center(
+                child: new Text("No games scheduled for today",
+                    style:
+                        new TextStyle(fontFamily: "Default", fontSize: 20.0))),
     );
+  }
+
+  void _changeDate(int day) {
+    _currentDate = _currentDate.add(new Duration(days: day));
+    _refresh();
   }
 
   @override
   void dispose() {
     super.dispose();
-    timer.cancel();
+    _timer.cancel();
   }
 
   @override
   void initState() {
     _games = widget.games;
     super.initState();
-    timer = new Timer.periodic(new Duration(seconds: 20), (Timer timer) async {
-      List<game> newContent = await loadGames();
+    _timer = new Timer.periodic(new Duration(seconds: 20), (Timer timer) async {
+      List<Game> newContent = await loadGames(_utcDate);
       this.setState(() {
         _games = newContent;
       });
     });
+  }
+
+  Future _refresh() async {
+    List<Game> newContent = await loadGames(_currentDate);
+    this.setState(() {
+      _games = newContent;
+    });
+    return new Future<Null>.value();
   }
 }

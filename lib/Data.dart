@@ -3,23 +3,24 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'Games.dart';
 
-//Return decoded JSON from url web into String
+//Read url and return its content
 Future<String> _loadData(String url) async {
   return (await (http.read(url)));
 }
 
-Future loadGames() async {
-  var prefix = "http://data.nba.net/10s/";
-  var today = prefix + "prod/v1/today.json";
-  var decod = JSON.decode(await _loadData(today));
-  var url = decod["links"]["todayScoreboard"];
-  return setGames(_loadData(prefix + url));
+Future loadGames(DateTime selectedDate) async {
+  String url = "http://data.nba.net/prod/v1/${formatDate(selectedDate)}/scoreboard.json";
+  return setGames(_loadData(url));
 }
 
-@Deprecated("Not used anymore")
-Future loadTeams() async {
-  var url = "http://data.nba.net/prod/v1/2017/teams.json";
-  return Team.setTeams(await _loadData(url));
+String formatDate(DateTime date)
+{
+  return "${date.year}${numberFormatTwoDigit(date.month.toString())}${numberFormatTwoDigit(date.day.toString())}";
+}
+
+String numberFormatTwoDigit(String number)
+{
+  return (number.startsWith("0") || int.parse(number) > 9) ? number : "0$number";
 }
 
 Future loadStandings() async {
@@ -41,26 +42,26 @@ String setCurrentStartTime(String time) {
     return hour + " AM";
 }
 
-Future<List<game>> setGames(Future<String> s) async {
-  List<game> games = new List<game>();
+Future<List<Game>> setGames(Future<String> s) async {
+  List<Game> games = new List<Game>();
   var decod = JSON.decode(await s);
 
   for (int i in inRange(decod["numGames"])) {
     var decodGame = decod["games"][i];
-    games.add(new game(
+    games.add(new Game(
         decodGame["arena"]["city"],
         decodGame["arena"]["name"],
         decodGame["isGameActivated"],
         decodGame["period"]["current"].toString(),
         decodGame["clock"],
         decodGame["startTimeUTC"],
-        new scoreboardTeam(
+        new ScoreboardTeam(
             decodGame["vTeam"]["teamId"],
             decodGame["vTeam"]["triCode"],
             decodGame["vTeam"]["win"],
             decodGame["vTeam"]["loss"],
             decodGame["vTeam"]["score"]),
-        new scoreboardTeam(
+        new ScoreboardTeam(
           decodGame["hTeam"]["teamId"],
           decodGame["hTeam"]["triCode"],
           decodGame["hTeam"]["win"],
@@ -69,5 +70,5 @@ Future<List<game>> setGames(Future<String> s) async {
         )));
   }
 
-  return await games;
+  return games;
 }

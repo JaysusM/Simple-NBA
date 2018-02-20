@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'Games.dart';
 
-class gameCard extends StatefulWidget {
-  gameCard(game g){
+class GameCard extends StatefulWidget {
+  GameCard(Game g){
     _title = new Center(
         child: new Text(
             "${g.visitor.tricode} ${g.visitor.score}-${g.home.score} ${g
@@ -26,12 +26,12 @@ class gameCard extends StatefulWidget {
 
   AssetImage _assetVisitorLogo, _assetHomeLogo;
   Widget _title;
-  game _game;
+  Game _game;
 
-  State<gameCard> createState() => new tapCard();
+  State<GameCard> createState() => new TapCard();
 }
 
-class tapCard extends State<gameCard> {
+class TapCard extends State<GameCard> {
 
   double _size = 30.0;
   bool tapped = false;
@@ -121,7 +121,7 @@ class tapCard extends State<gameCard> {
                         fontFamily: "Mono")),
                 top: 6.0,
                 left: MediaQuery.of(context).size.width / 2 -
-                    (((20.0 * 4) / 2) + 4.0))
+                    ((20.0 * 4) / 2))
           ],
         ),
       );
@@ -142,11 +142,11 @@ Widget loadingScreen() {
   );
 }
 
-class standingCard extends StatelessWidget {
-  Team _mainTeam;
-  Color _color;
+class StandingCard extends StatelessWidget {
+  final Team _mainTeam;
+  final Color _color;
 
-  standingCard(this._mainTeam, this._color);
+  StandingCard(this._mainTeam, this._color);
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +209,7 @@ getWidgetFromStandings(List<List<Team>> standings) {
       counter++;
       if (counter >= 8) playoffBackground = Colors.white;
 
-      widgets.add(new standingCard(it.current, playoffBackground));
+      widgets.add(new StandingCard(it.current, playoffBackground));
     }
 
     widgets.insert(0, standingInfo());
