@@ -232,7 +232,8 @@ class CalendarTabState extends State<CalendarTab> {
       List<Game> newContent = await loadGames(_startGameDate);
       this.setState(() {
         _gameDate.add(formatDate(_startGameDate), newContent);
-        _games = newContent;
+        if(formatDate(_currentDate) == formatDate(_startGameDate))
+          _games = newContent;
       });
     });
   }
