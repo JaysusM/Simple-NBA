@@ -50,6 +50,7 @@ class TapCard extends State<GameCard> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[checkTapped()]),
               padding: new EdgeInsets.only(bottom: 10.0, top: 10.0)),
+        elevation: 6.0,
         ));
   }
 
@@ -189,6 +190,7 @@ class StandingCard extends StatelessWidget {
           ),
           padding: new EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 2.0)),
       color: _color,
+      elevation: 4.0
     );
   }
 }
