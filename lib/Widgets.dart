@@ -3,10 +3,12 @@ import 'Games.dart';
 
 class GameCard extends StatefulWidget {
   GameCard(Game g){
+    String text = (g.status == 1)
+        ? "${g.visitor.tricode}  ${g.time}  ${g.home.tricode}"
+        : "${g.visitor.tricode}  ${g.visitor.score}-${g.home.score}  ${g.home.tricode}";
+
     _title = new Center(
-        child: new Text(
-            "${g.visitor.tricode} ${g.visitor.score}-${g.home.score} ${g
-                .home.tricode}",
+        child: new Text(text,
             style: new TextStyle(
                 fontSize: 20.0,
                 fontWeight: FontWeight.bold,

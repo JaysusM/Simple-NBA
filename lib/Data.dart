@@ -51,7 +51,7 @@ Future<List<Game>> setGames(Future<String> s) async {
     games.add(new Game(
         decodGame["arena"]["city"],
         decodGame["arena"]["name"],
-        decodGame["isGameActivated"],
+        decodGame["statusNum"],
         decodGame["period"]["current"].toString(),
         decodGame["clock"],
         decodGame["startTimeUTC"],

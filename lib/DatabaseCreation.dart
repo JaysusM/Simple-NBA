@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 
   startDB() async {
     Directory dir = await getApplicationDocumentsDirectory();
-    String path = "${dir.path}/db/team.db";
+    String path = "${dir.path}/db/snba.db";
 
     if (!(new File(path).existsSync())) {
       Database db = await openDatabase(path, version: 1,
@@ -61,8 +61,6 @@ import 'package:path_provider/path_provider.dart';
         ('World','World','East','East','World',1,0,'World',1610616844,'WLD','world')"""
         );
       });
-
-
       db.close();
     }
   }

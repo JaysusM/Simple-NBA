@@ -10,6 +10,8 @@ for (int i = 0; i < supInf; i++)
 yield i;
 }
 
+//TODO set _active with status from api
+
 class Game
 {
   String _city, _arena;
@@ -18,18 +20,20 @@ class Game
   bool _active;
   String _period;
   String _clock;
+  int _status;
 
   Game(this._city, this._arena,
-      this._active, String period,
+      this._status, String period,
       String clock,
       String date,
       this.visitor, this.home)
     {
     this._hour = setCurrentStartTime(date);
+    _active = (_status == 2);
 
-    if(!_active && int.parse(period) >= 4)
+    if(_status == 3)
       _clock = "FINAL";
-    else if(!_active)
+    else if(_status == 1)
       _clock = "--:--";
     else if(clock.isEmpty)
       _clock = "12:00";
@@ -65,6 +69,7 @@ class Game
   get arena => _arena;
   String get clock => _clock;
   String get time => _hour;
+  int get status => _status;
 
   @override
   String toString() {
@@ -131,7 +136,7 @@ class Team
 
     List<List<Team>> standingList = new List<List<Team>>();
     var standings = JSON.decode(response)["league"]["standard"]["conference"];
-    var conference = standings["west"];
+    var conference = standings["east"];
 
     for (int i in inRange(2)) {
       List<Team> temporary = new List<Team>();
@@ -143,7 +148,7 @@ class Team
             currentTeam["tricode"], currentTeam["conf_name"],
             win: conference[j]["win"], loss: conference[j]["loss"]));
       }
-      conference = standings["east"];
+      conference = standings["west"];
       standingList.add(temporary);
     }
 

@@ -11,8 +11,7 @@ void main() {
 }
 
 //DateTime set day with ET mid-day (when matches are reloaded)
-DateTime setHourETTime()
-{
+DateTime setHourETTime() {
   DateTime temp = new DateTime.now().toUtc().subtract(new Duration(hours: 5));
   return (temp.hour >= 12) ? temp : temp.subtract(new Duration(days: 1));
 }
@@ -90,7 +89,8 @@ class MainFrameState extends State<MainFrame>
             standingsTab(_standingsWidgets)
           ],
           controller: _mainNavigationController,
-        ));
+        )
+    );
   }
 }
 
@@ -105,16 +105,17 @@ Widget _throwError(AsyncSnapshot response) {
   return new Scaffold(
       appBar: new AppBar(title: new Text("Error launching app, restart it")),
       body: new Directionality(
-      textDirection: TextDirection.ltr,
-      child: new Container(
-          child: new Center(
-              child: new Text(
-                  "Error loading data (check your connection): \n ${response
-                      .error
-                      .toString()}",
-                  style: new TextStyle(height: 15.0))),
-          color: Colors.grey,
-          padding: new EdgeInsets.only(left: 10.0, right: 10.0, top:5.0))));
+          textDirection: TextDirection.ltr,
+          child: new Container(
+              child: new Center(
+                  child: new Text(
+                      "Error loading data (check your connection): \n ${response
+                          .error
+                          .toString()}",
+                      style: new TextStyle(height: 15.0))),
+              color: Colors.grey,
+              padding:
+                  new EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0))));
 }
 
 class StandingsWidgetView extends StatefulWidget {
@@ -156,20 +157,19 @@ class CalendarTab extends StatefulWidget {
   State<StatefulWidget> createState() => new CalendarTabState();
 }
 
-
 //FormatDate in this class will be used to compare dates without time, just day-month-year
 class CalendarTabState extends State<CalendarTab> {
   List<Game> _games;
   Timer _timer;
   DateTime _selectedDate;
   DateTime _startGameDate;
+
   //I didn't like Dart's HashMap structure so I created a new simpler one.
   //This will store all List of Games from visited dates since App was launched, will show
   //visited date games without using internet connection (offline use).
   Dictionary<String, List<Game>> _gameDate;
-  
-  CalendarTabState()
-  {
+
+  CalendarTabState() {
     _startGameDate = setHourETTime();
     _selectedDate = setHourETTime();
     _gameDate = new Dictionary();
@@ -178,51 +178,64 @@ class CalendarTabState extends State<CalendarTab> {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-            title: new SizedBox(
-              child: new Stack(
-                children: <Widget>[
-                  new Positioned(
-                      child: new IconButton(
-                          icon: new Icon(Icons.arrow_back_ios,
-                              color: Colors.white),
-                          onPressed: () {
-                            _changeDate(-1);
-                          }),
-                      left: 5.0,
-                      top: 5.0),
-                  new Center(
-                      child: (formatDate(_selectedDate) != formatDate(_startGameDate)) ? new Text("${_selectedDate.year} - ${numberFormatTwoDigit(_selectedDate
-                          .month.toString())} - ${numberFormatTwoDigit(_selectedDate.day.toString())}") :
-                  new Text("TODAY")),
-                  new Positioned(
-                      child: new IconButton(
-                          icon: new Icon(Icons.arrow_forward_ios,
-                              color: Colors.white),
-                          onPressed: () {
-                            _changeDate(1);
-                          }),
-                      right: 5.0,
-                      top: 5.0)
-                ],
-              ),
+          title: new SizedBox(
+            child: new Stack(
+              children: <Widget>[
+                new Positioned(
+                    child: new IconButton(
+                        icon:
+                            new Icon(Icons.arrow_back_ios, color: Colors.white),
+                        onPressed: () {
+                          _changeDate(-1);
+                        }),
+                    left: 5.0,
+                    top: 5.0),
+                new Center(
+                    child: (formatDate(_selectedDate) !=
+                            formatDate(_startGameDate))
+                        ? new Text(
+                            "${_selectedDate.year} - ${numberFormatTwoDigit(
+                            _selectedDate
+                                .month.toString())} - ${numberFormatTwoDigit(
+                            _selectedDate.day.toString())}")
+                        : new Text("TODAY")),
+                new Positioned(
+                    child: new IconButton(
+                        icon: new Icon(Icons.arrow_forward_ios,
+                            color: Colors.white),
+                        onPressed: () {
+                          _changeDate(1);
+                        }),
+                    right: 5.0,
+                    top: 5.0)
+              ],
             ),
-            elevation: 0.0,
+          ),
+          elevation: 0.0,
         ),
-        body: (_games.isNotEmpty)
-            ? new ListView(
-                children: _games.map((game) => new GameCard(game)).toList(),
-                padding: new EdgeInsets.only(top: 5.0, left: 4.0, right: 4.0)
-              )
-            : new Center(
-                child: new Text("No games scheduled",
-                    style:
-                        new TextStyle(fontFamily: "Default", fontSize: 20.0))),
-    );
+        body: new RefreshIndicator(
+            child: (_games.isNotEmpty)
+                ? new ListView(
+                    children: _games.map((game) => new GameCard(game)).toList(),
+                    padding:
+                        new EdgeInsets.only(top: 5.0, left: 4.0, right: 4.0))
+                : new Center(
+                    child: new Text("No games scheduled",
+                        style: new TextStyle(
+                            fontFamily: "Default", fontSize: 20.0))),
+            onRefresh: () async {
+              List<Game> newContent = await loadGames(_startGameDate);
+              this.setState(() {
+                _gameDate.add(formatDate(_startGameDate), newContent);
+                if (formatDate(_selectedDate) == formatDate(_startGameDate))
+                  _games = newContent;
+              });
+            }));
   }
 
   void _changeDate(int day) {
-    _selectedDate = new DateTime.fromMillisecondsSinceEpoch(_selectedDate.add(new Duration(days: day))
-    .millisecondsSinceEpoch);
+    _selectedDate = new DateTime.fromMillisecondsSinceEpoch(
+        _selectedDate.add(new Duration(days: day)).millisecondsSinceEpoch);
     _refresh();
   }
 
@@ -240,7 +253,7 @@ class CalendarTabState extends State<CalendarTab> {
       List<Game> newContent = await loadGames(_startGameDate);
       this.setState(() {
         _gameDate.add(formatDate(_startGameDate), newContent);
-        if(formatDate(_selectedDate) == formatDate(_startGameDate))
+        if (formatDate(_selectedDate) == formatDate(_startGameDate))
           _games = newContent;
       });
     });
@@ -249,17 +262,16 @@ class CalendarTabState extends State<CalendarTab> {
   Future _refresh() async {
     List<Game> newContent;
 
-    if(!_gameDate.containsKey(formatDate(_selectedDate)))
+    if (!_gameDate.containsKey(formatDate(_selectedDate)))
       newContent = await loadGames(_selectedDate);
     else
       newContent = _gameDate.getValue(formatDate(_selectedDate));
 
     this.setState(() {
       _games = newContent;
-      if(!_gameDate.containsKey(formatDate(_selectedDate)))
+      if (!_gameDate.containsKey(formatDate(_selectedDate)))
         _gameDate.add(formatDate(_selectedDate), newContent);
     });
     return new Future<Null>.value();
   }
 }
-
