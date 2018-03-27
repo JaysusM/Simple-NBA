@@ -51,9 +51,9 @@ class TapCard extends State<GameCard> {
               child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[checkTapped()]),
-              padding: new EdgeInsets.only(bottom: 10.0, top: 10.0)),
-        elevation: 6.0,
-        ));
+              padding: new EdgeInsets.only(bottom: 10.0, top: 10.0),
+          decoration: new BoxDecoration(border: new Border(bottom: new BorderSide(width: 1.0, color: Colors.black45)))),
+        elevation: 0.0,));
   }
 
   Widget checkTapped() {
@@ -153,7 +153,7 @@ class StandingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Card(
+    return new Container(
       child: new Container(
           child: new Column(
             children: <Widget>[
@@ -190,9 +190,9 @@ class StandingCard extends StatelessWidget {
             ],
             crossAxisAlignment: CrossAxisAlignment.stretch,
           ),
-          padding: new EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 2.0)),
+      padding: new EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 2.0)),
       color: _color,
-      elevation: 4.0
+      margin: new EdgeInsets.only(bottom: 1.0),
     );
   }
 }
@@ -216,50 +216,19 @@ getWidgetFromStandings(List<List<Team>> standings) {
       widgets.add(new StandingCard(it.current, playoffBackground));
     }
 
-    widgets.insert(0, standingInfo());
-
     tabs.add(new Tab(
-        child: new ListView(
-      children: widgets,
-      padding: new EdgeInsets.all(8.0),
+        child: new Container(
+          child: new ListView(
+              children: widgets
+          ),
+          decoration: new BoxDecoration(
+              border: new Border.all(width: 0.1),
+              borderRadius: new BorderRadius.all(new Radius.circular(4.0)),
+              boxShadow: <BoxShadow>[ new BoxShadow(offset: new Offset(2.0, 1.0), color: Colors.grey, blurRadius: 6.0) ]
+          ),
+          margin: new EdgeInsets.fromLTRB(8.0,17.0,8.0,0.0),
     )));
   }
 
   return tabs;
-}
-
-Widget standingInfo() {
-  return new Card(
-    child: new Container(
-        child: new Column(
-          children: <Widget>[
-            new SizedBox(
-              child: new Stack(
-                children: <Widget>[
-                  new Positioned(
-                      child: new Text("CODE",
-                          style: new TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20.0,
-                              fontFamily: 'Default')),
-                      left: 50.0,
-                      top: 5.0),
-                  new Positioned(
-                      child: new Text(
-                        "W - L    %RATIO",
-                        style: new TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 23.0),
-                      ),
-                      right: 8.0,
-                      top: 3.0),
-                ],
-              ),
-              height: 30.0,
-            ),
-          ],
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-        ),
-        padding: new EdgeInsets.all(8.0)),
-    color: new Color.fromRGBO(20, 20, 20, 0.30),
-  );
 }

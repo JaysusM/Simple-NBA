@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:async';
+import 'package:simple_nba/Player.dart';
 
 Iterable<int> inRange(int supInf) sync* {
 for (int i = 0; i < supInf; i++)
@@ -21,6 +22,7 @@ class Game
   String _period;
   String _clock;
   int _status;
+  List<Player> leaders;
 
   Game(this._city, this._arena,
       this._status, String period,

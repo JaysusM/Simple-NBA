@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 /// This methods are what we used in order to create our team database
 
@@ -8,12 +9,36 @@ import 'package:path_provider/path_provider.dart';
     Directory dir = await getApplicationDocumentsDirectory();
     String path = "${dir.path}/db/snba.db";
 
-    if (!(new File(path).existsSync())) {
+    if ((new File(path).existsSync())) {
       Database db = await openDatabase(path, version: 1,
           onCreate: (Database data, int version) async {
             await data.execute(
                 "CREATE TABLE team (alt_city_name VARCHAR(18),city VARCHAR(13),conf_name VARCHAR(4),div_name VARCHAR(9),full_name VARCHAR(27),is_all_star BOOL,is_nba_franchise BOOL,nickname VARCHAR(15),team_id INT,tricode VARCHAR(3),url_name VARCHAR(15))");
-          });
+            await data.execute("""CREATE TABLE players (
+            list_nbaDebutYear INT,
+            list_dateOfBirthUTC DATETIME,
+            list_heightInches VARCHAR(2) ,
+            list_firstName VARCHAR(12) ,
+            list_heightFeet VARCHAR(1) ,
+            list_personId INT,
+            list_lastName VARCHAR(16) ,
+            list_lastAffiliation VARCHAR(50) ,
+            list_pos VARCHAR(3) ,
+            list_weightKilograms NUMERIC(4, 1),
+            list_weightPounds INT,
+            list_teamId INT,
+            list_draft_roundNum INT,
+            list_draft_teamId INT,
+            list_draft_pickNum INT,
+            list_draft_seasonYear INT,
+            list_jersey INT,
+            list_country VARCHAR(32) ,
+            list_collegeName VARCHAR(33) ,
+            list_yearsPro INT,
+            list_isActive VARCHAR(4) ,
+            list_heightMeters NUMERIC(3, 2)
+            )""");
+      });
 
       await db.inTransaction(() async {
         db.rawInsert("""INSERT INTO team VALUES
@@ -60,6 +85,8 @@ import 'package:path_provider/path_provider.dart';
         ('Washington','Washington','East','Southeast','Washington Wizards',0,1,'Wizards',1610612764,'WAS','wizards'),
         ('World','World','East','East','World',1,0,'World',1610616844,'WLD','world')"""
         );
+
+        db.rawInsert(await rootBundle.loadString('assets/players.txt'));
       });
       db.close();
     }

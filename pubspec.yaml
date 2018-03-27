@@ -70,6 +70,9 @@ flutter:
     - assets/NBA.png
     - assets/LAC.png
     - assets/noteam.png
+    - assets/players.txt
+    - assets/242.jpg
+    - assets/bg.jpg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

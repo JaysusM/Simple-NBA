@@ -72,16 +72,22 @@ class MainFrameState extends State<MainFrame>
   Widget setInfo() {
     return new Scaffold(
         appBar: new AppBar(
+          flexibleSpace: new Container(
+              decoration: new BoxDecoration(
+                  image: new DecorationImage(image: new AssetImage("assets/242.jpg"),
+                      fit: BoxFit.fitWidth))),
             title: new Title(
                 color: Colors.white,
                 child: new Text("Simple NBA",
-                    style: new TextStyle(fontFamily: "Default")))),
+                    style: new TextStyle(fontFamily: "Default", color: Colors.white)))),
         bottomNavigationBar: new Material(
-          child: new TabBar(tabs: <Tab>[
+          child: new Container( child: new TabBar(tabs: <Tab>[
             new Tab(icon: new Icon(Icons.calendar_today, size: 40.0)),
             new Tab(icon: new Icon(Icons.assessment, size: 40.0))
-          ], controller: _mainNavigationController),
-          color: Colors.red,
+          ], controller: _mainNavigationController)
+            ,
+            color: new Color.fromRGBO(147, 0, 0, 1.0),
+          )
         ),
         body: new TabBarView(
           children: <Widget>[
@@ -89,7 +95,7 @@ class MainFrameState extends State<MainFrame>
             standingsTab(_standingsWidgets)
           ],
           controller: _mainNavigationController,
-        )
+        ),
     );
   }
 }
@@ -143,6 +149,7 @@ class StandingsWidgetViewState extends State
             ]),
             flexibleSpace: new Container(color: Colors.white, height: 0.15),
             elevation: 0.0,
+            backgroundColor: new Color.fromRGBO(12, 106, 201, 1.0)
           ),
           body: new TabBarView(children: _standings),
         ));
@@ -182,12 +189,12 @@ class CalendarTabState extends State<CalendarTab> {
             child: new Stack(
               children: <Widget>[
                 new Positioned(
-                    child: new IconButton(
+                    child: new Container( child:new IconButton(
                         icon:
                             new Icon(Icons.arrow_back_ios, color: Colors.white),
                         onPressed: () {
                           _changeDate(-1);
-                        }),
+                        })),
                     left: 5.0,
                     top: 5.0),
                 new Center(
@@ -212,13 +219,13 @@ class CalendarTabState extends State<CalendarTab> {
             ),
           ),
           elevation: 0.0,
+          backgroundColor: new Color.fromRGBO(12, 106, 201, 1.0),
         ),
-        body: new RefreshIndicator(
+        body: new Container(
+          child: new RefreshIndicator(
             child: (_games.isNotEmpty)
                 ? new ListView(
-                    children: _games.map((game) => new GameCard(game)).toList(),
-                    padding:
-                        new EdgeInsets.only(top: 5.0, left: 4.0, right: 4.0))
+                    children: _games.map((game) => new GameCard(game)).toList())
                 : new Center(
                     child: new Text("No games scheduled",
                         style: new TextStyle(
@@ -230,7 +237,9 @@ class CalendarTabState extends State<CalendarTab> {
                 if (formatDate(_selectedDate) == formatDate(_startGameDate))
                   _games = newContent;
               });
-            }));
+            }),
+          color: Colors.white,
+        ));
   }
 
   void _changeDate(int day) {
