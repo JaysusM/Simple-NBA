@@ -5,11 +5,11 @@ import 'package:flutter/services.dart' show rootBundle;
 
 /// This methods are what we used in order to create our team database
 
-  startDB() async {
+startDB() async {
     Directory dir = await getApplicationDocumentsDirectory();
     String path = "${dir.path}/db/snba.db";
 
-    if ((new File(path).existsSync())) {
+    if (!(new File(path).existsSync())) {
       Database db = await openDatabase(path, version: 1,
           onCreate: (Database data, int version) async {
             await data.execute(

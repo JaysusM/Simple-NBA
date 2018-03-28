@@ -136,15 +136,6 @@ Widget getSpecialPlayer() {
   return null;
 }
 
-Widget loadingScreen() {
-  return new Container(
-      decoration: new BoxDecoration(
-          image: new DecorationImage(
-              image: new AssetImage("assets/NBA.png"), fit: BoxFit.contain)),
-      child: null
-  );
-}
-
 class StandingCard extends StatelessWidget {
   final Team _mainTeam;
   final Color _color;

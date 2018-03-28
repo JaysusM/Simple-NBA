@@ -11,8 +11,6 @@ for (int i = 0; i < supInf; i++)
 yield i;
 }
 
-//TODO set _active with status from api
-
 class Game
 {
   String _city, _arena;
@@ -134,7 +132,7 @@ class Team
   static Future<List<List<Team>>> setStandingsFromDB(String response) async
   {
     Directory current = await getApplicationDocumentsDirectory();
-    Database db = await openDatabase("${current.path}/db/team.db");
+    Database db = await openDatabase("${current.path}/db/snba.db");
 
     List<List<Team>> standingList = new List<List<Team>>();
     var standings = JSON.decode(response)["league"]["standard"]["conference"];

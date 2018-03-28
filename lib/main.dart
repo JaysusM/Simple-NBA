@@ -5,6 +5,7 @@ import 'dart:async';
 import 'Data.dart';
 import 'DatabaseCreation.dart';
 import 'Dictionary.dart';
+import 'LoadingAnimation.dart';
 
 void main() {
   runApp(new MaterialApp(home: new MainFrame()));
@@ -50,7 +51,7 @@ class MainFrameState extends State<MainFrame>
           if (response.hasError)
             return _throwError(response);
           else if (!response.hasData)
-            return loadingScreen();
+            return new loadingAnimation();
           else {
             _calendarData = response.data;
             return new FutureBuilder(
@@ -59,7 +60,7 @@ class MainFrameState extends State<MainFrame>
                   if (response.hasError)
                     return _throwError(response);
                   else if (!response.hasData)
-                    return loadingScreen();
+                    return new loadingAnimation();
                   else {
                     _standingsWidgets = getWidgetFromStandings(response.data);
                     return setInfo();
