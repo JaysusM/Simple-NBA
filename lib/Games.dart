@@ -1,28 +1,57 @@
 import 'dart:convert';
 import 'Data.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 import 'dart:async';
 import 'package:simple_nba/Player.dart';
+import 'Teams.dart';
 
 Iterable<int> inRange(int supInf) sync* {
 for (int i = 0; i < supInf; i++)
 yield i;
 }
 
+Future<List<Game>> setGames(Future<String> content) async {
+  List<Game> games = new List<Game>();
+  var decod = JSON.decode(await content);
+
+  for (int i in inRange(decod["numGames"])) {
+    var decodGame = decod["games"][i];
+    games.add(new Game(
+        decodGame["gameId"],
+        int.parse(decodGame["startDateEastern"]),
+        decodGame["arena"]["city"],
+        decodGame["arena"]["name"],
+        decodGame["statusNum"],
+        decodGame["period"]["current"].toString(),
+        decodGame["clock"],
+        decodGame["startTimeUTC"],
+        new ScoreboardTeam(
+            decodGame["vTeam"]["teamId"],
+            decodGame["vTeam"]["triCode"],
+            decodGame["vTeam"]["win"],
+            decodGame["vTeam"]["loss"],
+            decodGame["vTeam"]["score"]),
+        new ScoreboardTeam(
+          decodGame["hTeam"]["teamId"],
+          decodGame["hTeam"]["triCode"],
+          decodGame["hTeam"]["win"],
+          decodGame["hTeam"]["loss"],
+          decodGame["hTeam"]["score"],
+        )));
+  }
+
+  return games;
+}
+
 class Game
 {
-  String _city, _arena;
-  String _hour;
   ScoreboardTeam visitor, home;
   bool _active;
-  String _period;
-  String _clock;
-  int _status;
+  String _city, _arena, _hour, _period, _clock;
+  int _status, _date;
+  String _id;
   List<Player> leaders;
 
-  Game(this._city, this._arena,
+  Game(this._id, this._date, this._city, this._arena,
       this._status, String period,
       String clock,
       String date,
@@ -70,104 +99,23 @@ class Game
   String get clock => _clock;
   String get time => _hour;
   int get status => _status;
+  String get id => _id;
+  int get date => _date;
 
   @override
   String toString() {
     return "{ City: " + _city
         + ", home: " + visitor.toString() + ", visitor: " + home.toString() + "}";
   }
-}
-
-class ScoreboardTeam
-{
-  static int _getScore(String score)
-  {
-    if(score.isEmpty)
-      return 0;
-    return int.parse(score);
-  }
-
-  String _tricode;
-  int _win, _loss;
-  String _score;
-  int _id;
-
-  ScoreboardTeam(id, tricode, win, loss, score)
-  {
-    _tricode = tricode;
-    _win = int.parse(win);
-    _loss = int.parse(loss);
-    _score = _getScore(score).toString();
-    _id = int.parse(id);
-  }
-
-  String get tricode => _tricode;
-  int get win => _win;
-  get loss => _loss;
-  String get score => _score;
-  setScore (String score) { _score = score; }
-  int get id => _id;
-
-  @override
-  String toString() {
-    return '{ tricode: $_tricode, id: $_id,  win: $_win,  loss: $_loss,  score: $_score}';
-  }
-}
-
-class Team
-{
-  Team(this._id, this._fullName, this._tricode, this._conference, {String win, String loss})
-  : _win = win,
-  _loss = loss;
-
-  String _id, _fullName, _tricode, _conference, _win, _loss;
-
-  String get id => _id;
-  String get name => _fullName;
-  String get tricode => _tricode;
-  String get conference => _conference;
-  String get winLoss => _win + " - " + _loss + "      " +
-      (double.parse(_win)/(double.parse(_loss)+double.parse(_win))).toStringAsPrecision(3);
-
-  static Future<List<List<Team>>> setStandingsFromDB(String response) async
-  {
-    Directory current = await getApplicationDocumentsDirectory();
-    Database db = await openDatabase("${current.path}/db/snba.db");
-
-    List<List<Team>> standingList = new List<List<Team>>();
-    var standings = JSON.decode(response)["league"]["standard"]["conference"];
-    var conference = standings["east"];
-
-    for (int i in inRange(2)) {
-      List<Team> temporary = new List<Team>();
-      for (int j in inRange(15)) {
-        List<Map> team = await db.rawQuery(
-            "SELECT * FROM team where team_id=${conference[j]["teamId"]}");
-        Map currentTeam = team.first;
-        temporary.add(new Team(currentTeam["teamId"], currentTeam["full_name"],
-            currentTeam["tricode"], currentTeam["conf_name"],
-            win: conference[j]["win"], loss: conference[j]["loss"]));
-      }
-      conference = standings["west"];
-      standingList.add(temporary);
-    }
-
-    db.close();
-    return standingList;
-  }
-
-  @override
-  String toString() {
-    return 'team{_id: $_id, _fullName: $_fullName, _tricode: $_tricode, _conference: $_conference}';
-  }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is Team &&
+          other is Game &&
               runtimeType == other.runtimeType &&
               _id == other._id;
 
   @override
   int get hashCode => _id.hashCode;
+
 }

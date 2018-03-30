@@ -6,6 +6,7 @@ import 'Data.dart';
 import 'DatabaseCreation.dart';
 import 'Dictionary.dart';
 import 'LoadingAnimation.dart';
+import 'Player.dart';
 
 void main() {
   runApp(new MaterialApp(home: new MainFrame()));
@@ -46,28 +47,19 @@ class MainFrameState extends State<MainFrame>
 
   Widget build(BuildContext context) {
     return new FutureBuilder(
-        future: loadGames(setHourETTime()),
+        future: loadData(setHourETTime()),
         builder: (BuildContext context, AsyncSnapshot response) {
           if (response.hasError)
             return _throwError(response);
           else if (!response.hasData)
             return new loadingAnimation();
           else {
-            _calendarData = response.data;
-            return new FutureBuilder(
-                future: loadStandings(),
-                builder: (BuildContext context, AsyncSnapshot response) {
-                  if (response.hasError)
-                    return _throwError(response);
-                  else if (!response.hasData)
-                    return new loadingAnimation();
-                  else {
-                    _standingsWidgets = getWidgetFromStandings(response.data);
-                    return setInfo();
-                  }
-                });
+            _calendarData = response.data[0];
+            _standingsWidgets = getWidgetFromStandings(response.data[1]);
+            return setInfo();
           }
-        });
+        }
+    );
   }
 
   Widget setInfo() {
@@ -169,8 +161,7 @@ class CalendarTab extends StatefulWidget {
 class CalendarTabState extends State<CalendarTab> {
   List<Game> _games;
   Timer _timer;
-  DateTime _selectedDate;
-  DateTime _startGameDate;
+  DateTime _selectedDate, _startGameDate;
 
   //I didn't like Dart's HashMap structure so I created a new simpler one.
   //This will store all List of Games from visited dates since App was launched, will show
@@ -226,7 +217,8 @@ class CalendarTabState extends State<CalendarTab> {
           child: new RefreshIndicator(
             child: (_games.isNotEmpty)
                 ? new ListView(
-                    children: _games.map((game) => new GameCard(game)).toList())
+                    children: _games.map((game) => new GameCard(game)).toList()
+            )
                 : new Center(
                     child: new Text("No games scheduled",
                         style: new TextStyle(

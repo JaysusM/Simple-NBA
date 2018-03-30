@@ -40,8 +40,8 @@ class loadingAnimationState extends State with SingleTickerProviderStateMixin {
         body: new Transform.rotate(
             angle: angleAnimation.value / 360 * 2 * PI,
             child: new Center(child: new Container(
-              decoration: new BoxDecoration(image: new DecorationImage(image: new AssetImage("assets/logo.png")))
-              ,padding: new EdgeInsets.all(100.0),
+              decoration: new BoxDecoration(image: new DecorationImage(image: new AssetImage("assets/logo.png"))),
+              padding: new EdgeInsets.all(100.0),
             ))));
   }
 

@@ -1,7 +1,8 @@
-import 'dart:convert';
+import 'Teams.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'Games.dart';
+import 'Player.dart';
 
 //Read url and return its content
 Future<String> _loadData(String url) async {
@@ -42,33 +43,9 @@ String setCurrentStartTime(String time) {
     return hour + " AM";
 }
 
-Future<List<Game>> setGames(Future<String> s) async {
-  List<Game> games = new List<Game>();
-  var decod = JSON.decode(await s);
-
-  for (int i in inRange(decod["numGames"])) {
-    var decodGame = decod["games"][i];
-    games.add(new Game(
-        decodGame["arena"]["city"],
-        decodGame["arena"]["name"],
-        decodGame["statusNum"],
-        decodGame["period"]["current"].toString(),
-        decodGame["clock"],
-        decodGame["startTimeUTC"],
-        new ScoreboardTeam(
-            decodGame["vTeam"]["teamId"],
-            decodGame["vTeam"]["triCode"],
-            decodGame["vTeam"]["win"],
-            decodGame["vTeam"]["loss"],
-            decodGame["vTeam"]["score"]),
-        new ScoreboardTeam(
-          decodGame["hTeam"]["teamId"],
-          decodGame["hTeam"]["triCode"],
-          decodGame["hTeam"]["win"],
-          decodGame["hTeam"]["loss"],
-          decodGame["hTeam"]["score"],
-        )));
-  }
-
-  return games;
+Future loadData(DateTime date) async {
+  List data = new List();
+  data.insert(0, await loadGames(date));
+  data.insert(1, await loadStandings());
+  return data;
 }
