@@ -214,10 +214,10 @@ Widget leaderTile(
       break;
   }
 
-  if (player1.sName.length >= 10)
+  if (player1.sName.length >= 11)
     player1.name = player1.sName.substring(0, 11);
 
-  if (player2.sName.length >= 10)
+  if (player2.sName.length >= 11)
     player2.name = player2.sName.substring(0, 11);
 
   return new Row(
