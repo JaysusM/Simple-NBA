@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'Games.dart';
 import 'Player.dart';
 import 'Teams.dart';
-import 'LoadingAnimation.dart';
 
 class GameCard extends StatefulWidget {
   GameCard(Game g) {
@@ -23,7 +22,7 @@ class GameCard extends StatefulWidget {
     String visitorLogo = 'assets/${g.visitor.tricode.toUpperCase()}.png';
     String homeLogo = 'assets/${g.home.tricode.toUpperCase()}.png';
 
-    //TODO If we don't have picture in our assets must we provide it default one using noteam.png
+    //TODO If we don't have picture in our assets we must provide a default one using noteam.png
     _assetVisitorLogo = new AssetImage(visitorLogo);
     _assetHomeLogo = new AssetImage(homeLogo);
 
@@ -45,15 +44,20 @@ class GameCard extends StatefulWidget {
 }
 
 class TapCard extends State<GameCard> {
-  double _size = 30.0;
-  bool tapped = false;
+  double _size;
+  bool tapped;
+
+  TapCard() {
+    _size = 30.0;
+    tapped = false;
+  }
 
   @override
   Widget build(BuildContext context) {
     return new GestureDetector(
         onTap: () {
           this.setState(() {
-            (tapped) ? tapped = false : tapped = true;
+            tapped = !tapped;
           });
         },
         child: new Card(
@@ -153,31 +157,57 @@ class TapCard extends State<GameCard> {
                         fontFamily: "Mono")),
                 top: 6.0,
                 left: MediaQuery.of(context).size.width / 2 - ((20.0 * 4) / 2)),
-            (widget.leaders != null)
-                ? new Positioned(
-                    child: getWidgetFromPlayer(widget.leaders, context),
-                    top: 135.0)
-                : new FutureBuilder(
-                    future: loadLeaders(widget._game.id, widget._game.date),
-                    builder: (BuildContext c, AsyncSnapshot response) {
-                      if (response.hasError)
-                        //TODO Need info to show
-                        return new Positioned(
-                            child: new Container(
-                                child: new Text("TODO"),
-                                color: Colors.blueAccent,
-                                height: MediaQuery.of(context).size.height,
-                                width: MediaQuery.of(context).size.width),
-                            top: 135.0);
-                      else if (!response.hasData)
-                        return new loadingAnimation();
-                      else {
-                        widget.leaders = response.data;
-                        return new Positioned(
-                            child: getWidgetFromPlayer(response.data, context),
-                            top: 135.0);
-                      }
-                    }),
+            new Positioned(
+                child: new Container(
+                    child: (widget.leaders != null)
+                        ? getWidgetFromPlayer(10, widget.leaders, context)
+                        : new FutureBuilder(
+                            future:
+                                loadLeaders(widget._game.id, widget._game.date),
+                            builder: (BuildContext c, AsyncSnapshot response) {
+                              if (response.hasError)
+                                return new FutureBuilder(
+                                    future: loadTeamsLeaders(widget._game),
+                                    builder: (BuildContext c,
+                                        AsyncSnapshot response) {
+                                      if (response.hasError)
+                                        return new Center(
+                                            child: new Text("ERROR"));
+                                      else if (!response.hasData)
+                                        return new Container(
+                                          child: new Text("Loading...",
+                                              style: new TextStyle(
+                                                  fontSize: 16.0)),
+                                          margin: new EdgeInsets.only(
+                                              left:
+                                                  MediaQuery.of(c).size.width /
+                                                      2.5)
+                                        );
+                                      else {
+                                        widget.leaders = response.data;
+                                        return getWidgetFromPlayer(
+                                            10, response.data, context);
+                                      }
+                                    });
+                              else if (!response.hasData)
+                                return new Container(
+                                    child: new Text("Loading...",
+                                        style: new TextStyle(
+                                            fontSize: 16.0)),
+                                    margin: new EdgeInsets.only(
+                                        left:
+                                        MediaQuery.of(c).size.width /
+                                            2.5)
+                                );
+                              else {
+                                widget.leaders = response.data;
+                                return getWidgetFromPlayer(
+                                    12, response.data, context);
+                              }
+                            }),
+                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery.of(context).size.width),
+                top: 135.0),
           ],
         ),
       );
@@ -185,18 +215,18 @@ class TapCard extends State<GameCard> {
   }
 }
 
-Widget getWidgetFromPlayer(List<Player> players, BuildContext context) {
+Widget getWidgetFromPlayer(int nameSizeMaxLength, List<Player> players, BuildContext context) {
   return new Column(
     children: <Widget>[
-      leaderTile(1, players[3], players[0], context),
-      leaderTile(2, players[4], players[1], context),
-      leaderTile(3, players[5], players[2], context)
+      leaderTile(nameSizeMaxLength, 1, players[3], players[0], context),
+      leaderTile(nameSizeMaxLength, 2, players[4], players[1], context),
+      leaderTile(nameSizeMaxLength, 3, players[5], players[2], context)
     ],
   );
 }
 
 Widget leaderTile(
-    int rowNum, Player player1, Player player2, BuildContext context) {
+    int nameSize, int rowNum, Player player1, Player player2, BuildContext context) {
   String stat1, stat2;
 
   switch (rowNum) {
@@ -214,11 +244,9 @@ Widget leaderTile(
       break;
   }
 
-  if (player1.sName.length >= 11)
-    player1.name = player1.sName.substring(0, 11);
+  if (player1.sName.length >= nameSize) player1.name = player1.sName.substring(0, nameSize);
 
-  if (player2.sName.length >= 11)
-    player2.name = player2.sName.substring(0, 11);
+  if (player2.sName.length >= nameSize) player2.name = player2.sName.substring(0, nameSize);
 
   return new Row(
     children: <Widget>[

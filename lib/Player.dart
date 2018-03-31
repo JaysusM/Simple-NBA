@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'Games.dart';
 
 Future<List<Player>> loadLeaders(String gameId, int gameDate) async {
   String url = "http://data.nba.net/prod/v1/$gameDate/${gameId}_boxscore.json";
@@ -39,8 +40,52 @@ Future<List<Player>> loadLeaders(String gameId, int gameDate) async {
   return leaders;
 }
 
-Future getPlayerName(String playerId, Database db) async {
-  return (await db.rawQuery("SELECT lastName FROM players WHERE personId = $playerId")).first["lastName"];
+Future<String> getPlayerName(String playerId, Database db) async {
+  String playerName;
+  try {
+    playerName = (await db.rawQuery("SELECT lastName FROM players WHERE personId = $playerId")).first["lastName"];
+  } catch (exception) {
+    playerName = "DBError";
+  }
+  return playerName;
+}
+
+Future<List<Player>> loadTeamsLeaders(Game game) async {
+  List<Player> leaders = new List();
+  Database db = await openDatabase("${(await getApplicationDocumentsDirectory()).path}/db/snba.db");
+
+  String prefix = "http://data.nba.net";
+  String url = "$prefix/10s/prod/v1/today.json";
+
+  var decodJSON = JSON.decode(await http.read(url));
+  url = "$prefix${decodJSON["links"]["teamLeaders2"]}";
+
+  leaders.addAll(await _loadTeamLeaders(game.home.id.toString(), url, db));
+  leaders.addAll(await _loadTeamLeaders(game.visitor.id.toString(), url, db));
+
+  db.close();
+  return leaders;
+}
+
+Future<List<Player>> _loadTeamLeaders(String teamId, String url, Database db) async {
+  String link = url.replaceAll("{{teamId}}", teamId);
+
+  var decodJSON = JSON.decode(await http.read(link));
+
+  List<Player> leaders = new List<Player>();
+  leaders.add(new Player(decodJSON["league"]["standard"]["ppg"][0]["personId"],
+      teamId,
+      name: await getPlayerName(decodJSON["league"]["standard"]["ppg"][0]["personId"], db),
+      points: decodJSON["league"]["standard"]["ppg"][0]["value"]));
+  leaders.add(new Player(decodJSON["league"]["standard"]["trpg"][0]["personId"],
+      teamId,
+      name: await getPlayerName(decodJSON["league"]["standard"]["trpg"][0]["personId"], db),
+      rebounds: decodJSON["league"]["standard"]["trpg"][0]["value"]));
+  leaders.add(new Player(decodJSON["league"]["standard"]["apg"][0]["personId"],
+      teamId,
+      name: await getPlayerName(decodJSON["league"]["standard"]["apg"][0]["personId"], db),
+      assist: decodJSON["league"]["standard"]["apg"][0]["value"]));
+  return leaders;
 }
 
 class Player

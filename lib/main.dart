@@ -67,7 +67,7 @@ class MainFrameState extends State<MainFrame>
         appBar: new AppBar(
           flexibleSpace: new Container(
               decoration: new BoxDecoration(
-                  image: new DecorationImage(image: new AssetImage("assets/242.jpg"),
+                  image: new DecorationImage(image: new AssetImage("assets/header.jpg"),
                       fit: BoxFit.fitWidth))),
             title: new Title(
                 color: Colors.white,

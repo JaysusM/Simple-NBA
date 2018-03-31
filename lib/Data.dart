@@ -2,7 +2,6 @@ import 'Teams.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'Games.dart';
-import 'Player.dart';
 
 //Read url and return its content
 Future<String> _loadData(String url) async {
