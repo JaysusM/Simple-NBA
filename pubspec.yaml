@@ -3,9 +3,9 @@ description: Simple NBA scoreboard
 
 dependencies:
   http: "^0.11.3+16"
-  image: "^1.1.29"
   sqflite: "^0.6.2+2"
   path_provider: "^0.3.1"
+  url_launcher: "^2.0.2"
   flutter:
     sdk: flutter
 
@@ -36,6 +36,9 @@ flutter:
     - family: Default
       fonts:
       - asset: assets/fonts/Default.ttf
+    - family: Overpass
+      fonts:
+      - asset: assets/fonts/OverpassMono-Regular.ttf
 
   assets:
     - assets/DET.png
@@ -70,8 +73,10 @@ flutter:
     - assets/LAC.png
     - assets/noteam.png
     - assets/players.txt
+    - assets/teams.txt
     - assets/header.jpg
     - assets/logo.png
+    - assets/twitterIcon.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

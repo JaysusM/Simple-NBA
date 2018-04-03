@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'Data.dart';
 import 'dart:async';
-import 'package:simple_nba/Player.dart';
+import 'Twitter.dart';
 import 'Teams.dart';
 
 Iterable<int> inRange(int supInf) sync* {
@@ -48,8 +48,7 @@ class Game
   bool _active;
   String _city, _arena, _hour, _period, _clock;
   int _status, _date;
-  String _id;
-  List<Player> leaders;
+  String _id, _homeTwitter, _awayTwitter;
 
   Game(this._id, this._date, this._city, this._arena,
       this._status, String period,
@@ -65,7 +64,7 @@ class Game
     else if(_status == 1)
       _clock = "--:--";
     else if(clock.isEmpty)
-      _clock = "12:00";
+      _clock = "00:00";
     else
       _clock = clock;
 
@@ -77,6 +76,10 @@ class Game
       this._period = "OT";
     else
       this._period = period+"Q";
+
+    var twitters = getTwitters(home.id, visitor.id);
+    _homeTwitter = twitters[0];
+    _awayTwitter = twitters[1];
     }
 
     //Format score to 3 digits - 3 digits (_ _ _ - _ _ _)
@@ -101,6 +104,8 @@ class Game
   int get status => _status;
   String get id => _id;
   int get date => _date;
+  String get homeTwitter => _homeTwitter;
+  String get awayTwitter => _awayTwitter;
 
   @override
   String toString() {

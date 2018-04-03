@@ -6,9 +6,15 @@ import 'Data.dart';
 import 'DatabaseCreation.dart';
 import 'Dictionary.dart';
 import 'LoadingAnimation.dart';
-import 'Player.dart';
+import 'package:flutter/services.dart';
+import 'MatchCard.dart';
 
 void main() {
+
+  //That will disable screen rotation
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp
+  ]);
   runApp(new MaterialApp(home: new MainFrame()));
 }
 
@@ -19,6 +25,9 @@ DateTime setHourETTime() {
 }
 
 class MainFrame extends StatefulWidget {
+  List<Widget> _standingsWidgets;
+  List<Game> _calendarData;
+
   MainFrame() {
     //We create db if it doesn't exist
     startDB();
@@ -30,13 +39,11 @@ class MainFrame extends StatefulWidget {
 class MainFrameState extends State<MainFrame>
     with SingleTickerProviderStateMixin {
   TabController _mainNavigationController;
-  List<Widget> _standingsWidgets;
-  List<Game> _calendarData;
 
   @override
   void initState() {
-    super.initState();
     _mainNavigationController = new TabController(vsync: this, length: 2);
+    super.initState();
   }
 
   @override
@@ -54,8 +61,8 @@ class MainFrameState extends State<MainFrame>
           else if (!response.hasData)
             return new loadingAnimation();
           else {
-            _calendarData = response.data[0];
-            _standingsWidgets = getWidgetFromStandings(response.data[1]);
+            widget._calendarData = response.data[0];
+            widget._standingsWidgets = getWidgetFromStandings(response.data[1]);
             return setInfo();
           }
         }
@@ -84,8 +91,8 @@ class MainFrameState extends State<MainFrame>
         ),
         body: new TabBarView(
           children: <Widget>[
-            new CalendarTab(_calendarData),
-            standingsTab(_standingsWidgets)
+            new CalendarTab(widget._calendarData, this),
+            standingsTab(widget._standingsWidgets)
           ],
           controller: _mainNavigationController,
         ),
@@ -118,18 +125,17 @@ Widget _throwError(AsyncSnapshot response) {
 }
 
 class StandingsWidgetView extends StatefulWidget {
-  final List<Widget> _standings;
+  final List<Widget> standings;
 
-  StandingsWidgetView(this._standings);
+  StandingsWidgetView(this.standings);
 
-  createState() => new StandingsWidgetViewState(_standings);
+  createState() => new StandingsWidgetViewState();
 }
 
-class StandingsWidgetViewState extends State
+class StandingsWidgetViewState extends State<StandingsWidgetView>
     with SingleTickerProviderStateMixin {
-  List<Widget> _standings;
 
-  StandingsWidgetViewState(this._standings);
+  StandingsWidgetViewState();
 
   Widget build(BuildContext context) {
     return new DefaultTabController(
@@ -144,15 +150,18 @@ class StandingsWidgetViewState extends State
             elevation: 0.0,
             backgroundColor: new Color.fromRGBO(12, 106, 201, 1.0)
           ),
-          body: new TabBarView(children: _standings),
-        ));
+          body: new TabBarView(children: widget.standings),
+        )
+    );
   }
+
 }
 
 class CalendarTab extends StatefulWidget {
   final List<Game> games;
+  final MainFrameState ancestor;
 
-  CalendarTab(this.games);
+  CalendarTab(this.games, this.ancestor);
 
   State<StatefulWidget> createState() => new CalendarTabState();
 }
@@ -252,27 +261,28 @@ class CalendarTabState extends State<CalendarTab> {
     _games = widget.games;
     super.initState();
     _timer = new Timer.periodic(new Duration(seconds: 20), (Timer timer) async {
-      List<Game> newContent = await loadGames(_startGameDate);
+      List newGames = await loadGames(_startGameDate);
+
       this.setState(() {
-        _gameDate.add(formatDate(_startGameDate), newContent);
+        _gameDate.add(formatDate(_startGameDate), newGames);
         if (formatDate(_selectedDate) == formatDate(_startGameDate))
-          _games = newContent;
+          _games = newGames;
       });
     });
   }
 
   Future _refresh() async {
-    List<Game> newContent;
+    List<Game> newGames;
 
     if (!_gameDate.containsKey(formatDate(_selectedDate)))
-      newContent = await loadGames(_selectedDate);
+      newGames = await loadGames(_selectedDate);
     else
-      newContent = _gameDate.getValue(formatDate(_selectedDate));
+      newGames = _gameDate.getValue(formatDate(_selectedDate));
 
     this.setState(() {
-      _games = newContent;
+      _games = newGames;
       if (!_gameDate.containsKey(formatDate(_selectedDate)))
-        _gameDate.add(formatDate(_selectedDate), newContent);
+        _gameDate.add(formatDate(_selectedDate), newGames);
     });
     return new Future<Null>.value();
   }

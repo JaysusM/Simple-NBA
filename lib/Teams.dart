@@ -4,6 +4,39 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:async';
+import 'Dictionary.dart';
+
+Future<List<List<Team>>> setStandingsFromDB(String response) async
+{
+  Directory current = await getApplicationDocumentsDirectory();
+  Database db = await openDatabase("${current.path}/db/snba.db");
+  Dictionary teamId = new Dictionary();
+
+  List<List<Team>> standingList = new List<List<Team>>();
+  var standings = JSON.decode(response)["league"]["standard"]["conference"];
+  var conference = standings["east"];
+
+  for (int i in inRange(2)) {
+    int index = 1;
+    List<Team> temporary = new List<Team>();
+    for (int j in inRange(15)) {
+      Map currentTeam = await getTeamFromId(conference[j]["teamId"], db);
+      teamId.add(conference[j]["teamId"], currentTeam["full_name"]);
+      temporary.add(new Team(conference[j]["teamId"], position: index.toString(), name: currentTeam["full_name"],
+          tricode: currentTeam["tricode"], conference: currentTeam["conf_name"],
+          clinched: conference[j]["clinchedPlayoffsCodeV2"],
+          win: conference[j]["win"], loss: conference[j]["loss"]));
+      index++;
+    }
+    conference = standings["west"];
+    standingList.add(temporary);
+  }
+
+  db.close();
+  Team.teamIdNames = teamId;
+
+  return standingList;
+}
 
 class ScoreboardTeam
 {
@@ -17,15 +50,14 @@ class ScoreboardTeam
   String _tricode;
   int _win, _loss;
   String _score;
-  int _id;
+  String _id;
 
-  ScoreboardTeam(id, tricode, win, loss, score)
+  ScoreboardTeam(this._id, tricode, win, loss, score)
   {
     _tricode = tricode;
     _win = int.parse(win);
     _loss = int.parse(loss);
     _score = _getScore(score).toString();
-    _id = int.parse(id);
   }
 
   String get tricode => _tricode;
@@ -33,58 +65,39 @@ class ScoreboardTeam
   get loss => _loss;
   String get score => _score;
   setScore (String score) { _score = score; }
-  int get id => _id;
+  String get id => _id;
 
   @override
   String toString() {
-    return '{ tricode: $_tricode, id: $_id,  win: $_win,  loss: $_loss,  score: $_score}';
+    return '{ tricode: $_tricode, id: $_id,  win: $_win,  loss: $_loss,  score: $_score }';
   }
 }
 
 class Team
 {
-  Team(this._position, this._id, this._fullName, this._tricode, this._conference, {String win, String loss})
+  Team(this._id,
+      {String win, String loss, String position, String tricode, String conference,
+      String clinched, String name})
       : _win = win,
-        _loss = loss;
+        _loss = loss,
+        _position = position,
+        _tricode = tricode,
+        _conference = conference,
+        _clinched = clinched,
+        _fullName = name;
 
   String _position, _id, _fullName, _tricode, _conference, _win, _loss;
+  String _clinched;
+  static Dictionary<String,String> teamIdNames;
 
   String get position => _position;
   String get id => _id;
   String get name => _fullName;
   String get tricode => _tricode;
   String get conference => _conference;
-  String get winLoss => _win + " - " + _loss + "      " +
+  String get winLoss => _win + "-" + _loss + "  " +
       (double.parse(_win)/(double.parse(_loss)+double.parse(_win))).toStringAsPrecision(3);
-
-  static Future<List<List<Team>>> setStandingsFromDB(String response) async
-  {
-    Directory current = await getApplicationDocumentsDirectory();
-    Database db = await openDatabase("${current.path}/db/snba.db");
-
-    List<List<Team>> standingList = new List<List<Team>>();
-    var standings = JSON.decode(response)["league"]["standard"]["conference"];
-    var conference = standings["east"];
-
-    for (int i in inRange(2)) {
-      int index = 1;
-      List<Team> temporary = new List<Team>();
-      for (int j in inRange(15)) {
-        List<Map> team = await db.rawQuery(
-            "SELECT * FROM team WHERE team_id=${conference[j]["teamId"]}");
-        Map currentTeam = team.first;
-        temporary.add(new Team(index.toString(), currentTeam["teamId"], currentTeam["full_name"],
-            currentTeam["tricode"], currentTeam["conf_name"],
-            win: conference[j]["win"], loss: conference[j]["loss"]));
-        index++;
-      }
-      conference = standings["west"];
-      standingList.add(temporary);
-    }
-
-    db.close();
-    return standingList;
-  }
+  String get clinchedChar => _clinched;
 
   @override
   String toString() {
@@ -100,4 +113,10 @@ class Team
 
   @override
   int get hashCode => _id.hashCode;
+}
+
+Future<Map> getTeamFromId(String id, Database db) async {
+  List<Map> team = await db.rawQuery(
+      "SELECT * FROM team WHERE team_id=$id");
+  return team.first;
 }

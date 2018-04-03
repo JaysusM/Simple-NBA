@@ -25,7 +25,7 @@ String numberFormatTwoDigit(String number)
 
 Future loadStandings() async {
   var url = "http://data.nba.net/prod/v1/current/standings_conference.json";
-  return Team.setStandingsFromDB(await _loadData(url));
+  return setStandingsFromDB(await _loadData(url));
 }
 
 String setCurrentStartTime(String time) {
