@@ -20,30 +20,30 @@ Widget leaderTile(int nameSize, int rowNum, Player player1, Player player2,
 
   switch (rowNum) {
     case 1:
-      stat1 = "(${player1.points}PTS)";
-      stat2 = "(${player2.points}PTS)";
+      stat1 = "(${player1.stat}PTS)";
+      stat2 = "(${player2.stat}PTS)";
       break;
     case 2:
-      stat1 = "(${player1.rebounds}REB)";
-      stat2 = "(${player2.rebounds}REB)";
+      stat1 = "(${player1.stat}REB)";
+      stat2 = "(${player2.stat}REB)";
       break;
     default:
-      stat1 = "(${player1.assist}AST)";
-      stat2 = "(${player2.assist}AST)";
+      stat1 = "(${player1.stat}AST)";
+      stat2 = "(${player2.stat}AST)";
       break;
   }
 
-  if (player1.name.length >= nameSize)
-    player1.name = player1.name.substring(0, nameSize);
+  if (player1.lastName.length >= nameSize)
+    player1.lastName = player1.lastName.substring(0, nameSize);
 
-  if (player2.name.length >= nameSize)
-    player2.name = player2.name.substring(0, nameSize);
+  if (player2.lastName.length >= nameSize)
+    player2.lastName = player2.lastName.substring(0, nameSize);
 
   return new Row(
     children: <Widget>[
       new Container(
         child: new Center(
-            child: new Text("${player1.name.toUpperCase()} $stat1")),
+            child: new Text("${player1.lastName.toUpperCase()} $stat1")),
         color: new Color.fromRGBO(217, 217, 255, 1.0),
         width: MediaQuery.of(context).size.width / 2 - 5,
         padding: new EdgeInsets.symmetric(vertical: 7.0),
@@ -51,7 +51,7 @@ Widget leaderTile(int nameSize, int rowNum, Player player1, Player player2,
       ),
       new Container(
         child: new Center(
-            child: new Text("${player2.name.toUpperCase()} $stat2")),
+            child: new Text("${player2.lastName.toUpperCase()} $stat2")),
         color: new Color.fromRGBO(217, 217, 255, 1.0),
         width: MediaQuery.of(context).size.width / 2 - 5,
         padding: new EdgeInsets.symmetric(vertical: 7.0),

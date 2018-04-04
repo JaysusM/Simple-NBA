@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Games.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'Teams.dart';
@@ -9,8 +8,9 @@ import 'Dictionary.dart';
 import 'Player.dart';
 import 'dart:convert';
 import 'LoadingAnimation.dart';
+import 'package:path_provider/path_provider.dart';
 
-class MatchPage extends StatelessWidget {
+class MatchPage extends StatefulWidget {
   Game game;
   Team homeTeam, awayTeam;
   String homeLastName, awayLastName;
@@ -24,6 +24,7 @@ class MatchPage extends StatelessWidget {
         name: getTeamNameFromId(game.visitor.id, game.visitor.tricode),
         tricode: game.visitor.tricode);
 
+//TODO Use nicknames instead
     homeLastName = homeTeam.name.substring(homeTeam.name.lastIndexOf(" ") + 1);
     awayLastName = awayTeam.name.substring(awayTeam.name.lastIndexOf(" ") + 1);
   }
@@ -33,53 +34,81 @@ class MatchPage extends StatelessWidget {
     return (name == null) ? defaultValue : name;
   }
 
+
+  @override
+  State createState() => new MatchPageState();
+}
+
+class MatchPageState extends State<MatchPage> {
+
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Center(
-            child: new Container(
-          child: new Text("$awayLastName @ $homeLastName"),
-          padding: new EdgeInsets.only(right: 40.0),
-        )),
-        flexibleSpace: new Container(
-          decoration: new BoxDecoration(
-              image: new DecorationImage(
-                  image: new AssetImage("assets/header.jpg"),
-                  fit: BoxFit.fitWidth)),
-        ),
-      ),
-      body: new FutureBuilder(
-          future: loadMatchStats(game),
-          builder: (BuildContext context, AsyncSnapshot response) {
-            if (response.hasError) {
-              return new Container();
-            } else if (response.connectionState == ConnectionState.waiting) {
-              return new loadingAnimation();
-            } else {
-              print(response.data.getValue(game.home.id));
-              return playerCard(
-                  response.data.getValue(game.home.id)[0], context);
-            }
-          }),
+    return new DefaultTabController(length: 2, child: new Scaffold(
+        appBar: new AppBar(
+            title: new TabBar(tabs: <Tab>[
+          new Tab(text: widget.awayLastName.toUpperCase()),
+          new Tab(text: widget.homeLastName.toUpperCase())
+        ]),
+            flexibleSpace: new Image.asset("assets/header.jpg",fit: BoxFit.fitWidth)),
+        body: new FutureBuilder(
+            future: loadMatchStats(widget.game),
+            builder: (BuildContext context, AsyncSnapshot response) {
+              if (response.hasError) {
+                return new Container();
+              } else if (response.connectionState == ConnectionState.waiting) {
+                return new loadingAnimation();
+              } else {
+                return new TabBarView(children: <Widget>[
+                  new ListView(
+                    children:
+                    response.data.getValue(widget.game.visitor.id).map((player) => playerCard(player, context)).toList(),
+                  ),
+                  new ListView(
+                    children:
+                    response.data.getValue(widget.game.home.id).map((player) => playerCard(player, context)).toList(),
+                  )
+                ]);
+              }
+            }))
     );
   }
 
   Widget playerCard(PlayerStats player, BuildContext context) {
+    TextStyle defaultStyle = new TextStyle(fontFamily: "Mono", fontSize: 20.0);
     return new Container(
         child: new Stack(children: <Widget>[
           new Positioned(
               child: new CircleAvatar(
-            child: player.image,
-                radius: 50.0,
+                child: player.image,
+                radius: 42.0,
                 backgroundColor: new Color.fromRGBO(200, 200, 200, 0.5),
-          ),
-          left: 30.0,
-          top: 25.0),
+              ),
+              left: 10.0,
+              top: 10.0),
           new Positioned(
-              child: new Text(player.id, style: new TextStyle(fontFamily: "Mono", fontSize: 20.0)),
-              left: 200.0,
-              top: 25.0,
+            child: new Text(player.name, style: defaultStyle),
+            left: 160.0,
+            top: 25.0,
+          ),
+          new Positioned(
+            child: new Text("Points: ${player.points}", style: defaultStyle,),
+            left: 160.0,
+            top: 45.0,
+          ),
+          new Positioned(
+            child: new Text("Rebounds: ${player.rebounds}", style: defaultStyle,),
+            left: 160.0,
+            top: 65.0,
+          ),
+          new Positioned(
+            child: new Text("Assists: ${player.assists}", style: defaultStyle,),
+            left: 160.0,
+            top: 85.0,
+          ),
+          new Positioned(
+            child: new Text("Minutes: ${player.min}", style: defaultStyle,),
+            left: 160.0,
+            top: 105.0,
           )
         ]),
         decoration: new BoxDecoration(
@@ -89,59 +118,68 @@ class MatchPage extends StatelessWidget {
         width: MediaQuery.of(context).size.width - 20,
         margin: new EdgeInsets.all(10.0));
   }
+}
 
-  Future loadMatchStats(Game game) async {
-    String url = "http://data.nba.net/prod/v1/${game.date}/${game
-        .id}_boxscore.json";
-    String content = await http.read(url);
-    List decoder = JSON.decode(content)["stats"]["activePlayers"];
-    List<PlayerStats> homePlayers = new List();
-    List<PlayerStats> awayPlayers = new List();
+Future loadMatchStats(Game game) async {
 
-    Database db = await openDatabase("${(await getApplicationDocumentsDirectory()).path}/db/snba.db");
+  Database db = await openDatabase("${(await getApplicationDocumentsDirectory()).path}/db/snba.db");
 
-    decoder.forEach((player) async {
-      if (player["teamId"] == game.home.id) {
-        homePlayers.add(await getPlayerStatFromMap(player, db)
-          ..image = new Image.network(Player.getImage(player["personId"])));
-      } else {
-        awayPlayers.add(await getPlayerStatFromMap(player, db)
-          ..image = new Image.network(Player.getImage(player["personId"])));
-      }
-    });
+  String url = "http://data.nba.net/prod/v1/${game.date}/${game
+      .id}_boxscore.json";
+  String content = await http.read(url);
+  List decoder = JSON.decode(content)["stats"]["activePlayers"];
+  List<PlayerStats> homePlayers = new List();
+  List<PlayerStats> awayPlayers = new List();
 
-    Dictionary<String, List<PlayerStats>> playersStats = new Dictionary();
-    playersStats.add(game.home.id, homePlayers);
-    playersStats.add(game.visitor.id, awayPlayers);
-    db.close();
-    return playersStats;
-  }
+  decoder.forEach((player) async {
+    if (player["teamId"] == game.home.id) {
+      homePlayers.add(getPlayerStatFromMap(player, db)
+        ..image = new Image.network(Player.getImage(player["personId"])));
+    } else {
+      awayPlayers.add(getPlayerStatFromMap(player, db)
+        ..image = new Image.network(Player.getImage(player["personId"])));
+    }
+  });
 
-  Future<PlayerStats> getPlayerStatFromMap(Map data, Database db) async {
-    return new PlayerStats(
-        await getPlayerNameFromId(data["personId"], db),
-        data["personId"],
-        data["teamId"],
-        data["isOnCourt"],
-        data["points"],
-        data["pos"],
-        data["min"],
-        data["fgm"],
-        data["fga"],
-        data["fgp"],
-        data["ftm"],
-        data["ftp"],
-        data["tpm"],
-        data["tpa"],
-        data["tpp"],
-        data["offReb"],
-        data["defReb"],
-        data["totReb"],
-        data["assists"],
-        data["pFouls"],
-        data["steals"],
-        data["turnovers"],
-        data["blocks"],
-        data["plusMinus"]);
-  }
+  Dictionary<String, List<PlayerStats>> playersStats = new Dictionary();
+  await Future.wait([setNamesInPlayersList(homePlayers, db),
+  setNamesInPlayersList(awayPlayers, db)]);
+  db.close();
+  playersStats.add(game.home.id, homePlayers);
+  playersStats.add(game.visitor.id, awayPlayers);
+  return playersStats;
+}
+
+Future setNamesInPlayersList(List<Player> players, Database db) async {
+  await Future.forEach(players, (player) async {
+    player.fullName = await getPlayerNameFromId(player.id, db);
+  });
+}
+
+PlayerStats getPlayerStatFromMap(Map data, Database db) {
+  return new PlayerStats(
+      null,
+      data["personId"],
+      data["teamId"],
+      data["isOnCourt"],
+      data["points"],
+      data["pos"],
+      data["min"],
+      data["fgm"],
+      data["fga"],
+      data["fgp"],
+      data["ftm"],
+      data["ftp"],
+      data["tpm"],
+      data["tpa"],
+      data["tpp"],
+      data["offReb"],
+      data["defReb"],
+      data["totReb"],
+      data["assists"],
+      data["pFouls"],
+      data["steals"],
+      data["turnovers"],
+      data["blocks"],
+      data["plusMinus"]);
 }

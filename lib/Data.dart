@@ -3,14 +3,9 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'Games.dart';
 
-//Read url and return its content
-Future<String> _loadData(String url) async {
-  return (await (http.read(url)));
-}
-
 Future loadGames(DateTime selectedDate) async {
   String url = "http://data.nba.net/prod/v1/${formatDate(selectedDate)}/scoreboard.json";
-  return setGames(_loadData(url));
+  return setGames(http.read(url));
 }
 
 String formatDate(DateTime date)
@@ -25,7 +20,7 @@ String numberFormatTwoDigit(String number)
 
 Future loadStandings() async {
   var url = "http://data.nba.net/prod/v1/current/standings_conference.json";
-  return setStandingsFromDB(await _loadData(url));
+  return setStandingsFromDB(await http.read(url));
 }
 
 String setCurrentStartTime(String time) {
@@ -37,9 +32,9 @@ String setCurrentStartTime(String time) {
     return (int.parse(hour.substring(0, 2)) - 12).toString() +
         ":" +
         hour.substring(3) +
-        " PM";
+        "PM";
   else
-    return hour + " AM";
+    return hour + "AM";
 }
 
 Future loadData(DateTime date) async {

@@ -77,6 +77,7 @@ flutter:
     - assets/header.jpg
     - assets/logo.png
     - assets/twitterIcon.png
+    - assets/whitebackground.jpg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

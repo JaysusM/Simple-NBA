@@ -3,19 +3,19 @@ import 'Games.dart';
 import 'Widgets.dart';
 import 'dart:async';
 import 'Data.dart';
-import 'DatabaseCreation.dart';
+import 'Database.dart';
 import 'Dictionary.dart';
 import 'LoadingAnimation.dart';
 import 'package:flutter/services.dart';
 import 'MatchCard.dart';
 
-void main() {
-
+Future main() async {
+  await startDB();
   //That will disable screen rotation
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp
-  ]);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(new MaterialApp(home: new MainFrame()));
+
+  return new Future<Null>.value();
 }
 
 //DateTime set day with ET mid-day (when matches are reloaded)
@@ -28,11 +28,6 @@ class MainFrame extends StatefulWidget {
   List<Widget> _standingsWidgets;
   List<Game> _calendarData;
 
-  MainFrame() {
-    //We create db if it doesn't exist
-    startDB();
-  }
-
   createState() => new MainFrameState();
 }
 
@@ -43,6 +38,9 @@ class MainFrameState extends State<MainFrame>
   @override
   void initState() {
     _mainNavigationController = new TabController(vsync: this, length: 2);
+    _mainNavigationController.addListener(() {
+      this.setState(() {});
+    });
     super.initState();
   }
 
@@ -65,37 +63,67 @@ class MainFrameState extends State<MainFrame>
             widget._standingsWidgets = getWidgetFromStandings(response.data[1]);
             return setInfo();
           }
-        }
-    );
+        });
   }
 
   Widget setInfo() {
     return new Scaffold(
-        appBar: new AppBar(
-          flexibleSpace: new Container(
-              decoration: new BoxDecoration(
-                  image: new DecorationImage(image: new AssetImage("assets/header.jpg"),
-                      fit: BoxFit.fitWidth))),
-            title: new Title(
-                color: Colors.white,
-                child: new Text("Simple NBA",
-                    style: new TextStyle(fontFamily: "Default", color: Colors.white)))),
-        bottomNavigationBar: new Material(
-          child: new Container( child: new TabBar(tabs: <Tab>[
-            new Tab(icon: new Icon(Icons.calendar_today, size: 40.0)),
-            new Tab(icon: new Icon(Icons.assessment, size: 40.0))
-          ], controller: _mainNavigationController)
-            ,
-            color: new Color.fromRGBO(147, 0, 0, 1.0),
-          )
-        ),
-        body: new TabBarView(
-          children: <Widget>[
-            new CalendarTab(widget._calendarData, this),
-            standingsTab(widget._standingsWidgets)
-          ],
-          controller: _mainNavigationController,
-        ),
+      appBar: new AppBar(
+        flexibleSpace: new Container(
+            decoration: new BoxDecoration(
+                image: new DecorationImage(
+                    image: new AssetImage("assets/header.jpg"),
+                    fit: BoxFit.fitWidth))),
+        title: new Title(
+            color: Colors.white,
+            child: new Text("Simple NBA",
+                style:
+                    new TextStyle(fontFamily: "Default", color: Colors.white))),
+        actions: <Widget>[
+          (_mainNavigationController.index == 1)
+              ? new IconButton(
+                  icon: new Icon(Icons.info_outline),
+                  onPressed: () {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return new Container(child: new Text(
+"""x - Clinched Playoff Berth\nnw - Clinched Northwest Division\nc - Clinched Central Division\no - Eliminated from Playoff contention\np - Clinched Pacific Division\nse - Clinched Southeast Division\ne - Clinched Eastern Conference\nsw - Clinched Southwest Division\nw - Clinched Western Conference\na - Clinched Atlantic Division""",
+                              style: new TextStyle(
+                                  fontSize: 14.0, fontFamily: 'Mono',
+                              color: Colors.black54)),
+                            decoration: new BoxDecoration(
+                              image: new DecorationImage(
+                                image: new AssetImage("assets/whitebackground.jpg"),
+                              fit: BoxFit.fill
+                              ),
+                              border: new Border.all(
+                                width: 1.5,
+                                color: Colors.black54
+                              )
+                            ),
+                            padding: new EdgeInsets.all(14.0),
+                          );
+                        });
+                  })
+              : new Container()
+        ],
+      ),
+      bottomNavigationBar: new Material(
+          child: new Container(
+        child: new TabBar(tabs: <Tab>[
+          new Tab(icon: new Icon(Icons.calendar_today, size: 40.0)),
+          new Tab(icon: new Icon(Icons.assessment, size: 40.0))
+        ], controller: _mainNavigationController),
+        color: new Color.fromRGBO(147, 0, 0, 1.0),
+      )),
+      body: new TabBarView(
+        children: <Widget>[
+          new CalendarTab(widget._calendarData, this),
+          standingsTab(widget._standingsWidgets)
+        ],
+        controller: _mainNavigationController,
+      ),
     );
   }
 }
@@ -134,7 +162,6 @@ class StandingsWidgetView extends StatefulWidget {
 
 class StandingsWidgetViewState extends State<StandingsWidgetView>
     with SingleTickerProviderStateMixin {
-
   StandingsWidgetViewState();
 
   Widget build(BuildContext context) {
@@ -142,19 +169,16 @@ class StandingsWidgetViewState extends State<StandingsWidgetView>
         length: 2,
         child: new Scaffold(
           appBar: new AppBar(
-            title: new TabBar(tabs: <Tab>[
-              new Tab(child: new Text("EAST")),
-              new Tab(child: new Text("WEST"))
-            ]),
-            flexibleSpace: new Container(color: Colors.white, height: 0.15),
-            elevation: 0.0,
-            backgroundColor: new Color.fromRGBO(12, 106, 201, 1.0)
-          ),
+              title: new TabBar(tabs: <Tab>[
+                new Tab(child: new Text("EAST")),
+                new Tab(child: new Text("WEST"))
+              ]),
+              flexibleSpace: new Container(color: Colors.white, height: 0.15),
+              elevation: 0.0,
+              backgroundColor: new Color.fromRGBO(12, 106, 201, 1.0)),
           body: new TabBarView(children: widget.standings),
-        )
-    );
+        ));
   }
-
 }
 
 class CalendarTab extends StatefulWidget {
@@ -190,12 +214,13 @@ class CalendarTabState extends State<CalendarTab> {
             child: new Stack(
               children: <Widget>[
                 new Positioned(
-                    child: new Container( child:new IconButton(
-                        icon:
-                            new Icon(Icons.arrow_back_ios, color: Colors.white),
-                        onPressed: () {
-                          _changeDate(-1);
-                        })),
+                    child: new Container(
+                        child: new IconButton(
+                            icon: new Icon(Icons.arrow_back_ios,
+                                color: Colors.white),
+                            onPressed: () {
+                              _changeDate(-1);
+                            })),
                     left: 5.0,
                     top: 5.0),
                 new Center(
@@ -224,22 +249,22 @@ class CalendarTabState extends State<CalendarTab> {
         ),
         body: new Container(
           child: new RefreshIndicator(
-            child: (_games.isNotEmpty)
-                ? new ListView(
-                    children: _games.map((game) => new GameCard(game)).toList()
-            )
-                : new Center(
-                    child: new Text("No games scheduled",
-                        style: new TextStyle(
-                            fontFamily: "Default", fontSize: 20.0))),
-            onRefresh: () async {
-              List<Game> newContent = await loadGames(_startGameDate);
-              this.setState(() {
-                _gameDate.add(formatDate(_startGameDate), newContent);
-                if (formatDate(_selectedDate) == formatDate(_startGameDate))
-                  _games = newContent;
-              });
-            }),
+              child: (_games.isNotEmpty)
+                  ? new ListView(
+                      children:
+                          _games.map((game) => new GameCard(game)).toList())
+                  : new Center(
+                      child: new Text("No games scheduled",
+                          style: new TextStyle(
+                              fontFamily: "Default", fontSize: 20.0))),
+              onRefresh: () async {
+                List<Game> newContent = await loadGames(_startGameDate);
+                this.setState(() {
+                  _gameDate.add(formatDate(_startGameDate), newContent);
+                  if (formatDate(_selectedDate) == formatDate(_startGameDate))
+                    _games = newContent;
+                });
+              }),
           color: Colors.white,
         ));
   }

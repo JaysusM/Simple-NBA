@@ -3,8 +3,6 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-/// This methods are what we used in order to create our team database
-
 startDB() async {
     Directory dir = await getApplicationDocumentsDirectory();
     String path = "${dir.path}/db/snba.db";
@@ -13,7 +11,9 @@ startDB() async {
       Database db = await openDatabase(path, version: 1,
           onCreate: (Database data, int version) async {
             await data.execute(
-                "CREATE TABLE team (alt_city_name VARCHAR(18),city VARCHAR(13),conf_name VARCHAR(4),div_name VARCHAR(9),full_name VARCHAR(27),is_all_star BOOL,is_nba_franchise BOOL,nickname VARCHAR(15),team_id INT,tricode VARCHAR(3),url_name VARCHAR(15))");
+                "CREATE TABLE team (alt_city_name VARCHAR(18),city VARCHAR(13),conf_name VARCHAR(4),div_name VARCHAR(9),"
+                    "full_name VARCHAR(27),is_all_star BOOL,is_nba_franchise BOOL,nickname VARCHAR(15),team_id INT,"
+                    "tricode VARCHAR(3),url_name VARCHAR(15))");
             await data.execute("""CREATE TABLE players (
             nbaDebutYear INT,
             dateOfBirthUTC DATETIME,
@@ -38,12 +38,13 @@ startDB() async {
             isActive VARCHAR(4) ,
             heightMeters NUMERIC(3, 2)
             )""");
-      });
+          });
 
       await db.inTransaction(() async {
         db.rawInsert(await rootBundle.loadString('assets/teams.txt'));
         db.rawInsert(await rootBundle.loadString('assets/players.txt'));
       });
+
       db.close();
     }
   }

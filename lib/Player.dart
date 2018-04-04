@@ -2,51 +2,49 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 import 'Games.dart';
 import 'package:flutter/material.dart' show Widget;
+import 'package:path_provider/path_provider.dart';
 
 Future<List<Player>> loadLeaders(String gameId, int gameDate) async {
   String url = "http://data.nba.net/prod/v1/$gameDate/${gameId}_boxscore.json";
-  Directory currentDir = await getApplicationDocumentsDirectory();
-  Database db = await openDatabase("${currentDir.path}/db/snba.db");
+  Database db = await openDatabase("${(await getApplicationDocumentsDirectory()).path}/db/snba.db");
+  
   var decodJSON = JSON.decode(await http.read(url))["stats"];
   List<Player> leaders = new List<Player>();
-  leaders.add(new Player(decodJSON["hTeam"]["leaders"]["points"]["players"][0]["personId"],
-      decodJSON["hTeam"]["teamId"],
-      name: await getPlayerNameFromId(decodJSON["hTeam"]["leaders"]["points"]["players"][0]["personId"], db),
-      points: decodJSON["hTeam"]["leaders"]["points"]["value"]));
-  leaders.add(new Player(decodJSON["hTeam"]["leaders"]["rebounds"]["players"][0]["personId"],
-      decodJSON["hTeam"]["teamId"],
-      name: await getPlayerNameFromId(decodJSON["hTeam"]["leaders"]["rebounds"]["players"][0]["personId"], db),
-      rebounds: decodJSON["hTeam"]["leaders"]["rebounds"]["value"]));
-  leaders.add(new Player(decodJSON["hTeam"]["leaders"]["assists"]["players"][0]["personId"],
-      decodJSON["hTeam"]["teamId"],
-      name: await getPlayerNameFromId(decodJSON["hTeam"]["leaders"]["assists"]["players"][0]["personId"], db),
-      assist: decodJSON["hTeam"]["leaders"]["assists"]["value"]));
-  leaders.add(new Player(decodJSON["vTeam"]["leaders"]["points"]["players"][0]["personId"],
-      decodJSON["vTeam"]["teamId"],
-      name: await getPlayerNameFromId(decodJSON["vTeam"]["leaders"]["points"]["players"][0]["personId"], db),
-      points: decodJSON["vTeam"]["leaders"]["points"]["value"]));
-  leaders.add(new Player(decodJSON["vTeam"]["leaders"]["rebounds"]["players"][0]["personId"],
-      decodJSON["vTeam"]["teamId"],
-      name: await getPlayerNameFromId(decodJSON["vTeam"]["leaders"]["rebounds"]["players"][0]["personId"], db),
-      rebounds: decodJSON["vTeam"]["leaders"]["rebounds"]["value"]));
-  leaders.add(new Player(decodJSON["vTeam"]["leaders"]["assists"]["players"][0]["personId"],
-      decodJSON["vTeam"]["teamId"],
-      name: await getPlayerNameFromId(decodJSON["vTeam"]["leaders"]["assists"]["players"][0]["personId"], db),
-      assist: decodJSON["vTeam"]["leaders"]["assists"]["value"]));
+  leaders.add(await _getLeader(decodJSON, "points", "hTeam", db));
+  leaders.add(await _getLeader(decodJSON, "rebounds", "hTeam", db));
+  leaders.add(await _getLeader(decodJSON, "assists", "hTeam", db));
+  leaders.add(await _getLeader(decodJSON, "points", "vTeam", db));
+  leaders.add(await _getLeader(decodJSON, "rebounds", "vTeam", db));
+  leaders.add(await _getLeader(decodJSON, "assists", "vTeam", db));
+  
   db.close();
   return leaders;
 }
 
-Future<String> getPlayerNameFromId(String playerId, Database db) async {
-  String playerName;
+Future _getLeader (Map decodedData, String stat, String team, Database db) async {
+  Player leader;
   try {
-    playerName = (await db.rawQuery("SELECT lastName FROM players WHERE personId = $playerId")).first["lastName"];
+    leader = new Player(
+        decodedData[team]["leaders"][stat]["players"][0]["personId"],
+        decodedData[team]["teamId"],
+        name: await getPlayerNameFromId(
+            decodedData[team]["leaders"][stat]["players"][0]["personId"], db),
+        stat: decodedData[team]["leaders"][stat]["value"]);
+  } catch (Exception) {
+    leader = new Player(null, null, name: " - ", stat: "0");
+  }
+  return leader;
+}
+
+Future<List<String>> getPlayerNameFromId(String playerId, Database db) async {
+  List<String> playerName = new List();
+  try {
+    Map query = (await db.rawQuery("SELECT * FROM players WHERE personId = $playerId")).first;
+    playerName.addAll([query["firstName"], query["lastName"]]);
   } catch (exception) {
-    playerName = " - ";
+    playerName.addAll([" - "," - "]);
   }
   return playerName;
 }
@@ -63,7 +61,6 @@ Future<List<Player>> loadTeamsLeaders(Game game) async {
 
   leaders.addAll(await _loadTeamLeaders(game.home.id.toString(), url, db));
   leaders.addAll(await _loadTeamLeaders(game.visitor.id.toString(), url, db));
-
   db.close();
   return leaders;
 }
@@ -78,40 +75,50 @@ Future<List<Player>> _loadTeamLeaders(String teamId, String url, Database db) as
   leaders.add(new Player(decodJSON["league"]["standard"]["ppg"][0]["personId"],
       teamId,
       name: await getPlayerNameFromId(decodJSON["league"]["standard"]["ppg"][0]["personId"], db),
-      points: decodJSON["league"]["standard"]["ppg"][0]["value"]));
+      stat: decodJSON["league"]["standard"]["ppg"][0]["value"]));
   leaders.add(new Player(decodJSON["league"]["standard"]["trpg"][0]["personId"],
       teamId,
       name: await getPlayerNameFromId(decodJSON["league"]["standard"]["trpg"][0]["personId"], db),
-      rebounds: decodJSON["league"]["standard"]["trpg"][0]["value"]));
+      stat: decodJSON["league"]["standard"]["trpg"][0]["value"]));
   leaders.add(new Player(decodJSON["league"]["standard"]["apg"][0]["personId"],
       teamId,
       name: await getPlayerNameFromId(decodJSON["league"]["standard"]["apg"][0]["personId"], db),
-      assist: decodJSON["league"]["standard"]["apg"][0]["value"]));
+      stat: decodJSON["league"]["standard"]["apg"][0]["value"]));
 
   return leaders;
 }
 
 class Player
 {
-  String _name, _teamId, _id;
-  String _points, _assist, _rebounds;
+  String _firstName, _lastName, _teamId, _id;
+  String _stat;
 
-  Player(this._id, this._teamId, {points, assist, rebounds, name})
-  : this._points = points,
-  this._assist = assist,
-  this._rebounds = rebounds,
-  this._name = name;
+  Player(this._id, this._teamId, {stat, name})
+  : this._stat = stat {
+   fullName = name;
+  }
 
   get id => _id;
-  get rebounds => _rebounds;
-  get assist => _assist;
-  get points => _points;
+  get stat => _stat;
   get teamId => _teamId;
-  String get name => _name;
+  String get firstName => _firstName;
 
-  set name(String value) {
-    _name = value;
+  set fullName(List<String> name) {
+    firstName = (name != null) ? name[0] : null;
+    lastName = (name != null) ? name[1] : null;
   }
+
+  set firstName(String value) {
+    _firstName = value;
+  }
+
+  String get lastName => _lastName;
+
+  set lastName (String value) {
+    _lastName = value;
+  }
+
+  String get name => _firstName + " " + _lastName;
 
   static getImage(String playerId)
   {
@@ -125,16 +132,16 @@ class Player
 }
 
 class PlayerStats extends Player {
-  PlayerStats(String name, String id, String teamId, this._isOnCourt, String points, this._pos, this._min, this._fgm,
+  PlayerStats(List<String> fullName, String id, String teamId, this._isOnCourt, this._points, this._pos, this._min, this._fgm,
       this._fga, this._fgp, this._ftm, this._ftp, this._tpm, this._tpa,
-      this._tpp, this._offReb, this._defReb, String rebounds, String assists,
+      this._tpp, this._offReb, this._defReb, this._rebounds, this._assists,
       this._pFouls, this._steals, this._turnovers, this._blocks,
-      this._plusMinus) : super(id, teamId, name: name, points: points, assist: assists, rebounds: rebounds);
+      this._plusMinus) : super(id, teamId, name: fullName);
 
   bool _isOnCourt;
   String _pos, _min, _fgm, _fga, _fgp, _ftm, _ftp,
   _tpm, _tpa, _tpp, _offReb, _defReb,
-  _pFouls, _steals, _turnovers, _blocks, _plusMinus;
+  _pFouls, _steals, _turnovers, _blocks, _plusMinus, _points, _assists, _rebounds;
   Widget _image;
 
   bool get isOnCourt => _isOnCourt;
@@ -156,6 +163,9 @@ class PlayerStats extends Player {
   get blocks => _blocks;
   get plusMinus => _plusMinus;
   get image => _image;
+  get points => _points;
+  get assists => _assists;
+  get rebounds => _rebounds;
 
   set image(Widget value) {
     this._image = value;

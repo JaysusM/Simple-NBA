@@ -15,7 +15,7 @@ class GameCard extends StatefulWidget {
     _title = new Center(
         child: new Text(text,
             style: new TextStyle(
-                fontSize: 20.0,
+                fontSize: 21.0,
                 fontWeight: FontWeight.bold,
                 color: (g.active) ? Colors.red : Colors.black,
                 fontFamily: 'Mono')));
@@ -71,7 +71,7 @@ class TapCard extends State<GameCard> {
               decoration: new BoxDecoration(
                   border: new Border(
                       bottom:
-                      new BorderSide(width: 1.0, color: Colors.black45)))),
+                          new BorderSide(width: 1.0, color: Colors.black45)))),
           elevation: 0.0,
         ));
   }
@@ -112,19 +112,15 @@ class TapCard extends State<GameCard> {
               right: 10.0,
             ),
             new Positioned(
-              child: new twitterButton("http://twitter.com/${widget._game.awayTwitter}"),
+              child: new twitterButton(
+                  "http://twitter.com/${widget._game.awayTwitter}"),
               left: 5.0,
             ),
             new Positioned(
-                child: new twitterButton("http://twitter.com/${widget._game.homeTwitter}"),
-                right: 5.0,
+              child: new twitterButton(
+                  "http://twitter.com/${widget._game.homeTwitter}"),
+              right: 5.0,
             ),
-    ([2,3].contains(widget._game.status)) ? new Positioned(
-                child: new RaisedButton(
-                  onPressed: () {
-              Navigator.push(context, new MaterialPageRoute(builder: (context) => new MatchPage(widget._game)));
-            },
-                  child: new Text("Stats"),)) : new Text(""),
             new Positioned(
               child: new Text(
                   "${widget._game.visitor.score}-${widget._game.home.score}",
@@ -133,7 +129,7 @@ class TapCard extends State<GameCard> {
                       fontFamily: 'Mono',
                       fontSize: 24.0,
                       color:
-                      (widget._game.active) ? Colors.red : Colors.black)),
+                          (widget._game.active) ? Colors.red : Colors.black)),
               top: 34.0,
               left: MediaQuery.of(context).size.width / 2 -
                   (((20.0 * 4) / 2) + 12.0),
@@ -143,11 +139,11 @@ class TapCard extends State<GameCard> {
                     style: new TextStyle(
                         fontSize: 20.0,
                         color:
-                        (widget._game.active) ? Colors.red : Colors.black,
+                            (widget._game.active) ? Colors.red : Colors.black,
                         fontFamily: 'Mono')),
                 top: 70.0,
                 left: MediaQuery.of(context).size.width / 2 -
-                    (((20.0 * 4) / 2) + 8.0)),
+                    (20.0 * 4 + 10.0) / 2),
             new Positioned(
                 child: new Text(
                     "${widget._game.visitor.win}-${widget._game.visitor.loss}",
@@ -162,71 +158,83 @@ class TapCard extends State<GameCard> {
                 right: 40.0),
             new Positioned(
                 child: new Text(
-                  (widget._game.active || widget._game.status == 3) ? "Game Leaders" : "Season Leaders",
+                  (widget._game.active || widget._game.status == 3)
+                      ? "Game Leaders"
+                      : "Season Leaders",
                   style: new TextStyle(
-                      fontFamily: "Default", fontWeight: FontWeight.bold, fontSize: 18.0),
+                      fontFamily: "Default",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0),
                 ),
                 top: 105.0,
-                left: MediaQuery.of(context).size.width/3.18),
+                left: MediaQuery.of(context).size.width / 3.18),
             new Positioned(
-                child: new Text(
-                    (widget._game.active ||
-                        (!widget._game.active &&
-                            widget._game.clock == "FINAL"))
-                        ? ""
-                        : widget._game.time,
-                    style: new TextStyle(
-                        fontSize: 17.0,
-                        color: Colors.black,
-                        fontFamily: "Mono")),
+                child: (widget._game.active ||
+                        (!widget._game.active && widget._game.clock == "FINAL"))
+                    ? new MaterialButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) =>
+                                      new MatchPage(widget._game)));
+                        },
+                        child: new Text("Stats"),
+                      )
+                    : new Text(" ${widget._game.time}",
+                        style: new TextStyle(
+                            fontSize: 17.0,
+                            color: Colors.black,
+                            fontFamily: "Mono")),
                 top: 6.0,
-                left: MediaQuery.of(context).size.width / 2 - ((20.0 * 4) / 2)),
+                left:
+                    MediaQuery.of(context).size.width / 2 - ((20.0 * 4.5) / 2)),
             new Positioned(
                 child: new Container(
                     child: (widget.leaders != null)
                         ? getWidgetFromPlayer(10, widget.leaders, context)
-                        : new FutureBuilder(
-                        future:
-                        loadLeaders(widget._game.id, widget._game.date),
-                        builder: (BuildContext c, AsyncSnapshot response) {
-                          if (response.hasError)
-                            return new FutureBuilder(
-                                future: loadTeamsLeaders(widget._game),
-                                builder: (BuildContext c,
-                                    AsyncSnapshot response) {
+                        : (widget._game.status != 1)
+                            ? new FutureBuilder(
+                                future: loadLeaders(
+                                    widget._game.id, widget._game.date),
+                                builder:
+                                    (BuildContext c, AsyncSnapshot response) {
                                   if (response.hasError)
-                                    return new Center(
-                                        child: new Text("ERROR"));
+                                    return new Text("Error");
                                   else if (!response.hasData)
                                     return new Container(
                                         child: new Text("Loading...",
-                                            style: new TextStyle(
-                                                fontSize: 16.0)),
+                                            style:
+                                                new TextStyle(fontSize: 16.0)),
                                         margin: new EdgeInsets.only(
-                                            left: MediaQuery
-                                                .of(c)
-                                                .size
-                                                .width /
+                                            left: MediaQuery.of(c).size.width /
+                                                2.5));
+                                  else {
+                                    widget.leaders = response.data;
+                                    return getWidgetFromPlayer(
+                                        12, response.data, context);
+                                  }
+                                })
+                            : new FutureBuilder(
+                                future: loadTeamsLeaders(widget._game),
+                                builder:
+                                    (BuildContext c, AsyncSnapshot response) {
+                                  if (response.hasError)
+                                    return new Center(child: new Text("ERROR"));
+                                  else if (!response.hasData)
+                                    return new Container(
+                                        child: new Text("Loading...",
+                                            style:
+                                                new TextStyle(fontSize: 16.0)),
+                                        margin: new EdgeInsets.only(
+                                            left: MediaQuery.of(c).size.width /
                                                 2.5));
                                   else {
                                     widget.leaders = response.data;
                                     return getWidgetFromPlayer(
                                         10, response.data, context);
                                   }
-                                });
-                          else if (!response.hasData)
-                            return new Container(
-                                child: new Text("Loading...",
-                                    style: new TextStyle(fontSize: 16.0)),
-                                margin: new EdgeInsets.only(
-                                    left:
-                                    MediaQuery.of(c).size.width / 2.5));
-                          else {
-                            widget.leaders = response.data;
-                            return getWidgetFromPlayer(
-                                12, response.data, context);
-                          }
-                        }),
+                                }),
                     height: MediaQuery.of(context).size.height,
                     width: MediaQuery.of(context).size.width),
                 top: 135.0),
