@@ -174,6 +174,7 @@ class TapCard extends State<GameCard> {
                     ? new MaterialButton(
                         onPressed: () {
                           Navigator.push(
+
                               context,
                               new MaterialPageRoute(
                                   builder: (context) =>

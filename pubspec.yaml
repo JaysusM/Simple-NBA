@@ -39,6 +39,15 @@ flutter:
     - family: Overpass
       fonts:
       - asset: assets/fonts/OverpassMono-Regular.ttf
+    - family: Signika
+      fonts:
+      - asset: assets/fonts/Signika-Regular.ttf
+    - family: SignikaB
+      fonts:
+      - asset: assets/fonts/Signika-Bold.ttf
+    - family: Orbitron
+      fonts:
+      - asset: assets/fonts/Orbitron-Medium.ttf
 
   assets:
     - assets/DET.png
@@ -77,7 +86,6 @@ flutter:
     - assets/header.jpg
     - assets/logo.png
     - assets/twitterIcon.png
-    - assets/whitebackground.jpg
 
   # To add assets to your application, add an assets section, like this:
   # assets:

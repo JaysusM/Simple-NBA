@@ -42,7 +42,6 @@ class MatchPageState extends State<MatchPage> {
   Dictionary stats;
   Timer timer;
 
-
   @override
   void initState() {
     timer = new Timer.periodic(new Duration(seconds: 20), (timer) async {
@@ -119,17 +118,18 @@ class MatchPageState extends State<MatchPage> {
   }
 
   Widget playerCard(PlayerStats player, BuildContext context) {
-    TextStyle defaultStyle = new TextStyle(fontFamily: "Overpass", fontSize: 20.0);
     return new Container(
         child: new Stack(children: <Widget>[
-            (player.isOnCourt) ? new Positioned(
-            child: new CircleAvatar(
-              backgroundColor: Colors.red,
-              radius: 5.0,
-            ),
-            top: 7.0,
-            left: 7.0,
-          ) : new Container(),
+          (player.isOnCourt)
+              ? new Positioned(
+                  child: new CircleAvatar(
+                    backgroundColor: Colors.red,
+                    radius: 5.0,
+                  ),
+                  top: 7.0,
+                  left: 7.0,
+                )
+              : new Container(),
           new Positioned(
               child: new CircleAvatar(
                 child: player.image,
@@ -139,48 +139,51 @@ class MatchPageState extends State<MatchPage> {
               left: 10.0,
               top: 10.0),
           new Positioned(
-            child: new Text((player.pos == "")
-                ? player.abbName.toUpperCase()
-                : "${player.pos} - ${player.abbName.toUpperCase()}", style: defaultStyle),
-            left: 100.0,
+            child: new Text(
+                (player.pos == "")
+                    ? player.abbName.toUpperCase()
+                    : "${player.pos} - ${player.abbName.toUpperCase()}",
+                style: new TextStyle(fontFamily: "SignikaB", fontSize: 20.0)),
+            left: 115.0,
             top: 10.0,
           ),
           new Positioned(
-            child: new Text(
-              "Points: ${player.points}",
-              style: defaultStyle,
-            ),
-            left: 120.0,
-            top: 45.0,
+            child: statWidget("Pts ", player.points),
+            left: 100.0,
+            top: 50.0,
           ),
           new Positioned(
-            child: new Text(
-              "Rebounds: ${player.rebounds}",
-              style: defaultStyle,
-            ),
-            left: 120.0,
-            top: 65.0,
+            child: statWidget("Reb ", player.rebounds),
+            left: 100.0,
+            top: 70.0,
           ),
           new Positioned(
-            child: new Text(
-              "Assists: ${player.assists}",
-              style: defaultStyle,
-            ),
-            left: 120.0,
-            top: 85.0,
+            child: statWidget("Ast ", player.assists),
+            left: 100.0,
+            top: 90.0,
           ),
           new Positioned(
-            child: new Text(
-              "Minutes: ${player.min}",
-              style: defaultStyle,
-            ),
-            left: 120.0,
+            child: drawClock(player.min),
+            left: 286.0,
             top: 105.0,
-          )
+          ),
+          new Positioned(
+              child: statsCircle("FG", player.fgp, player.fga, player.fgm),
+              top: 40.0,
+              left: 200.0),
+          new Positioned(
+              child: statsCircle("3P", player.tpp, player.tpa, player.tpm),
+              top: 40.0,
+              left: 260.0),
+          new Positioned(
+              child: statsCircle("FT", player.ftp, player.fta, player.ftm),
+              top: 40.0,
+              left: 320.0),
         ]),
         decoration: new BoxDecoration(
             borderRadius: new BorderRadius.circular(10.0),
-            color: Colors.blueAccent),
+            color: new Color.fromRGBO(255, 139, 0, 1.0),
+        border: new Border.all(color: Colors.black, width: 2.0)),
         height: 150.0,
         width: MediaQuery.of(context).size.width - 20,
         margin: new EdgeInsets.all(10.0));
@@ -191,6 +194,81 @@ class MatchPageState extends State<MatchPage> {
     timer.cancel();
     super.dispose();
   }
+}
+
+Widget statWidget(String statName, String stat) {
+  return new Text("$statName$stat", style: new TextStyle(fontSize: 20.0, fontFamily: 'Signika'));
+}
+
+Widget drawClock(String time) {
+  return new Row(
+    children: <Widget>[
+      _clockFragment(time.split(":")[0]),
+      new Text(" : ", style: new TextStyle(fontSize: 20.0, fontFamily: 'Orbitron')),
+      _clockFragment(time.split(":")[1])
+    ],
+  );
+}
+
+Widget _clockFragment(String time) {
+  return new Container(
+    child: new Stack(
+      children: <Widget>[
+        new Container(
+          color: new Color.fromRGBO(255, 255, 255, 0.20),
+          height: 15.0,
+          width: 30.0,
+        ),
+        new Positioned(child: new Text((time.length < 2) ? "0$time" : time, style: new TextStyle(fontFamily: 'Overpass', fontSize: 17.0, color: Colors.white)),
+        top: 5.5,
+        left: 3.0)
+      ],
+    ),
+    height: 30.0,
+    width: 30.0,
+    decoration: new BoxDecoration(
+      color: Colors.black,
+      border: new Border.all(color: Colors.white70, width: 1.0)
+    ),
+  );
+}
+
+Widget statsCircle(
+    String statName, String percent, String attempt, String made) {
+  if (made.length < 2) {
+    made = " $made";
+    if (attempt.length < 2) made = " $made";
+  }
+  if (percent.length < 4 && percent.contains(".")) percent += "0";
+
+  return new CircleAvatar(
+      child: new CircleAvatar(
+          child: new Stack(
+            children: <Widget>[
+              new Positioned(
+                  child: new Text(statName,
+                      style: new TextStyle(
+                          fontFamily: 'SignikaR', fontSize: 10.0)),
+                  top: 3.0,
+                  left: 18.0),
+              new Positioned(
+                  child: new Text("%$percent",
+                      style: new TextStyle(
+                          fontFamily: 'SignikaR', fontSize: 14.0)),
+                  top: 14.0,
+                  left: 4.5),
+              new Positioned(
+                  child: new Text("$made / $attempt",
+                      style: new TextStyle(
+                          fontFamily: 'SignikaR', fontSize: 10.0)),
+                  top: 30.0,
+                  left: 8.0)
+            ],
+          ),
+          radius: 24.0,
+          backgroundColor: new Color.fromRGBO(12, 72, 209, 1.0)),
+      radius: 25.4,
+      backgroundColor: new Color.fromRGBO(255, 215, 2, 1.0));
 }
 
 Future loadMatchStats(Game game) async {
@@ -205,13 +283,10 @@ Future loadMatchStats(Game game) async {
   List<PlayerStats> awayPlayers = new List();
 
   decoder.forEach((player) async {
-    if (player["teamId"] == game.home.id) {
-      homePlayers.add(getPlayerStatFromMap(player, db)
-        ..image = new Image.network(Player.getImage(player["personId"])));
-    } else {
-      awayPlayers.add(getPlayerStatFromMap(player, db)
-        ..image = new Image.network(Player.getImage(player["personId"])));
-    }
+    if (player["teamId"] == game.home.id)
+      homePlayers.add(getPlayerStatFromMap(player, db));
+    else
+      awayPlayers.add(getPlayerStatFromMap(player, db));
   });
 
   Dictionary<String, List<PlayerStats>> playersStats = new Dictionary();
@@ -232,8 +307,17 @@ Future setNamesInPlayersList(List<Player> players, Database db) async {
 }
 
 PlayerStats getPlayerStatFromMap(Map data, Database db) {
+  Widget image;
+
+  try {
+    image = new Image.network(Player.getImage(data["personId"]));
+  } catch (exception) {
+    image = new Image.asset("noteam.png");
+  }
+
   return new PlayerStats(
       null,
+      image,
       data["personId"],
       data["teamId"],
       data["isOnCourt"],
@@ -243,6 +327,7 @@ PlayerStats getPlayerStatFromMap(Map data, Database db) {
       data["fgm"],
       data["fga"],
       data["fgp"],
+      data["fta"],
       data["ftm"],
       data["ftp"],
       data["tpm"],

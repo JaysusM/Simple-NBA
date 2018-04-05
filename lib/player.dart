@@ -119,9 +119,7 @@ class Player
   }
 
   String get name => _firstName + " " + _lastName;
-  //Yes.. I had to do it, he's the only one who break the app margins...
-  String get abbName => (_lastName != "Antetokounmpo") ? _firstName.substring(0,1) + ". " + _lastName
-  : _lastName;
+  String get abbName => _firstName.substring(0,1) + ". " + _lastName;
 
   static getImage(String playerId)
   {
@@ -135,14 +133,14 @@ class Player
 }
 
 class PlayerStats extends Player {
-  PlayerStats(List<String> fullName, String id, String teamId, this._isOnCourt, this._points, this._pos, this._min, this._fgm,
-      this._fga, this._fgp, this._ftm, this._ftp, this._tpm, this._tpa,
+  PlayerStats(List<String> fullName, this._image, String id, String teamId, this._isOnCourt, this._points, this._pos, this._min, this._fgm,
+      this._fga, this._fgp, this._fta, this._ftm, this._ftp, this._tpm, this._tpa,
       this._tpp, this._offReb, this._defReb, this._rebounds, this._assists,
       this._pFouls, this._steals, this._turnovers, this._blocks,
       this._plusMinus) : super(id, teamId, name: fullName);
 
   bool _isOnCourt;
-  String _pos, _min, _fgm, _fga, _fgp, _ftm, _ftp,
+  String _pos, _min, _fgm, _fga, _fgp, _fta, _ftm, _ftp,
   _tpm, _tpa, _tpp, _offReb, _defReb,
   _pFouls, _steals, _turnovers, _blocks, _plusMinus, _points, _assists, _rebounds;
   Widget _image;
@@ -153,6 +151,7 @@ class PlayerStats extends Player {
   get fgm => _fgm;
   get fga => _fga;
   get fgp => _fgp;
+  get fta => _fta;
   get ftm => _ftm;
   get ftp => _ftp;
   get tpm => _tpm;
