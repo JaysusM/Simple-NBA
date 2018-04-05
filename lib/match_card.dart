@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'Games.dart';
-import 'Widgets.dart';
-import 'Player.dart';
-import 'Twitter.dart';
-import 'MatchInfoPage.dart';
+import 'games.dart';
+import 'widgets.dart';
+import 'player.dart';
+import 'twitter.dart';
+import 'match_info_page.dart';
 
 class GameCard extends StatefulWidget {
   GameCard(Game g) {
@@ -179,14 +179,15 @@ class TapCard extends State<GameCard> {
                                   builder: (context) =>
                                       new MatchPage(widget._game)));
                         },
-                        child: new Text("Stats"),
+                        child: new Chip(label: new Text("Stats")
+                        ),
                       )
                     : new Text(" ${widget._game.time}",
                         style: new TextStyle(
                             fontSize: 17.0,
                             color: Colors.black,
                             fontFamily: "Mono")),
-                top: 6.0,
+                top: 0.0,
                 left:
                     MediaQuery.of(context).size.width / 2 - ((20.0 * 4.5) / 2)),
             new Positioned(

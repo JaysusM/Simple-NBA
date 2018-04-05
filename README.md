@@ -1,11 +1,11 @@
 # Simple NBA
 
-Pre-release APK available [here](https://github.com/JaysusM/Simple-NBA/releases/download/0.7/simpleNBA.apk)
+First pre-release APK available [here](https://github.com/JaysusM/Simple-NBA/releases/download/1.0/app-release.apk)
 
-Is a flutter-made app. It will show statistics and live scores for all NBA matches.
-The information will be taken from JSON files provided by [data.nba.net](http://data.nba.net/) website.
+Is a flutter-made app. It will show statistics and scoreboard for all NBA matches.
+That information will be taken from a JSON file provided by [data.nba.net](http://data.nba.net/) website.
 
-The app will show real-time period and scores, start time for every match in local time, current standings and players stats. You will also be able to see past and future matches with its statistics.
+The app will show real-time period and scores, start time for every match in local time and current standings. You will also be able to see that information from past and future days.
 
 # Screenshots
 

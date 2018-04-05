@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'Games.dart';
+import 'games.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:async';
-import 'Dictionary.dart';
+import 'dictionary.dart';
 
 Future<List<List<Team>>> setStandingsFromDB(String response) async
 {
@@ -25,7 +25,7 @@ Future<List<List<Team>>> setStandingsFromDB(String response) async
       temporary.add(new Team(conference[j]["teamId"], position: index.toString(), name: currentTeam["full_name"],
           tricode: currentTeam["tricode"], conference: currentTeam["conf_name"],
           clinched: conference[j]["clinchedPlayoffsCodeV2"],
-          win: conference[j]["win"], loss: conference[j]["loss"]));
+          win: conference[j]["win"], loss: conference[j]["loss"], gb: conference[j]["gamesBehind"]));
       index++;
     }
     conference = standings["west"];
@@ -77,17 +77,18 @@ class Team
 {
   Team(this._id,
       {String win, String loss, String position, String tricode, String conference,
-      String clinched, String name})
+      String clinched, String name, String gb})
       : _win = win,
         _loss = loss,
         _position = position,
         _tricode = tricode,
         _conference = conference,
         _clinched = clinched,
-        _fullName = name;
+        _fullName = name,
+        _gb = gb;
 
   String _position, _id, _fullName, _tricode, _conference, _win, _loss;
-  String _clinched;
+  String _clinched, _gb;
   static Dictionary<String,String> teamIdNames;
 
   String get position => _position;
@@ -98,6 +99,7 @@ class Team
   String get winLoss => _win + "-" + _loss + "  " +
       (double.parse(_win)/(double.parse(_loss)+double.parse(_win))).toStringAsPrecision(3);
   String get clinchedChar => _clinched;
+  String get gb => _gb;
 
   @override
   String toString() {

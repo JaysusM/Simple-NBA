@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:sqflite/sqflite.dart';
-import 'Games.dart';
+import 'games.dart';
 import 'package:flutter/material.dart' show Widget;
 import 'package:path_provider/path_provider.dart';
 
@@ -119,6 +119,9 @@ class Player
   }
 
   String get name => _firstName + " " + _lastName;
+  //Yes.. I had to do it, he's the only one who break the app margins...
+  String get abbName => (_lastName != "Antetokounmpo") ? _firstName.substring(0,1) + ". " + _lastName
+  : _lastName;
 
   static getImage(String playerId)
   {

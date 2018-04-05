@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'StandingCard.dart';
-import 'Player.dart';
-import 'Teams.dart';
+import 'standing_card.dart';
+import 'player.dart';
+import 'teams.dart';
 
 Widget getWidgetFromPlayer(
     int nameSizeMaxLength, List<Player> players, BuildContext context) {
@@ -63,7 +63,6 @@ Widget leaderTile(int nameSize, int rowNum, Player player1, Player player2,
 
 getWidgetFromStandings(List<List<Team>> standings) {
   List<Widget> tabs = new List<Widget>();
-
   var auxIt = standings.iterator;
 
   while (auxIt.moveNext()) {
@@ -73,6 +72,8 @@ getWidgetFromStandings(List<List<Team>> standings) {
 
     List<Widget> widgets = new List<Widget>();
 
+    widgets.add(standingsHeader());
+
     while (it.moveNext()) {
       counter++;
       if (counter >= 8) playoffBackground = Colors.white;
@@ -80,21 +81,43 @@ getWidgetFromStandings(List<List<Team>> standings) {
       widgets.add(new StandingCard(it.current, playoffBackground));
     }
 
-    tabs.add(new Tab(
-        child: new Container(
+    tabs.add(new Container(
       child: new ListView(children: widgets),
-      decoration: new BoxDecoration(
-          border: new Border.all(width: 0.1),
-          borderRadius: new BorderRadius.all(new Radius.circular(4.0)),
-          boxShadow: <BoxShadow>[
-            new BoxShadow(
-                offset: new Offset(2.0, 1.0),
-                color: Colors.grey,
-                blurRadius: 6.0)
-          ]),
-      margin: new EdgeInsets.fromLTRB(8.0, 17.0, 8.0, 5.0),
-    )));
+      color: Colors.black87,
+    ));
   }
 
   return tabs;
+}
+
+Widget standingsHeader() {
+  return new SizedBox(
+    height: 25.0,
+    child: new Container(
+      child: new Stack(
+        children: <Widget>[
+          new Positioned(
+              child: new Text(
+                "W - L     %RATIO",
+                style: new TextStyle(
+                    fontFamily: 'Overpass',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.0),
+              ),
+              left: 142.0,
+              top: 4.0),
+          new Positioned(
+            child: new Text("GB",
+                style: new TextStyle(
+                    fontFamily: 'Default',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.0)),
+            top: 4.0,
+            right: 10.0,),
+        ],
+      ),
+      color: new Color.fromRGBO(230, 230, 230, 1.0),
+      margin: new EdgeInsets.symmetric(vertical: 1.0),
+    ),
+  );
 }

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'Games.dart';
-import 'Widgets.dart';
+import 'games.dart';
+import 'widgets.dart';
 import 'dart:async';
-import 'Data.dart';
-import 'Database.dart';
-import 'Dictionary.dart';
-import 'LoadingAnimation.dart';
+import 'data.dart';
+import 'database.dart';
+import 'dictionary.dart';
+import 'loading_animation.dart';
 import 'package:flutter/services.dart';
-import 'MatchCard.dart';
+import 'match_card.dart';
 
 Future main() async {
   await startDB();
@@ -92,16 +92,7 @@ class MainFrameState extends State<MainFrame>
                               style: new TextStyle(
                                   fontSize: 14.0, fontFamily: 'Mono',
                               color: Colors.black54)),
-                            decoration: new BoxDecoration(
-                              image: new DecorationImage(
-                                image: new AssetImage("assets/whitebackground.jpg"),
-                              fit: BoxFit.fill
-                              ),
-                              border: new Border.all(
-                                width: 1.5,
-                                color: Colors.black54
-                              )
-                            ),
+                            color: Colors.white,
                             padding: new EdgeInsets.all(14.0),
                           );
                         });

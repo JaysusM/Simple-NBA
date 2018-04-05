@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'Data.dart';
+import 'data.dart';
 import 'dart:async';
-import 'Twitter.dart';
-import 'Teams.dart';
+import 'twitter.dart';
+import 'teams.dart';
 
 Iterable<int> inRange(int supInf) sync* {
 for (int i = 0; i < supInf; i++)

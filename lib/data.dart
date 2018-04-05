@@ -1,7 +1,7 @@
-import 'Teams.dart';
+import 'teams.dart';
 import 'dart:async';
 import 'package:http/http.dart' as http;
-import 'Games.dart';
+import 'games.dart';
 
 Future loadGames(DateTime selectedDate) async {
   String url = "http://data.nba.net/prod/v1/${formatDate(selectedDate)}/scoreboard.json";
