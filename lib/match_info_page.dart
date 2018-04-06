@@ -41,6 +41,34 @@ class MatchPage extends StatefulWidget {
 class MatchPageState extends State<MatchPage> {
   Dictionary stats;
   Timer timer;
+  List<String> statLegend;
+
+  MatchPageState() {
+    statLegend = [
+      "PLAYER",
+      "POS ",
+      "MIN ",
+      "PTS ",
+      "REB ",
+      "AST ",
+      "STL ",
+      "BLK ",
+      "TO  ",
+      "PF  ",
+      "OREB",
+      "DREB",
+      "FGM ",
+      "FGA ",
+      "FGP ",
+      "3PM ",
+      "3PA ",
+      "3PP ",
+      "FTM ",
+      "FTA ",
+      "FTP ",
+      "+/- "
+    ];
+  }
 
   @override
   void initState() {
@@ -94,114 +122,149 @@ class MatchPageState extends State<MatchPage> {
                         return new loadingAnimation();
                       } else {
                         stats = response.data;
-                        return getWidgetFromStats(stats, false);
+                        return getWidgetFromStats(stats);
                       }
                     })
-                : getWidgetFromStats(stats, true)));
+                : getWidgetFromStats(stats)));
   }
 
-  Widget getWidgetFromStats(Dictionary stats, bool showSnackbar) {
+  Widget getWidgetFromStats(Dictionary stats) {
     return new TabBarView(children: <Widget>[
-      new ListView(
-        children: stats
-            .getValue(widget.game.visitor.id)
-            .map((player) => playerCard(player, context))
-            .toList(),
-      ),
-      new ListView(
-        children: stats
-            .getValue(widget.game.home.id)
-            .map((player) => playerCard(player, context))
-            .toList(),
-      )
+      teamStats(stats.getValue(widget.game.visitor.id)),
+      teamStats(stats.getValue(widget.game.home.id))
     ]);
   }
 
-  Widget playerCard(PlayerStats player, BuildContext context) {
+  Widget teamStats(List<PlayerStats> players) {
+    TextStyle defaultStyle = new TextStyle(
+        fontSize: 17.0, fontFamily: 'Signika', color: Colors.white);
     return new Container(
-        child: new Stack(children: <Widget>[
-          (player.isOnCourt)
-              ? new Positioned(
-                  child: new CircleAvatar(
-                    backgroundColor: Colors.red,
-                    radius: 5.0,
-                  ),
-                  top: 7.0,
-                  left: 7.0,
-                )
-              : new Container(),
-          new Positioned(
-              child: new CircleAvatar(
+      child: new SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: new SizedBox(
+          width: 1200.0,
+          child: new ListView(
+            children: <Widget>[
+              new Row(
+                children: statLegend
+                    .map((stat) => new Column(
+                            children: <Widget>[
+                          new Container(
+                              child: new Text(stat, style: defaultStyle),
+                              padding: new EdgeInsets.only(top: 5.0))
+                        ]..addAll(players
+                                .map((player) =>
+                                    getStatValue(stat, player, defaultStyle))
+                                .toList())))
+                    .toList(),
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+              )
+            ],
+          ),
+        ),
+      ),
+      color: Colors.black87,
+    );
+  }
+
+  Widget getStatValue(String stat, PlayerStats player, TextStyle style) {
+    String value;
+
+    switch (stat.toUpperCase().replaceAll(" ", "")) {
+      case "PTS":
+        value = player.points;
+        break;
+      case "REB":
+        value = player.rebounds;
+        break;
+      case "AST":
+        value = player.assists;
+        break;
+      case "TO":
+        value = player.turnovers;
+        break;
+      case "OREB":
+        value = player.offReb;
+        break;
+      case "DREB":
+        value = player.defReb;
+        break;
+      case "BLK":
+        value = player.blocks;
+        break;
+      case "STL":
+        value = player.steals;
+        break;
+      case "PF":
+        value = player.pFouls;
+        break;
+      case "MIN":
+        value = player.min;
+        break;
+      case "+/-":
+        value = player.plusMinus;
+        break;
+      case "FGM":
+        value = player.fgm;
+        break;
+      case "FGA":
+        value = player.fga;
+        break;
+      case "FGP":
+        value = player.fgp;
+        break;
+      case "3PM":
+        value = player.tpm;
+        break;
+      case "3PA":
+        value = player.tpa;
+        break;
+      case "3PP":
+        value = player.tpp;
+        break;
+      case "FTM":
+        value = player.ftm;
+        break;
+      case "FTA":
+        value = player.fta;
+        break;
+      case "FTP":
+        value = player.ftp;
+        break;
+      case "POS":
+        value = player.pos;
+        break;
+      case "PLAYER":
+        return new Container(
+          child: new Stack(
+            children: <Widget>[
+              new Positioned(
                 child: new Container(
-                    child: player.image,
-                    padding: new EdgeInsets.only(bottom: 20.0)),
-                radius: 42.0,
-                backgroundColor: new Color.fromRGBO(200, 200, 200, 0.5),
+                    child: new CircleAvatar(
+                      child: player.image,
+                      radius: 20.0,
+                      backgroundColor: new Color.fromRGBO(255, 255, 255, 0.5),
+                    ),
+                    height: 40.0,
+                    width: 40.0),
               ),
-              left: 10.0,
-              top: 10.0),
-          new Positioned(
-            child: new Text(
-                (player.pos == "")
-                    ? player.abbName.toUpperCase()
-                    : "${player.pos} - ${player.abbName.toUpperCase()}",
-                style: new TextStyle(fontFamily: "SignikaB", fontSize: 20.0)),
-            left: 115.0,
-            top: 10.0,
+              new Positioned(
+                  child: new Text(player.abbName, style: style),
+                  left: 50.0,
+                  top: 10.0)
+            ],
           ),
-          new Positioned(
-            child: statWidget("Pts ", player.points),
-            left: 10.0,
-            top: 100.0,
-          ),
-          new Positioned(
-            child: statWidget("Blk ", "${player.blocks}"),
-            left: 10.0,
-            top: 120.0,
-          ),
-          new Positioned(
-            child: statWidget("Stl ", "${player.steals}"),
-            left: 80.0,
-            top: 120.0,
-          ),
-          new Positioned(
-            child: statWidget("Ast ", player.assists),
-            left: 80.0,
-            top: 100.0,
-          ),
-          new Positioned(
-            child: drawClock(player.min),
-            right: 60.0,
-            top: 105.0,
-          ),
-          new Positioned(
-            child:
-                reboundsWidget(player.rebounds, player.offReb, player.defReb),
-            right: 175.0,
-            top: 40.0,
-          ),
-          new Positioned(
-              child: statsCircle("FG", player.fgp, player.fga, player.fgm),
-              top: 40.0,
-              right: 120.0),
-          new Positioned(
-              child: statsCircle("3P", player.tpp, player.tpa, player.tpm),
-              top: 40.0,
-              right: 65.0),
-          new Positioned(
-              child: statsCircle("FT", player.ftp, player.fta, player.ftm),
-              top: 40.0,
-              right: 10.0),
-        new Positioned(child: new IconButton(icon: new Icon(Icons.add_circle), iconSize: 30.0, onPressed: (){}),
-    right: 5.0, top: 97.0)
-        ]),
-        decoration: new BoxDecoration(
-            borderRadius: new BorderRadius.circular(10.0),
-            color: new Color.fromRGBO(255, 139, 0, 1.0),
-            border: new Border.all(color: Colors.black, width: 2.0)),
-        height: 150.0,
-        width: MediaQuery.of(context).size.width - 20,
-        margin: new EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0));
+          width: 170.0,
+        );
+      default:
+        value = "ERR";
+        break;
+    }
+
+    return new Container(
+      child: new Text(([null, ""].contains(value)) ? " " : value, style: style),
+      padding: new EdgeInsets.symmetric(vertical: 9.5),
+    );
   }
 
   @override
@@ -238,13 +301,13 @@ Widget reboundsWidget(String rebounds, String offReb, String defReb) {
             new Positioned(
                 child: new Text("Off",
                     style:
-                    new TextStyle(fontFamily: 'SignikaR', fontSize: 6.0)),
+                        new TextStyle(fontFamily: 'SignikaR', fontSize: 6.0)),
                 top: 19.0,
                 left: 3.8),
             new Positioned(
                 child: new Text("Def",
                     style:
-                    new TextStyle(fontFamily: 'SignikaR', fontSize: 6.0)),
+                        new TextStyle(fontFamily: 'SignikaR', fontSize: 6.0)),
                 top: 19.0,
                 right: 3.8),
             new Positioned(

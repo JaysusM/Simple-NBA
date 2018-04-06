@@ -128,7 +128,7 @@ class Player
     else if(lastName == null)
       return firstName;
     else
-      return firstName.substring(0,1) + ". " + lastName;
+      return (lastName.length < 10) ? firstName.substring(0,1) + ". " + lastName : lastName;
   }
 
   static getImage(String playerId)
