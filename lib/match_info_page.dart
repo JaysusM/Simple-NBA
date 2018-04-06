@@ -132,7 +132,9 @@ class MatchPageState extends State<MatchPage> {
               : new Container(),
           new Positioned(
               child: new CircleAvatar(
-                child: player.image,
+                child: new Container(
+                    child: player.image,
+                    padding: new EdgeInsets.only(bottom: 20.0)),
                 radius: 42.0,
                 backgroundColor: new Color.fromRGBO(200, 200, 200, 0.5),
               ),
@@ -149,44 +151,57 @@ class MatchPageState extends State<MatchPage> {
           ),
           new Positioned(
             child: statWidget("Pts ", player.points),
-            left: 100.0,
-            top: 50.0,
+            left: 10.0,
+            top: 100.0,
           ),
           new Positioned(
-            child: statWidget("Reb ", player.rebounds),
-            left: 100.0,
-            top: 70.0,
+            child: statWidget("Blk ", "${player.blocks}"),
+            left: 10.0,
+            top: 120.0,
+          ),
+          new Positioned(
+            child: statWidget("Stl ", "${player.steals}"),
+            left: 80.0,
+            top: 120.0,
           ),
           new Positioned(
             child: statWidget("Ast ", player.assists),
-            left: 100.0,
-            top: 90.0,
+            left: 80.0,
+            top: 100.0,
           ),
           new Positioned(
             child: drawClock(player.min),
-            left: 286.0,
+            right: 60.0,
             top: 105.0,
+          ),
+          new Positioned(
+            child:
+                reboundsWidget(player.rebounds, player.offReb, player.defReb),
+            right: 175.0,
+            top: 40.0,
           ),
           new Positioned(
               child: statsCircle("FG", player.fgp, player.fga, player.fgm),
               top: 40.0,
-              left: 200.0),
+              right: 120.0),
           new Positioned(
               child: statsCircle("3P", player.tpp, player.tpa, player.tpm),
               top: 40.0,
-              left: 260.0),
+              right: 65.0),
           new Positioned(
               child: statsCircle("FT", player.ftp, player.fta, player.ftm),
               top: 40.0,
-              left: 320.0),
+              right: 10.0),
+        new Positioned(child: new IconButton(icon: new Icon(Icons.add_circle), iconSize: 30.0, onPressed: (){}),
+    right: 5.0, top: 97.0)
         ]),
         decoration: new BoxDecoration(
             borderRadius: new BorderRadius.circular(10.0),
             color: new Color.fromRGBO(255, 139, 0, 1.0),
-        border: new Border.all(color: Colors.black, width: 2.0)),
+            border: new Border.all(color: Colors.black, width: 2.0)),
         height: 150.0,
         width: MediaQuery.of(context).size.width - 20,
-        margin: new EdgeInsets.all(10.0));
+        margin: new EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 0.0));
   }
 
   @override
@@ -196,15 +211,68 @@ class MatchPageState extends State<MatchPage> {
   }
 }
 
+Widget reboundsWidget(String rebounds, String offReb, String defReb) {
+  if (offReb.length < 2) {
+    offReb = " $offReb";
+    if (defReb.length < 2) offReb = " $offReb";
+  }
+
+  if (rebounds.length < 2) rebounds = " $rebounds";
+
+  return new CircleAvatar(
+      child: new CircleAvatar(
+        child: new Stack(
+          children: <Widget>[
+            new Positioned(
+                child: new Text("REB",
+                    style:
+                        new TextStyle(fontFamily: 'SignikaR', fontSize: 10.0)),
+                top: 3.0,
+                left: 15.0),
+            new Positioned(
+                child: new Text(rebounds,
+                    style:
+                        new TextStyle(fontFamily: 'SignikaR', fontSize: 14.0)),
+                top: 14.0,
+                left: 16.8),
+            new Positioned(
+                child: new Text("Off",
+                    style:
+                    new TextStyle(fontFamily: 'SignikaR', fontSize: 6.0)),
+                top: 19.0,
+                left: 3.8),
+            new Positioned(
+                child: new Text("Def",
+                    style:
+                    new TextStyle(fontFamily: 'SignikaR', fontSize: 6.0)),
+                top: 19.0,
+                right: 3.8),
+            new Positioned(
+                child: new Text("$offReb  |  $defReb",
+                    style:
+                        new TextStyle(fontFamily: 'SignikaR', fontSize: 10.0)),
+                top: 30.0,
+                left: 7.5)
+          ],
+        ),
+        radius: 24.0,
+        backgroundColor: new Color.fromRGBO(12, 72, 209, 1.0),
+      ),
+      radius: 25.4,
+      backgroundColor: new Color.fromRGBO(255, 215, 2, 1.0));
+}
+
 Widget statWidget(String statName, String stat) {
-  return new Text("$statName$stat", style: new TextStyle(fontSize: 20.0, fontFamily: 'Signika'));
+  return new Text("$statName$stat",
+      style: new TextStyle(fontSize: 20.0, fontFamily: 'Signika'));
 }
 
 Widget drawClock(String time) {
   return new Row(
     children: <Widget>[
       _clockFragment(time.split(":")[0]),
-      new Text(" : ", style: new TextStyle(fontSize: 20.0, fontFamily: 'Orbitron')),
+      new Text(" : ",
+          style: new TextStyle(fontSize: 20.0, fontFamily: 'Orbitron')),
       _clockFragment(time.split(":")[1])
     ],
   );
@@ -219,17 +287,22 @@ Widget _clockFragment(String time) {
           height: 15.0,
           width: 30.0,
         ),
-        new Positioned(child: new Text((time.length < 2) ? "0$time" : time, style: new TextStyle(fontFamily: 'Overpass', fontSize: 17.0, color: Colors.white)),
-        top: 5.5,
-        left: 3.0)
+        new Positioned(
+            child: new Text((time.length < 2) ? "0$time" : time,
+                style: new TextStyle(
+                    fontFamily: 'Overpass',
+                    fontSize: 17.0,
+                    color: Colors.white)),
+            top: 5.5,
+            left: 3.0)
       ],
     ),
     height: 30.0,
     width: 30.0,
     decoration: new BoxDecoration(
-      color: Colors.black,
-      border: new Border.all(color: Colors.white70, width: 1.0)
-    ),
+        color: Colors.black,
+        border: new Border.all(color: Colors.white70, width: 1.0),
+        borderRadius: new BorderRadius.all(new Radius.circular(4.0))),
   );
 }
 

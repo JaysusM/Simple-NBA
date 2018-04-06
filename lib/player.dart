@@ -119,7 +119,17 @@ class Player
   }
 
   String get name => _firstName + " " + _lastName;
-  String get abbName => _firstName.substring(0,1) + ". " + _lastName;
+  String get abbName {
+    if(firstName == null)
+      if(lastName == null)
+        return "";
+      else
+        return lastName;
+    else if(lastName == null)
+      return firstName;
+    else
+      return firstName.substring(0,1) + ". " + lastName;
+  }
 
   static getImage(String playerId)
   {
