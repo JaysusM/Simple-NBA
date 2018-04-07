@@ -96,8 +96,14 @@ class MatchPageState extends State<MatchPage> {
                   ],
                 ),
                 title: new TabBar(tabs: <Tab>[
-                  new Tab(text: widget.awayLastName.toUpperCase()),
-                  new Tab(text: widget.homeLastName.toUpperCase())
+                  new Tab(child: new Text(widget.awayLastName.toUpperCase(), style: new TextStyle(
+                    fontFamily: 'Signika',
+                    fontSize: 17.0
+                  ))),
+                  new Tab(child: new Text(widget.homeLastName.toUpperCase(), style: new TextStyle(
+                      fontFamily: 'Signika',
+                      fontSize: 17.0
+                  )))
                 ]),
                 actions: <Widget>[
                   new IconButton(
@@ -110,7 +116,9 @@ class MatchPageState extends State<MatchPage> {
                       })
                 ],
                 flexibleSpace:
-                    new Image.asset("assets/header.jpg", fit: BoxFit.fitWidth)),
+                    new Container(
+                      color: new Color.fromARGB(0xff, 0x18, 0x2b, 0x4a)
+                    )),
             body: (stats == null)
                 ? new FutureBuilder(
                     future: loadMatchStats(widget.game),
@@ -137,134 +145,79 @@ class MatchPageState extends State<MatchPage> {
 
   Widget teamStats(List<PlayerStats> players) {
     TextStyle defaultStyle = new TextStyle(
-        fontSize: 17.0, fontFamily: 'Signika', color: Colors.white);
+        fontSize: 17.0, fontFamily: 'Overpass', color: Colors.white);
     return new Container(
       child: new SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: new SizedBox(
-          width: 1200.0,
-          child: new ListView(
-            children: <Widget>[
-              new Row(
-                children: statLegend
-                    .map((stat) => new Column(
-                            children: <Widget>[
-                          new Container(
-                              child: new Text(stat, style: defaultStyle),
-                              padding: new EdgeInsets.only(top: 5.0))
-                        ]..addAll(players
-                                .map((player) =>
-                                    getStatValue(stat, player, defaultStyle))
-                                .toList())))
-                    .toList(),
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-              )
-            ],
-          ),
+          width: 1254.0,
+          child: new ListView(children: <Widget>[
+            new Row(children: getStatRow(statLegend, players, defaultStyle))
+          ]),
         ),
       ),
       color: Colors.black87,
     );
   }
 
-  Widget getStatValue(String stat, PlayerStats player, TextStyle style) {
-    String value;
+  List<Widget> getStatRow(
+      List<String> stats, List<PlayerStats> players, TextStyle style) {
+    return [
+      new Column(
+          children: <Widget>[
+        new Container(
+            child: new Text("PLAYER", style: style),
+            width: 200.0,
+            alignment: Alignment.center,
+            padding: new EdgeInsets.only(top: 7.5, bottom: 5.0),
+            decoration: new BoxDecoration(
+                border: new Border(
+                    bottom:
+                    new BorderSide(width: 2.0, color: new Color.fromARGB(0xff,0xdf,0xf8,0xeb))),
+                color: new Color.fromARGB(0xff,0x36,0x41,0x56))),
+      ]..addAll(players.map((player) => _getPlayerProfile(player, style)))),
+      new Column(
+          children: _getStatLegendRow("POS", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.pos, style)))),
+      new Column(
+          children: _getStatLegendRow("PTS", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.points, style)))),
+      new Column(
+          children: _getStatLegendRow("REB", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.rebounds, style)))),
+      new Column(
+          children: _getStatLegendRow("AST", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.assists, style)))),
+      new Column(
+          children: _getStatLegendRow("STL", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.steals, style)))),
+      new Column(
+          children: _getStatLegendRow("BLK", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.blocks, style)))),
+      new Column(
+          children: _getStatLegendRow("TO", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.turnovers, style)))),
+      new Column(
+          children: _getStatLegendRow("PF", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.pFouls, style)))),
+      new Column(
+          children: _getStatLegendRow("OREB", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.offReb, style)))),
+      new Column(
+          children: _getStatLegendRow("DREB", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.defReb, style)))),
+      new Column(
+          children: _getStatLegendRow("FGM", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.fgm, style)))),
+      new Column(
+          children: _getStatLegendRow("FGA", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.fga, style)))),
+      new Column(
+          children: _getStatLegendRow("FGP", style, 70.0)..addAll(players.map((player) => _getPlayerStatRow(4, player.fgp, style)))),
+      new Column(
+          children: _getStatLegendRow("3PM", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.tpm, style)))),
+      new Column(
+          children: _getStatLegendRow("3PA", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.tpa, style)))),
+      new Column(
+          children: _getStatLegendRow("3PP", style, 70.0)..addAll(players.map((player) => _getPlayerStatRow(4, player.tpp, style)))),
+      new Column(
+          children: _getStatLegendRow("FTM", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.ftm, style)))),
+      new Column(
+          children: _getStatLegendRow("FTA", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.fta, style)))),
+      new Column(
+          children: _getStatLegendRow("FTP", style, 70.0)..addAll(players.map((player) => _getPlayerStatRow(4, player.ftp, style)))),
+      new Column(
+          children: _getStatLegendRow("+/-", style, 60.0)..addAll(players.map((player) => _getPlayerStatRow(3, player.plusMinus, style)))),
 
-    switch (stat.toUpperCase().replaceAll(" ", "")) {
-      case "PTS":
-        value = player.points;
-        break;
-      case "REB":
-        value = player.rebounds;
-        break;
-      case "AST":
-        value = player.assists;
-        break;
-      case "TO":
-        value = player.turnovers;
-        break;
-      case "OREB":
-        value = player.offReb;
-        break;
-      case "DREB":
-        value = player.defReb;
-        break;
-      case "BLK":
-        value = player.blocks;
-        break;
-      case "STL":
-        value = player.steals;
-        break;
-      case "PF":
-        value = player.pFouls;
-        break;
-      case "MIN":
-        value = player.min;
-        break;
-      case "+/-":
-        value = player.plusMinus;
-        break;
-      case "FGM":
-        value = player.fgm;
-        break;
-      case "FGA":
-        value = player.fga;
-        break;
-      case "FGP":
-        value = player.fgp;
-        break;
-      case "3PM":
-        value = player.tpm;
-        break;
-      case "3PA":
-        value = player.tpa;
-        break;
-      case "3PP":
-        value = player.tpp;
-        break;
-      case "FTM":
-        value = player.ftm;
-        break;
-      case "FTA":
-        value = player.fta;
-        break;
-      case "FTP":
-        value = player.ftp;
-        break;
-      case "POS":
-        value = player.pos;
-        break;
-      case "PLAYER":
-        return new Container(
-          child: new Stack(
-            children: <Widget>[
-              new Positioned(
-                child: new Container(
-                    child: new CircleAvatar(
-                      child: player.image,
-                      radius: 20.0,
-                      backgroundColor: new Color.fromRGBO(255, 255, 255, 0.5),
-                    ),
-                    height: 40.0,
-                    width: 40.0),
-              ),
-              new Positioned(
-                  child: new Text(player.abbName, style: style),
-                  left: 50.0,
-                  top: 10.0)
-            ],
-          ),
-          width: 170.0,
-        );
-      default:
-        value = "ERR";
-        break;
-    }
-
-    return new Container(
-      child: new Text(([null, ""].contains(value)) ? " " : value, style: style),
-      padding: new EdgeInsets.symmetric(vertical: 9.5),
-    );
+    ];
   }
 
   @override
@@ -272,139 +225,66 @@ class MatchPageState extends State<MatchPage> {
     timer.cancel();
     super.dispose();
   }
-}
 
-Widget reboundsWidget(String rebounds, String offReb, String defReb) {
-  if (offReb.length < 2) {
-    offReb = " $offReb";
-    if (defReb.length < 2) offReb = " $offReb";
+  List<Widget> _getStatLegendRow(String statName, TextStyle style, [double width = 49.0]) {
+    return <Widget>[new Container(
+        child: new Text(statName, style: style),
+        width: width,
+        alignment: Alignment.center,
+        padding: new EdgeInsets.only(top: 7.5, bottom: 5.0),
+        decoration: new BoxDecoration(
+            border: new Border(
+                bottom:
+                new BorderSide(width: 2.0, color: new Color.fromARGB(0xff,0xdf,0xf8,0xeb))),
+            color: new Color.fromARGB(0xff,0x36,0x41,0x56)))];
   }
 
-  if (rebounds.length < 2) rebounds = " $rebounds";
-
-  return new CircleAvatar(
-      child: new CircleAvatar(
-        child: new Stack(
-          children: <Widget>[
-            new Positioned(
-                child: new Text("REB",
-                    style:
-                        new TextStyle(fontFamily: 'SignikaR', fontSize: 10.0)),
-                top: 3.0,
-                left: 15.0),
-            new Positioned(
-                child: new Text(rebounds,
-                    style:
-                        new TextStyle(fontFamily: 'SignikaR', fontSize: 14.0)),
-                top: 14.0,
-                left: 16.8),
-            new Positioned(
-                child: new Text("Off",
-                    style:
-                        new TextStyle(fontFamily: 'SignikaR', fontSize: 6.0)),
-                top: 19.0,
-                left: 3.8),
-            new Positioned(
-                child: new Text("Def",
-                    style:
-                        new TextStyle(fontFamily: 'SignikaR', fontSize: 6.0)),
-                top: 19.0,
-                right: 3.8),
-            new Positioned(
-                child: new Text("$offReb  |  $defReb",
-                    style:
-                        new TextStyle(fontFamily: 'SignikaR', fontSize: 10.0)),
-                top: 30.0,
-                left: 7.5)
-          ],
-        ),
-        radius: 24.0,
-        backgroundColor: new Color.fromRGBO(12, 72, 209, 1.0),
-      ),
-      radius: 25.4,
-      backgroundColor: new Color.fromRGBO(255, 215, 2, 1.0));
-}
-
-Widget statWidget(String statName, String stat) {
-  return new Text("$statName$stat",
-      style: new TextStyle(fontSize: 20.0, fontFamily: 'Signika'));
-}
-
-Widget drawClock(String time) {
-  return new Row(
-    children: <Widget>[
-      _clockFragment(time.split(":")[0]),
-      new Text(" : ",
-          style: new TextStyle(fontSize: 20.0, fontFamily: 'Orbitron')),
-      _clockFragment(time.split(":")[1])
-    ],
-  );
-}
-
-Widget _clockFragment(String time) {
-  return new Container(
-    child: new Stack(
-      children: <Widget>[
-        new Container(
-          color: new Color.fromRGBO(255, 255, 255, 0.20),
-          height: 15.0,
-          width: 30.0,
-        ),
-        new Positioned(
-            child: new Text((time.length < 2) ? "0$time" : time,
-                style: new TextStyle(
-                    fontFamily: 'Overpass',
-                    fontSize: 17.0,
-                    color: Colors.white)),
-            top: 5.5,
-            left: 3.0)
-      ],
-    ),
-    height: 30.0,
-    width: 30.0,
-    decoration: new BoxDecoration(
-        color: Colors.black,
-        border: new Border.all(color: Colors.white70, width: 1.0),
-        borderRadius: new BorderRadius.all(new Radius.circular(4.0))),
-  );
-}
-
-Widget statsCircle(
-    String statName, String percent, String attempt, String made) {
-  if (made.length < 2) {
-    made = " $made";
-    if (attempt.length < 2) made = " $made";
+  Widget _getPlayerStatRow(int length, String stat, TextStyle style) {
+    return new Container(
+      child: new Text(
+          _formatStat(length, stat),
+          style: style),
+      padding: new EdgeInsets.all(14.0),
+      decoration: new BoxDecoration(
+          border: new Border(
+              bottom:
+              new BorderSide(width: 2.0, color: new Color.fromARGB(0xff,0xdf,0xf8,0xeb))),
+      color: new Color.fromARGB(0x1a,0xcd,0xcd,0xcd)),
+    );
   }
-  if (percent.length < 4 && percent.contains(".")) percent += "0";
 
-  return new CircleAvatar(
-      child: new CircleAvatar(
-          child: new Stack(
-            children: <Widget>[
-              new Positioned(
-                  child: new Text(statName,
-                      style: new TextStyle(
-                          fontFamily: 'SignikaR', fontSize: 10.0)),
-                  top: 3.0,
-                  left: 18.0),
-              new Positioned(
-                  child: new Text("%$percent",
-                      style: new TextStyle(
-                          fontFamily: 'SignikaR', fontSize: 14.0)),
-                  top: 14.0,
-                  left: 4.5),
-              new Positioned(
-                  child: new Text("$made / $attempt",
-                      style: new TextStyle(
-                          fontFamily: 'SignikaR', fontSize: 10.0)),
-                  top: 30.0,
-                  left: 8.0)
-            ],
+  String _formatStat(int length, String stat) {
+    return (stat.length < length) ? _formatStat(length, " $stat") : stat;
+  }
+
+  Widget _getPlayerProfile(PlayerStats player, TextStyle style) {
+    return new Container(
+      child: new Stack(
+        children: <Widget>[
+          new Positioned(
+            child: new Container(
+                child: new CircleAvatar(
+                  child: player.image,
+                  radius: 20.0,
+                  backgroundColor: new Color.fromRGBO(255, 255, 255, 0.5),
+                ),
+                height: 40.0,
+                width: 40.0),
           ),
-          radius: 24.0,
-          backgroundColor: new Color.fromRGBO(12, 72, 209, 1.0)),
-      radius: 25.4,
-      backgroundColor: new Color.fromRGBO(255, 215, 2, 1.0));
+          new Positioned(
+              child: new Text(player.abbName.toUpperCase(), style: style),
+              left: 50.0,
+              top: 10.0)
+        ],
+      ),
+      width: 200.0,
+      padding: new EdgeInsets.all(5.0),
+      decoration: new BoxDecoration(
+          border: new Border(
+              bottom: new BorderSide(width: 2.0, color: new Color.fromARGB(0xff,0xdf,0xf8,0xeb))),
+      color: new Color.fromARGB(0x1a,0xcd,0xcd,0xcd)),
+    );
+  }
 }
 
 Future loadMatchStats(Game game) async {

@@ -45,9 +45,6 @@ flutter:
     - family: SignikaB
       fonts:
       - asset: assets/fonts/Signika-Bold.ttf
-    - family: Orbitron
-      fonts:
-      - asset: assets/fonts/Orbitron-Medium.ttf
 
   assets:
     - assets/DET.png

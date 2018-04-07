@@ -167,7 +167,7 @@ class TapCard extends State<GameCard> {
                       fontSize: 18.0),
                 ),
                 top: 105.0,
-                left: MediaQuery.of(context).size.width / 3.18),
+                left: MediaQuery.of(context).size.width / 3.18 + 5.0),
             new Positioned(
                 child: (widget._game.active ||
                         (!widget._game.active && widget._game.clock == "FINAL"))
