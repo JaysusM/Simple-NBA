@@ -45,28 +45,8 @@ class MatchPageState extends State<MatchPage> {
 
   MatchPageState() {
     statLegend = [
-      "PLAYER",
-      "POS ",
-      "MIN ",
-      "PTS ",
-      "REB ",
-      "AST ",
-      "STL ",
-      "BLK ",
-      "TO  ",
-      "PF  ",
-      "OREB",
-      "DREB",
-      "FGM ",
-      "FGA ",
-      "FGP ",
-      "3PM ",
-      "3PA ",
-      "3PP ",
-      "FTM ",
-      "FTA ",
-      "FTP ",
-      "+/- "
+      "PLAYER", "POS ", "MIN ", "PTS ", "REB ", "AST ", "STL ", "BLK ", "TO  ", "PF  ", "OREB",
+      "DREB", "FGM ", "FGA ", "FGP ", "3PM ", "3PA ", "3PP ", "FTM ", "FTA ", "FTP ", "+/- "
     ];
   }
 
@@ -150,7 +130,7 @@ class MatchPageState extends State<MatchPage> {
       child: new SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: new SizedBox(
-          width: 1254.0,
+          width: 1335.0,
           child: new ListView(children: <Widget>[
             new Row(children: getStatRow(statLegend, players, defaultStyle))
           ]),
@@ -214,6 +194,8 @@ class MatchPageState extends State<MatchPage> {
           children: _getStatLegendRow("FTA", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.fta, style)))),
       new Column(
           children: _getStatLegendRow("FTP", style, 70.0)..addAll(players.map((player) => _getPlayerStatRow(4, player.ftp, style)))),
+      new Column(
+          children: _getStatLegendRow("MIN", style, 81.0)..addAll(players.map((player) => _getPlayerStatRow(5, player.min, style)))),
       new Column(
           children: _getStatLegendRow("+/-", style, 60.0)..addAll(players.map((player) => _getPlayerStatRow(3, player.plusMinus, style)))),
 

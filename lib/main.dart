@@ -11,8 +11,10 @@ import 'match_card.dart';
 
 Future main() async {
   await startDB();
+
   //That will disable screen rotation
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
   runApp(new MaterialApp(home: new MainFrame()));
 
   return new Future<Null>.value();
@@ -210,7 +212,7 @@ class CalendarTabState extends State<CalendarTab> {
                             icon: new Icon(Icons.arrow_back_ios,
                                 color: Colors.white),
                             onPressed: () {
-                              _changeDate(-1);
+                              _changeDate(-1, context);
                             })),
                     left: 5.0,
                     top: 5.0),
@@ -228,7 +230,7 @@ class CalendarTabState extends State<CalendarTab> {
                         icon: new Icon(Icons.arrow_forward_ios,
                             color: Colors.white),
                         onPressed: () {
-                          _changeDate(1);
+                          _changeDate(1, context);
                         }),
                     right: 5.0,
                     top: 5.0)
@@ -260,10 +262,10 @@ class CalendarTabState extends State<CalendarTab> {
         ));
   }
 
-  void _changeDate(int day) {
+  void _changeDate(int day, BuildContext context) {
     _selectedDate = new DateTime.fromMillisecondsSinceEpoch(
         _selectedDate.add(new Duration(days: day)).millisecondsSinceEpoch);
-    _refresh();
+    _refresh(context, day);
   }
 
   @override
@@ -287,19 +289,26 @@ class CalendarTabState extends State<CalendarTab> {
     });
   }
 
-  Future _refresh() async {
+  Future _refresh(BuildContext context, int offset) async {
     List<Game> newGames;
-
-    if (!_gameDate.containsKey(formatDate(_selectedDate)))
-      newGames = await loadGames(_selectedDate);
-    else
-      newGames = _gameDate.getValue(formatDate(_selectedDate));
-
-    this.setState(() {
-      _games = newGames;
+    try {
       if (!_gameDate.containsKey(formatDate(_selectedDate)))
-        _gameDate.add(formatDate(_selectedDate), newGames);
-    });
+        newGames = await loadGames(_selectedDate);
+      else
+        newGames = _gameDate.getValue(formatDate(_selectedDate));
+
+      this.setState(() {
+        _games = newGames;
+        if (!_gameDate.containsKey(formatDate(_selectedDate)))
+          _gameDate.add(formatDate(_selectedDate), newGames);
+      });
+    } catch (exception) {
+      Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(
+        "No matches found",
+        style: new TextStyle(fontFamily: 'Default', fontSize: 18.0),
+      )));
+      _changeDate(-offset, context);
+    }
     return new Future<Null>.value();
   }
 }
