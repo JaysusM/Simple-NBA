@@ -163,8 +163,8 @@ class StandingsWidgetViewState extends State<StandingsWidgetView>
         child: new Scaffold(
           appBar: new AppBar(
               title: new TabBar(tabs: <Tab>[
-                new Tab(child: new Text("EAST")),
-                new Tab(child: new Text("WEST"))
+                new Tab(child: new Text("EAST", style: new TextStyle(fontFamily: 'Signika', fontSize: 22.0))),
+                new Tab(child: new Text("WEST", style: new TextStyle(fontFamily: 'Signika', fontSize: 22.0)))
               ]),
               flexibleSpace: new Container(color: Colors.white, height: 0.15),
               elevation: 0.0,

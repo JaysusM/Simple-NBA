@@ -61,23 +61,32 @@ Future<List<String>> playerNotFoundInsertIntoDBandReturn(String playerId, Databa
       i++;
     }
 
-    await db.rawInsert("""INSERT INTO players VALUES (${decoder[i]["nbaDebutYear"]},
+    await db.rawInsert("""INSERT INTO players VALUES (${_checkNull(decoder[i]["nbaDebutYear"].toString())},
         \"${decoder[i]["dateOfBirthUTC"]} 00:00:00\", \"${decoder[i]["heightInches"]}\",
         \"${decoder[i]["firstName"]}\", \"${decoder[i]["heightFeet"]}\",
         ${decoder[i]["personId"]}, \"${decoder[i]["lastName"]}\",
-        \"${decoder[i]["lastAffiliation"]}\", \"${decoder[i]["pos"]}\",
+        \"${_checkNull(decoder[i]["lastAffiliation"])}\", \"${decoder[i]["pos"]}\",
         ${decoder[i]["weightKilograms"]}, ${decoder[i]["weightPounds"]},
-        ${decoder[i]["teamId"]}, ${decoder[i]["draft"]["roundNum"]},
-        ${decoder[i]["draft"]["teamId"]}, ${decoder[i]["draft"]["pickNum"]},
-        ${decoder[i]["draft"]["seasonYear"]}, ${decoder[i]["jersey"]},
-        \"${decoder[i]["country"]}\", \"${decoder[i]["collegeName"]}\",
-        ${decoder[i]["yearsPro"]}, \"${decoder[i]["isActive"]}\",
+        ${decoder[i]["teamId"]}, 
+        ${_checkNull(decoder[i]["draft"]["roundNum"])},
+        ${_checkNull(decoder[i]["draft"]["teamId"])},
+        ${_checkNull(decoder[i]["draft"]["pickNum"])},
+        ${_checkNull(decoder[i]["draft"]["seasonYear"])},
+        ${decoder[i]["jersey"]},
+        \"${decoder[i]["country"]}\", \"${_checkNull(decoder[i]["collegeName"])}\",
+        ${_checkNull(decoder[i]["yearsPro"])}, \"${decoder[i]["isActive"]}\",
         ${decoder[i]["heightMeters"]})""");
 
     return [decoder[i]["firstName"], decoder[i]["lastName"]];
   } catch (exception) {
+    print(exception.toString());
     return ["-", "-"];
   }
+}
+
+String _checkNull(String val)
+{
+  return (val == "") ? null.toString() : val;
 }
 
 Future<List<Player>> loadTeamsLeaders(Game game) async {
