@@ -202,7 +202,7 @@ class TapCard extends State<GameCard> {
                                 builder:
                                     (BuildContext c, AsyncSnapshot response) {
                                   if (response.hasError)
-                                    return new Text("Error");
+                                    return new Text("\nData is not available yet", textAlign: TextAlign.center);
                                   else if (!response.hasData)
                                     return new Container(
                                         child: new Text("Loading...",

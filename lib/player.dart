@@ -44,9 +44,40 @@ Future<List<String>> getPlayerNameFromId(String playerId, Database db) async {
     Map query = (await db.rawQuery("SELECT * FROM players WHERE personId = $playerId")).first;
     playerName.addAll([query["firstName"], query["lastName"]]);
   } catch (exception) {
-    playerName.addAll([" - "," - "]);
+    return playerNotFoundInsertIntoDBandReturn(playerId, db);
   }
   return playerName;
+}
+
+Future<List<String>> playerNotFoundInsertIntoDBandReturn(String playerId, Database db) async
+{
+  try {
+    String players = await http.read(
+        "http://data.nba.net/prod/v1/2017/players.json");
+    var decoder = JSON.decode(players)["league"]["standard"];
+    int i = 0;
+
+    while (decoder[i]["personId"] != playerId) {
+      i++;
+    }
+
+    db.rawInsert("INSERT INTO players VALUES (${decoder[i]["nbaDebutYear"]},"
+        "${decoder[i]["dateOfBirthUTC"]}, ${decoder[i]["heightInches"]},"
+        "${decoder[i]["firstName"]}, ${decoder[i]["heightFeet"]},"
+        "${decoder[i]["playerId"]}, ${decoder[i]["lastName"]},"
+        "${decoder[i]["lastAffiliation"]}, ${decoder[i]["pos"]},"
+        "${decoder[i]["heightMeters"]}, ${decoder[i]["weightPounds"]},"
+        "${decoder[i]["teamId"]}, ${decoder[i]["draft"]["roundNum"]},"
+        "${decoder[i]["draft"]["teamId"]}, ${decoder[i]["draft"]["pickNum"]},"
+        "${decoder[i]["draft"]["seasonYear"]}, ${decoder[i]["jersey"]},"
+        "${decoder[i]["country"]}, ${decoder[i]["collegeName"]},"
+        "${decoder[i]["yearsPro"]}, ${decoder[i]["isActive"]},"
+        "${decoder[i]["heightMeters"]})");
+
+    return [decoder[i]['firstName'], decoder[i]['lastName']];
+  } catch (exception) {
+    return ['-', '-'];
+  }
 }
 
 Future<List<Player>> loadTeamsLeaders(Game game) async {

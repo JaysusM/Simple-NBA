@@ -27,6 +27,9 @@ class MatchPage extends StatefulWidget {
 //TODO Use nicknames instead
     homeLastName = homeTeam.name.substring(homeTeam.name.lastIndexOf(" ") + 1);
     awayLastName = awayTeam.name.substring(awayTeam.name.lastIndexOf(" ") + 1);
+
+    if (homeLastName.toUpperCase() == 'TIMBERWOLVES') homeLastName = 'WOLVES';
+    if (awayLastName.toUpperCase() == 'TIMBERWOLVES') awayLastName = 'WOLVES';
   }
 
   String getTeamNameFromId(String id, String defaultValue) {
@@ -45,8 +48,28 @@ class MatchPageState extends State<MatchPage> {
 
   MatchPageState() {
     statLegend = [
-      "PLAYER", "POS ", "MIN ", "PTS ", "REB ", "AST ", "STL ", "BLK ", "TO  ", "PF  ", "OREB",
-      "DREB", "FGM ", "FGA ", "FGP ", "3PM ", "3PA ", "3PP ", "FTM ", "FTA ", "FTP ", "+/- "
+      "PLAYER",
+      "POS ",
+      "MIN ",
+      "PTS ",
+      "REB ",
+      "AST ",
+      "STL ",
+      "BLK ",
+      "TO  ",
+      "PF  ",
+      "OREB",
+      "DREB",
+      "FGM ",
+      "FGA ",
+      "FGP ",
+      "3PM ",
+      "3PA ",
+      "3PP ",
+      "FTM ",
+      "FTA ",
+      "FTP ",
+      "+/- "
     ];
   }
 
@@ -76,14 +99,28 @@ class MatchPageState extends State<MatchPage> {
                   ],
                 ),
                 title: new TabBar(tabs: <Tab>[
-                  new Tab(child: new Text(widget.awayLastName.toUpperCase(), style: new TextStyle(
-                    fontFamily: 'Signika',
-                    fontSize: 17.0
-                  ))),
-                  new Tab(child: new Text(widget.homeLastName.toUpperCase(), style: new TextStyle(
-                      fontFamily: 'Signika',
-                      fontSize: 17.0
-                  )))
+                  new Tab(
+                      child: new Column(
+                    children: <Widget>[
+                      new Text("${widget.awayLastName.toUpperCase()}",
+                          style: new TextStyle(
+                              fontFamily: 'Signika', fontSize: 16.0)),
+                      new Text("${widget.game.visitor.score}",
+                          style: new TextStyle(
+                              fontFamily: 'Signika', fontSize: 16.0))
+                    ],
+                  )),
+                  new Tab(
+                      child: new Column(
+                    children: <Widget>[
+                      new Text("${widget.homeLastName.toUpperCase()}",
+                          style: new TextStyle(
+                              fontFamily: 'Signika', fontSize: 16.0)),
+                      new Text("${widget.game.home.score}",
+                          style: new TextStyle(
+                              fontFamily: 'Signika', fontSize: 16.0))
+                    ],
+                  ))
                 ]),
                 actions: <Widget>[
                   new IconButton(
@@ -95,10 +132,8 @@ class MatchPageState extends State<MatchPage> {
                         });
                       })
                 ],
-                flexibleSpace:
-                    new Container(
-                      color: new Color.fromARGB(0xff, 0x18, 0x2b, 0x4a)
-                    )),
+                flexibleSpace: new Container(
+                    color: new Color.fromARGB(0xff, 0x18, 0x2b, 0x4a))),
             body: (stats == null)
                 ? new FutureBuilder(
                     future: loadMatchStats(widget.game),
@@ -152,53 +187,95 @@ class MatchPageState extends State<MatchPage> {
             padding: new EdgeInsets.only(top: 7.5, bottom: 5.0),
             decoration: new BoxDecoration(
                 border: new Border(
-                    bottom:
-                    new BorderSide(width: 2.0, color: new Color.fromARGB(0xff,0xdf,0xf8,0xeb))),
-                color: new Color.fromARGB(0xff,0x36,0x41,0x56))),
+                    bottom: new BorderSide(
+                        width: 2.0,
+                        color: new Color.fromARGB(0xff, 0xdf, 0xf8, 0xeb))),
+                color: new Color.fromARGB(0xff, 0x36, 0x41, 0x56))),
       ]..addAll(players.map((player) => _getPlayerProfile(player, style)))),
       new Column(
-          children: _getStatLegendRow("POS", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.pos, style)))),
+          children: _getStatLegendRow("POS", style)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(2, player.pos, style)))),
       new Column(
-          children: _getStatLegendRow("PTS", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.points, style)))),
+          children: _getStatLegendRow("PTS", style)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(2, player.points, style)))),
       new Column(
-          children: _getStatLegendRow("REB", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.rebounds, style)))),
+          children: _getStatLegendRow("REB", style)
+            ..addAll(players.map(
+                (player) => _getPlayerStatRow(2, player.rebounds, style)))),
       new Column(
-          children: _getStatLegendRow("AST", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.assists, style)))),
+          children: _getStatLegendRow("AST", style)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(2, player.assists, style)))),
       new Column(
-          children: _getStatLegendRow("STL", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.steals, style)))),
+          children: _getStatLegendRow("STL", style)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(2, player.steals, style)))),
       new Column(
-          children: _getStatLegendRow("BLK", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.blocks, style)))),
+          children: _getStatLegendRow("BLK", style)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(2, player.blocks, style)))),
       new Column(
-          children: _getStatLegendRow("TO", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.turnovers, style)))),
+          children: _getStatLegendRow("TO", style)
+            ..addAll(players.map(
+                (player) => _getPlayerStatRow(2, player.turnovers, style)))),
       new Column(
-          children: _getStatLegendRow("PF", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.pFouls, style)))),
+          children: _getStatLegendRow("PF", style)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(2, player.pFouls, style)))),
       new Column(
-          children: _getStatLegendRow("OREB", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.offReb, style)))),
+          children: _getStatLegendRow("OREB", style)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(2, player.offReb, style)))),
       new Column(
-          children: _getStatLegendRow("DREB", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.defReb, style)))),
+          children: _getStatLegendRow("DREB", style)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(2, player.defReb, style)))),
       new Column(
-          children: _getStatLegendRow("FGM", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.fgm, style)))),
+          children: _getStatLegendRow("FGM", style)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(2, player.fgm, style)))),
       new Column(
-          children: _getStatLegendRow("FGA", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.fga, style)))),
+          children: _getStatLegendRow("FGA", style)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(2, player.fga, style)))),
       new Column(
-          children: _getStatLegendRow("FGP", style, 70.0)..addAll(players.map((player) => _getPlayerStatRow(4, player.fgp, style)))),
+          children: _getStatLegendRow("FGP", style, 70.0)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(4, player.fgp, style)))),
       new Column(
-          children: _getStatLegendRow("3PM", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.tpm, style)))),
+          children: _getStatLegendRow("3PM", style)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(2, player.tpm, style)))),
       new Column(
-          children: _getStatLegendRow("3PA", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.tpa, style)))),
+          children: _getStatLegendRow("3PA", style)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(2, player.tpa, style)))),
       new Column(
-          children: _getStatLegendRow("3PP", style, 70.0)..addAll(players.map((player) => _getPlayerStatRow(4, player.tpp, style)))),
+          children: _getStatLegendRow("3PP", style, 70.0)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(4, player.tpp, style)))),
       new Column(
-          children: _getStatLegendRow("FTM", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.ftm, style)))),
+          children: _getStatLegendRow("FTM", style)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(2, player.ftm, style)))),
       new Column(
-          children: _getStatLegendRow("FTA", style)..addAll(players.map((player) => _getPlayerStatRow(2, player.fta, style)))),
+          children: _getStatLegendRow("FTA", style)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(2, player.fta, style)))),
       new Column(
-          children: _getStatLegendRow("FTP", style, 70.0)..addAll(players.map((player) => _getPlayerStatRow(4, player.ftp, style)))),
+          children: _getStatLegendRow("FTP", style, 70.0)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(4, player.ftp, style)))),
       new Column(
-          children: _getStatLegendRow("MIN", style, 81.0)..addAll(players.map((player) => _getPlayerStatRow(5, player.min, style)))),
+          children: _getStatLegendRow("MIN", style, 81.0)
+            ..addAll(players
+                .map((player) => _getPlayerStatRow(5, player.min, style)))),
       new Column(
-          children: _getStatLegendRow("+/-", style, 60.0)..addAll(players.map((player) => _getPlayerStatRow(3, player.plusMinus, style)))),
-
+          children: _getStatLegendRow("+/-", style, 60.0)
+            ..addAll(players.map(
+                (player) => _getPlayerStatRow(3, player.plusMinus, style)))),
     ];
   }
 
@@ -208,30 +285,33 @@ class MatchPageState extends State<MatchPage> {
     super.dispose();
   }
 
-  List<Widget> _getStatLegendRow(String statName, TextStyle style, [double width = 49.0]) {
-    return <Widget>[new Container(
-        child: new Text(statName, style: style),
-        width: width,
-        alignment: Alignment.center,
-        padding: new EdgeInsets.only(top: 7.5, bottom: 5.0),
-        decoration: new BoxDecoration(
-            border: new Border(
-                bottom:
-                new BorderSide(width: 2.0, color: new Color.fromARGB(0xff,0xdf,0xf8,0xeb))),
-            color: new Color.fromARGB(0xff,0x36,0x41,0x56)))];
+  List<Widget> _getStatLegendRow(String statName, TextStyle style,
+      [double width = 49.0]) {
+    return <Widget>[
+      new Container(
+          child: new Text(statName, style: style),
+          width: width,
+          alignment: Alignment.center,
+          padding: new EdgeInsets.only(top: 7.5, bottom: 5.0),
+          decoration: new BoxDecoration(
+              border: new Border(
+                  bottom: new BorderSide(
+                      width: 2.0,
+                      color: new Color.fromARGB(0xff, 0xdf, 0xf8, 0xeb))),
+              color: new Color.fromARGB(0xff, 0x36, 0x41, 0x56)))
+    ];
   }
 
   Widget _getPlayerStatRow(int length, String stat, TextStyle style) {
     return new Container(
-      child: new Text(
-          _formatStat(length, stat),
-          style: style),
+      child: new Text(_formatStat(length, stat), style: style),
       padding: new EdgeInsets.all(14.0),
       decoration: new BoxDecoration(
           border: new Border(
-              bottom:
-              new BorderSide(width: 2.0, color: new Color.fromARGB(0xff,0xdf,0xf8,0xeb))),
-      color: new Color.fromARGB(0x1a,0xcd,0xcd,0xcd)),
+              bottom: new BorderSide(
+                  width: 2.0,
+                  color: new Color.fromARGB(0xff, 0xdf, 0xf8, 0xeb))),
+          color: new Color.fromARGB(0x1a, 0xcd, 0xcd, 0xcd)),
     );
   }
 
@@ -241,32 +321,124 @@ class MatchPageState extends State<MatchPage> {
 
   Widget _getPlayerProfile(PlayerStats player, TextStyle style) {
     return new Container(
-      child: new Stack(
-        children: <Widget>[
-          new Positioned(
-            child: new Container(
-                child: new CircleAvatar(
-                  child: player.image,
-                  radius: 20.0,
-                  backgroundColor: new Color.fromRGBO(255, 255, 255, 0.5),
-                ),
-                height: 40.0,
-                width: 40.0),
-          ),
-          new Positioned(
-              child: new Text(player.abbName.toUpperCase(), style: style),
-              left: 50.0,
-              top: 10.0)
-        ],
+      child: new GestureDetector(
+        child: new Stack(
+          children: <Widget>[
+            new Positioned(
+              child: new Container(
+                  child: new CircleAvatar(
+                    child: player.image,
+                    radius: 20.0,
+                    backgroundColor: new Color.fromRGBO(255, 255, 255, 0.5),
+                  ),
+                  height: 40.0,
+                  width: 40.0),
+            ),
+            new Positioned(
+                child: new Text(player.abbName.toUpperCase(), style: style),
+                left: 50.0,
+                top: 10.0)
+          ],
+        ),
+        onTap: () {
+          showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) {
+                return new Container(
+                  child: new Stack(
+                    children: <Widget>[
+                      new Positioned(
+                        child: new Container(child:
+                  new Column(
+                          children: <Widget>[
+                            new Text(player.firstName,
+                                style: new TextStyle(
+                                    fontFamily: 'Default', fontSize: 18.0)),
+                            new Text(player.lastName,
+                                style: new TextStyle(
+                                    fontFamily: 'Default', fontSize: 18.0)),
+                          ],
+                        ),
+                        width: 140.0,
+                        color: Colors.white10,),
+                        left: 0.0,
+                        top: 10.0,
+                      ),
+                      new Positioned(
+                        child: new Container(
+                            child: player.image, width: 120.0, height: 120.0),
+                        left: 10.0,
+                        top: 50.0,
+                      ),
+                      new Positioned(
+                        child: new Text("Match",
+                            style: new TextStyle(
+                                fontFamily: 'Default', fontSize: 18.0)),
+                        left: 160.0,
+                        top: 10.0,
+                      ),
+                      new Positioned(
+                          child: statsCircle(
+                              "FG", player.fgp, player.fga, player.fgm),
+                          left: 160.0,
+                          top: 35.0)
+                    ],
+                  ),
+                  height: 150.0,
+                );
+              });
+        },
       ),
       width: 200.0,
       padding: new EdgeInsets.all(5.0),
       decoration: new BoxDecoration(
           border: new Border(
-              bottom: new BorderSide(width: 2.0, color: new Color.fromARGB(0xff,0xdf,0xf8,0xeb))),
-      color: new Color.fromARGB(0x1a,0xcd,0xcd,0xcd)),
+              bottom: new BorderSide(
+                  width: 2.0,
+                  color: new Color.fromARGB(0xff, 0xdf, 0xf8, 0xeb))),
+          color: new Color.fromARGB(0x1a, 0xcd, 0xcd, 0xcd)),
     );
   }
+}
+
+Widget statsCircle(String statName, String percent,
+    [String attempt = "", String made = ""]) {
+  if (made.length < 2) {
+    made = " $made";
+    if (attempt.length < 2) made = " $made";
+  }
+
+  print(percent);
+  if(percent == "0.0") percent = "0.00";
+
+  return new CircleAvatar(
+      child: new CircleAvatar(
+          child: new Stack(
+            children: <Widget>[
+              new Positioned(
+                  child: new Text(statName,
+                      style: new TextStyle(
+                          fontFamily: 'SignikaR', fontSize: 10.0)),
+                  top: 3.0,
+                  left: 18.0),
+              new Positioned(
+                  child: new Text("%$percent",
+                      style: new TextStyle(
+                          fontFamily: 'SignikaR', fontSize: 14.0)),
+                  top: 14.0,
+                  left: 4.5),
+              new Positioned(
+                  child: new Text("$made / $attempt",
+                      style: new TextStyle(
+                          fontFamily: 'SignikaR', fontSize: 10.0)),
+                  top: 30.0,
+                  left: 8.0)
+            ],
+          ),
+          radius: 24.0,
+          backgroundColor: new Color.fromRGBO(12, 72, 209, 1.0)),
+      radius: 25.4,
+      backgroundColor: new Color.fromRGBO(255, 215, 2, 1.0));
 }
 
 Future loadMatchStats(Game game) async {
@@ -279,6 +451,10 @@ Future loadMatchStats(Game game) async {
   List decoder = JSON.decode(content)["stats"]["activePlayers"];
   List<PlayerStats> homePlayers = new List();
   List<PlayerStats> awayPlayers = new List();
+
+  game.visitor
+      .setScore(JSON.decode(content)['basicGameData']['vTeam']['score']);
+  game.home.setScore(JSON.decode(content)['basicGameData']['hTeam']['score']);
 
   decoder.forEach((player) async {
     if (player["teamId"] == game.home.id)
