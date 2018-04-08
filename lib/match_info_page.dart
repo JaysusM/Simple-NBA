@@ -161,20 +161,6 @@ class MatchPageState extends State<MatchPage> {
   Widget teamStats(List<PlayerStats> players) {
     TextStyle style = new TextStyle(
         fontSize: 17.0, fontFamily: 'Overpass', color: Colors.white);
-    ScrollController statsController = new ScrollController();
-    ScrollController playersController = new ScrollController();
-
-    statsController.addListener(() {
-      playersController.animateTo(statsController.offset,
-          duration: new Duration(microseconds: 1),
-          curve: Curves.linear);
-    });
-
-    playersController.addListener(() {
-      statsController.animateTo(playersController.offset,
-          duration: new Duration(microseconds: 1),
-          curve: Curves.linear);
-    });
 
     return new Stack(children: <Widget>[
       new Positioned(
@@ -182,7 +168,7 @@ class MatchPageState extends State<MatchPage> {
           child: new SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: new SizedBox(
-              width: 1135.0,
+              width: 1335.0,
               child: new Stack(
                 children: <Widget>[
                   new Container(
@@ -190,112 +176,91 @@ class MatchPageState extends State<MatchPage> {
                       children: <Widget>[
                         new Row(children: getStatRow(players, style)),
                       ],
-                      controller: statsController,
                     ),
                     margin: new EdgeInsets.only(top: 36.0),
                   ),
                   new Positioned(
-                      child: _getStatLegendRow("POS", style), left: 0.0),
+                      child: new Container(
+                          child: new Text("PLAYER", style: style),
+                          width: 200.0,
+                          alignment: Alignment.center,
+                          padding: new EdgeInsets.only(top: 7.5, bottom: 5.0),
+                          decoration: new BoxDecoration(
+                              border: new Border(
+                                  bottom: new BorderSide(
+                                      width: 2.0,
+                                      color: new Color.fromARGB(0xff, 0xdf, 0xf8, 0xeb))),
+                              color: new Color.fromARGB(0xff, 0x36, 0x41, 0x56))),
+                      left: 0.0,
+                      top: 0.0),
                   new Positioned(
-                      child: _getStatLegendRow("PTS", style), left: 49.0),
+                      child: _getStatLegendRow("POS", style), left: 200.0),
                   new Positioned(
-                      child: _getStatLegendRow("REB", style), left: 98.0),
+                      child: _getStatLegendRow("PTS", style), left: 249.0),
                   new Positioned(
-                      child: _getStatLegendRow("AST", style), left: 147.0),
+                      child: _getStatLegendRow("REB", style), left: 298.0),
                   new Positioned(
-                      child: _getStatLegendRow("STL", style), left: 196.0),
+                      child: _getStatLegendRow("AST", style), left: 347.0),
                   new Positioned(
-                      child: _getStatLegendRow("BLK", style), left: 245.0),
+                      child: _getStatLegendRow("STL", style), left: 396.0),
                   new Positioned(
-                      child: _getStatLegendRow("TO", style), left: 294.0),
+                      child: _getStatLegendRow("BLK", style), left: 445.0),
                   new Positioned(
-                      child: _getStatLegendRow("PF", style), left: 343.0),
+                      child: _getStatLegendRow("TO", style), left: 494.0),
                   new Positioned(
-                      child: _getStatLegendRow("OREB", style), left: 392.0),
+                      child: _getStatLegendRow("PF", style), left: 543.0),
                   new Positioned(
-                      child: _getStatLegendRow("DREB", style), left: 441.0),
+                      child: _getStatLegendRow("OREB", style), left: 592.0),
                   new Positioned(
-                      child: _getStatLegendRow("FGM", style), left: 490.0),
+                      child: _getStatLegendRow("DREB", style), left: 641.0),
                   new Positioned(
-                      child: _getStatLegendRow("FGA", style), left: 539.0),
+                      child: _getStatLegendRow("FGM", style), left: 690.0),
+                  new Positioned(
+                      child: _getStatLegendRow("FGA", style), left: 739.0),
                   new Positioned(
                       child: _getStatLegendRow("FGP", style, 70.0),
-                      left: 588.0),
+                      left: 788.0),
                   new Positioned(
-                      child: _getStatLegendRow("3PM", style), left: 658.0),
+                      child: _getStatLegendRow("3PM", style), left: 858.0),
                   new Positioned(
-                      child: _getStatLegendRow("3PA", style), left: 707.0),
+                      child: _getStatLegendRow("3PA", style), left: 907.0),
                   new Positioned(
                       child: _getStatLegendRow("3PP", style, 70.0),
-                      left: 756.0),
+                      left: 956.0),
                   new Positioned(
-                      child: _getStatLegendRow("FTM", style), left: 826.0),
+                      child: _getStatLegendRow("FTM", style), left: 1026.0),
                   new Positioned(
-                      child: _getStatLegendRow("FTA", style), left: 875.0),
+                      child: _getStatLegendRow("FTA", style), left: 1075.0),
                   new Positioned(
                       child: _getStatLegendRow("FTP", style, 70.0),
-                      left: 924.0),
+                      left: 1124.0),
                   new Positioned(
                       child: _getStatLegendRow("MIN", style, 81.0),
-                      left: 994.0),
+                      left: 1194.0),
                   new Positioned(
                     child: _getStatLegendRow("+/-", style, 60.0),
-                    left: 1075.0,
+                    left: 1275.0,
                   )
                 ],
               ),
             ),
           ),
           color: Colors.black87,
-          //200.0 from the left part of the screen the player name
-          width: MediaQuery.of(context).size.width - 200.0,
+          width: MediaQuery.of(context).size.width,
           //27.0 from the top bar with legend
           height: MediaQuery.of(context).size.height - 27.0,
         ),
-        left: 200.0,
+        left: 0.0,
         top: 0.0,
       ),
-      new Positioned(
-          child: new Container(
-              child: new Text("PLAYER", style: style),
-              width: 200.0,
-              alignment: Alignment.center,
-              padding: new EdgeInsets.only(top: 7.5, bottom: 5.0),
-              decoration: new BoxDecoration(
-                  border: new Border(
-                      bottom: new BorderSide(
-                          width: 2.0,
-                          color: new Color.fromARGB(0xff, 0xdf, 0xf8, 0xeb))),
-                  color: new Color.fromARGB(0xff, 0x36, 0x41, 0x56))),
-          left: 0.0,
-          top: 0.0),
-      new Positioned(
-        child: new Container(
-            child: new ListView(
-              children: <Widget>[
-                new Column(
-                    children: players
-                        .map((player) => _getPlayerProfile(player, style))
-                        .toList())
-              ],
-              controller: playersController,
-            ),
-            width: 200.0,
-            height: MediaQuery.of(context).size.height - 113.0,
-            decoration: new BoxDecoration(
-                border: new Border(
-                    bottom: new BorderSide(
-                        width: 2.0,
-                        color: new Color.fromARGB(0xff, 0xdf, 0xf8, 0xeb))),
-                color: new Color.fromARGB(0xff, 0x33, 0x33, 0x33))),
-        left: 0.0,
-        top: 36.0,
-      )
     ]);
   }
 
   List<Widget> getStatRow(List<PlayerStats> players, TextStyle style) {
     return [
+      new Column(
+          children: players.map((player) => _getPlayerProfile(player, style)).toList()
+      ),
       new Column(
           children: players
               .map((player) => _getPlayerStatRow(2, player.pos, style))
@@ -422,6 +387,12 @@ class MatchPageState extends State<MatchPage> {
   }
 
   Widget _getPlayerProfile(PlayerStats player, TextStyle style) {
+
+    TextStyle statsStyle = new TextStyle(
+        fontFamily: 'SignikaB',
+        fontSize: 18.0
+    );
+
     return new GestureDetector(
       child: new Container(
         child: new Stack(
@@ -486,14 +457,45 @@ class MatchPageState extends State<MatchPage> {
                       child: new Text("Match",
                           style: new TextStyle(
                               fontFamily: 'Default', fontSize: 18.0)),
-                      left: 160.0,
-                      top: 10.0,
+                      left: 145.0,
+                      top: 5.0,
+                    ),
+                    new Positioned(child: new Text("(${player.min})",
+                    style: statsStyle),
+                    left: 200.0,
+                    top: 5.0,),
+                    new Positioned(child: new Text("PTS: ${player.points}\tAST: ${player.assists}",
+                    style: statsStyle,),
+                    top: 93.0,
+                    left: 140.0,
                     ),
                     new Positioned(
                         child: statsCircle(
-                            "FG", player.fgp, player.fga, player.fgm),
-                        left: 160.0,
-                        top: 35.0)
+                            true, "FG", player.fgp, player.fga, player.fgm),
+                        left: 195.0,
+                        top: 35.0),
+                    new Positioned(
+                        child: reboundsWidget(
+                            player.rebounds, player.offReb, player.defReb),
+                        left: 140.0,
+                        top: 35.0),
+                    new Positioned(
+                        child: statsCircle(
+                            true, "3P", player.tpp, player.tpm, player.tpa),
+                        left: 250.0,
+                        top: 35.0),
+                    new Positioned(
+                        child: statsCircle(
+                            true, "FT", player.ftp, player.ftm, player.fta),
+                        left: 305.0,
+                        top: 35.0),
+                    new Positioned(child: new Text(""
+                        "BLK: ${player.blocks}\t"
+                        "STL: ${player.steals}\t"
+                        "TO: ${player.turnovers}\t",
+                        style: statsStyle),
+                    top: 115.0,
+                    left: 140.0,)
                   ],
                 ),
                 height: 150.0,
@@ -504,16 +506,67 @@ class MatchPageState extends State<MatchPage> {
   }
 }
 
-Widget statsCircle(String statName, String percent,
+Widget reboundsWidget(String rebounds, String offReb, String defReb) {
+  if (offReb.length < 2) {
+    offReb = " $offReb";
+    if (defReb.length < 2) offReb = " $offReb";
+  }
+
+  if (rebounds.length < 2) rebounds = " $rebounds";
+
+  return new CircleAvatar(
+      child: new CircleAvatar(
+          child: new Stack(
+              children: <Widget>[
+          new Positioned(
+          child: new Text("REB",
+              style:
+              new TextStyle(fontFamily: 'SignikaR', fontSize: 10.0)),
+          top: 3.0,
+          left: 15.0),
+      new Positioned(
+          child: new Text(rebounds,
+              style:
+              new TextStyle(fontFamily: 'SignikaR', fontSize: 14.0)),
+          top: 14.0,
+          left: 15.8),
+      new Positioned(
+          child: new Text("Off",
+              style:
+              new TextStyle(fontFamily: 'SignikaR', fontSize: 6.0)),
+          top: 19.0,
+          left: 3.8),
+      new Positioned(
+          child: new Text("Def",
+              style:
+              new TextStyle(fontFamily: 'SignikaR', fontSize: 6.0)),
+          top: 19.0,
+          right: 3.8),
+          new Positioned(
+      child: new Text("$offReb  |  $defReb",
+          style:
+          new TextStyle(fontFamily: 'SignikaR', fontSize: 10.0)),
+      top: 30.0,
+      left: 7.5)
+
+  ],
+  ),
+  radius: 24.0,
+  backgroundColor: new Color.fromRGBO(12, 72, 209, 1.0),
+  ),
+  radius: 25.4,
+  backgroundColor: new Color.fromRGBO(255, 215, 2, 1.0));
+}
+
+Widget statsCircle(bool isPercentage, String statName, String value,
     [String attempt = "", String made = ""]) {
   if (made.length < 2) {
     made = " $made";
     if (attempt.length < 2) made = " $made";
   }
 
-  print(percent);
-  if (percent == "0.0") percent = "0.00";
-
+  if (value == "0.0") value = "0.00";
+  if(value.length < 2) value = " $value";
   return new CircleAvatar(
       child: new CircleAvatar(
           child: new Stack(
@@ -523,15 +576,15 @@ Widget statsCircle(String statName, String percent,
                       style: new TextStyle(
                           fontFamily: 'SignikaR', fontSize: 10.0)),
                   top: 3.0,
-                  left: 18.0),
+                  left: (statName.length == 2) ? 18.0 : 15.0),
               new Positioned(
-                  child: new Text("%$percent",
+                  child: new Text((isPercentage) ? "%$value" : value,
                       style: new TextStyle(
-                          fontFamily: 'SignikaR', fontSize: 14.0)),
+                          fontFamily: 'SignikaR', fontSize: (isPercentage) ? 14.0 : 20.0)),
                   top: 14.0,
-                  left: 4.5),
+                  left: (isPercentage) ? 4.5 : 12.0),
               new Positioned(
-                  child: new Text("$made / $attempt",
+                  child: new Text((isPercentage) ? "$made / $attempt" : "",
                       style: new TextStyle(
                           fontFamily: 'SignikaR', fontSize: 10.0)),
                   top: 30.0,
