@@ -1,10 +1,10 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'dart:async';
-import 'package:sqflite/sqflite.dart';
-import 'games.dart';
-import 'package:flutter/material.dart' show Widget;
-import 'package:path_provider/path_provider.dart';
+import "package:http/http.dart" as http;
+import "dart:convert";
+import "dart:async";
+import "package:sqflite/sqflite.dart";
+import "games.dart";
+import "package:flutter/material.dart" show Widget;
+import "package:path_provider/path_provider.dart";
 
 Future<List<Player>> loadLeaders(String gameId, int gameDate) async {
   String url = "http://data.nba.net/prod/v1/$gameDate/${gameId}_boxscore.json";
@@ -61,22 +61,22 @@ Future<List<String>> playerNotFoundInsertIntoDBandReturn(String playerId, Databa
       i++;
     }
 
-    db.rawInsert("INSERT INTO players VALUES (${decoder[i]["nbaDebutYear"]},"
-        "${decoder[i]["dateOfBirthUTC"]}, ${decoder[i]["heightInches"]},"
-        "${decoder[i]["firstName"]}, ${decoder[i]["heightFeet"]},"
-        "${decoder[i]["playerId"]}, ${decoder[i]["lastName"]},"
-        "${decoder[i]["lastAffiliation"]}, ${decoder[i]["pos"]},"
-        "${decoder[i]["heightMeters"]}, ${decoder[i]["weightPounds"]},"
-        "${decoder[i]["teamId"]}, ${decoder[i]["draft"]["roundNum"]},"
-        "${decoder[i]["draft"]["teamId"]}, ${decoder[i]["draft"]["pickNum"]},"
-        "${decoder[i]["draft"]["seasonYear"]}, ${decoder[i]["jersey"]},"
-        "${decoder[i]["country"]}, ${decoder[i]["collegeName"]},"
-        "${decoder[i]["yearsPro"]}, ${decoder[i]["isActive"]},"
-        "${decoder[i]["heightMeters"]})");
+    await db.rawInsert("""INSERT INTO players VALUES (${decoder[i]["nbaDebutYear"]},
+        \"${decoder[i]["dateOfBirthUTC"]} 00:00:00\", \"${decoder[i]["heightInches"]}\",
+        \"${decoder[i]["firstName"]}\", \"${decoder[i]["heightFeet"]}\",
+        ${decoder[i]["personId"]}, \"${decoder[i]["lastName"]}\",
+        \"${decoder[i]["lastAffiliation"]}\", \"${decoder[i]["pos"]}\",
+        ${decoder[i]["weightKilograms"]}, ${decoder[i]["weightPounds"]},
+        ${decoder[i]["teamId"]}, ${decoder[i]["draft"]["roundNum"]},
+        ${decoder[i]["draft"]["teamId"]}, ${decoder[i]["draft"]["pickNum"]},
+        ${decoder[i]["draft"]["seasonYear"]}, ${decoder[i]["jersey"]},
+        \"${decoder[i]["country"]}\", \"${decoder[i]["collegeName"]}\",
+        ${decoder[i]["yearsPro"]}, \"${decoder[i]["isActive"]}\",
+        ${decoder[i]["heightMeters"]})""");
 
-    return [decoder[i]['firstName'], decoder[i]['lastName']];
+    return [decoder[i]["firstName"], decoder[i]["lastName"]];
   } catch (exception) {
-    return ['-', '-'];
+    return ["-", "-"];
   }
 }
 
@@ -169,7 +169,7 @@ class Player
 
   @override
   String toString() {
-    return 'Player{_name: $name}';
+    return "Player{_name: $name}";
   }
 }
 
