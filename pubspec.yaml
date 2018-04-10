@@ -80,7 +80,6 @@ flutter:
     - assets/noteam.png
     - assets/players.txt
     - assets/teams.txt
-    - assets/header.jpg
     - assets/logo.png
     - assets/twitterIcon.png
 

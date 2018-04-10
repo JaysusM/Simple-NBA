@@ -71,8 +71,10 @@ class TapCard extends State<GameCard> {
               decoration: new BoxDecoration(
                   border: new Border(
                       bottom:
-                          new BorderSide(width: 1.0, color: Colors.black45)))),
+                          new BorderSide(width: 1.3, color: Colors.black45))),
+          ),
           elevation: 0.0,
+          color: new Color(0xffffffff),
         ));
   }
 

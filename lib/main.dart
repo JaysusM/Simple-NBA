@@ -78,10 +78,8 @@ class MainFrameState extends State<MainFrame>
     return new Scaffold(
       appBar: new AppBar(
         flexibleSpace: new Container(
-            decoration: new BoxDecoration(
-                image: new DecorationImage(
-                    image: new AssetImage("assets/header.jpg"),
-                    fit: BoxFit.fitWidth))),
+            color: new Color.fromARGB(0xff, 0x18, 0x2b, 0x4a),
+                ),
         title: new Title(
             color: Colors.white,
             child: new Text("Simple NBA",
@@ -111,10 +109,10 @@ class MainFrameState extends State<MainFrame>
       bottomNavigationBar: new Material(
           child: new Container(
         child: new TabBar(tabs: <Tab>[
-          new Tab(icon: new Icon(Icons.calendar_today, size: 40.0)),
-          new Tab(icon: new Icon(Icons.assessment, size: 40.0))
+          new Tab(child: new Icon(Icons.calendar_today, size: 35.0)),
+          new Tab(icon: new Icon(Icons.assessment, size: 35.0))
         ], controller: _mainNavigationController),
-        color: new Color.fromRGBO(147, 0, 0, 1.0),
+            color: new Color(0xff34435a),
       )),
       body: new TabBarView(
         children: <Widget>[
@@ -169,12 +167,11 @@ class StandingsWidgetViewState extends State<StandingsWidgetView>
         child: new Scaffold(
           appBar: new AppBar(
               title: new TabBar(tabs: <Tab>[
-                new Tab(child: new Text("EAST", style: new TextStyle(fontFamily: 'Signika', fontSize: 22.0))),
-                new Tab(child: new Text("WEST", style: new TextStyle(fontFamily: 'Signika', fontSize: 22.0)))
+                new Tab(child: new Text("EAST", style: new TextStyle(fontFamily: 'Signika', fontSize: 17.0))),
+                new Tab(child: new Text("WEST", style: new TextStyle(fontFamily: 'Signika', fontSize: 17.0)))
               ]),
-              flexibleSpace: new Container(color: Colors.white, height: 0.15),
               elevation: 0.0,
-              backgroundColor: new Color.fromRGBO(12, 106, 201, 1.0)),
+              backgroundColor:new Color(0xff34435a)),
           body: new TabBarView(children: widget.standings),
         ));
   }
@@ -244,18 +241,21 @@ class CalendarTabState extends State<CalendarTab> {
             ),
           ),
           elevation: 0.0,
-          backgroundColor: new Color.fromRGBO(12, 106, 201, 1.0),
+          backgroundColor: new Color(0xff34435a),
         ),
         body: new Container(
           child: new RefreshIndicator(
               child: (_games.isNotEmpty)
-                  ? new ListView(
+                  ? new Container(
+                child: new ListView(
                       children:
-                          _games.map((game) => new GameCard(game)).toList())
+                          _games.map((game) => new GameCard(game)).toList()),
+              margin: new EdgeInsets.only(top: 5.0),
+              )
                   : new Center(
                       child: new Text("No games scheduled",
                           style: new TextStyle(
-                              fontFamily: "Default", fontSize: 20.0))),
+                              fontFamily: "Default", fontSize: 20.0, color: Colors.black))),
               onRefresh: () async {
                 List<Game> newContent = await loadGames(_startGameDate);
                 this.setState(() {
