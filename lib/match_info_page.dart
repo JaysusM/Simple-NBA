@@ -189,8 +189,10 @@ class MatchPageState extends State<MatchPage> {
                               border: new Border(
                                   bottom: new BorderSide(
                                       width: 2.0,
-                                      color: new Color.fromARGB(0xff, 0xdf, 0xf8, 0xeb))),
-                              color: new Color.fromARGB(0xff, 0x36, 0x41, 0x56))),
+                                      color: new Color.fromARGB(
+                                          0xff, 0xdf, 0xf8, 0xeb))),
+                              color:
+                                  new Color.fromARGB(0xff, 0x36, 0x41, 0x56))),
                       left: 0.0,
                       top: 0.0),
                   new Positioned(
@@ -259,8 +261,9 @@ class MatchPageState extends State<MatchPage> {
   List<Widget> getStatRow(List<PlayerStats> players, TextStyle style) {
     return [
       new Column(
-          children: players.map((player) => _getPlayerProfile(player, style)).toList()
-      ),
+          children: players
+              .map((player) => _getPlayerProfile(player, style))
+              .toList()),
       new Column(
           children: players
               .map((player) => _getPlayerStatRow(2, player.pos, style))
@@ -387,11 +390,8 @@ class MatchPageState extends State<MatchPage> {
   }
 
   Widget _getPlayerProfile(PlayerStats player, TextStyle style) {
-
-    TextStyle statsStyle = new TextStyle(
-        fontFamily: 'SignikaB',
-        fontSize: 18.0
-    );
+    TextStyle statsStyle =
+        new TextStyle(fontFamily: 'SignikaB', fontSize: 18.0);
 
     return new GestureDetector(
       child: new Container(
@@ -460,14 +460,18 @@ class MatchPageState extends State<MatchPage> {
                       left: 145.0,
                       top: 5.0,
                     ),
-                    new Positioned(child: new Text("(${player.min})",
-                    style: statsStyle),
-                    left: 200.0,
-                    top: 5.0,),
-                    new Positioned(child: new Text("PTS: ${player.points}\tAST: ${player.assists}",
-                    style: statsStyle,),
-                    top: 93.0,
-                    left: 140.0,
+                    new Positioned(
+                      child: new Text("(${player.min})", style: statsStyle),
+                      left: 200.0,
+                      top: 5.0,
+                    ),
+                    new Positioned(
+                      child: new Text(
+                        "PTS: ${player.points}\tAST: ${player.assists}",
+                        style: statsStyle,
+                      ),
+                      top: 93.0,
+                      left: 140.0,
                     ),
                     new Positioned(
                         child: statsCircle(
@@ -481,21 +485,24 @@ class MatchPageState extends State<MatchPage> {
                         top: 35.0),
                     new Positioned(
                         child: statsCircle(
-                            true, "3P", player.tpp, player.tpm, player.tpa),
+                            true, "3P", player.tpp, player.tpa, player.tpm),
                         left: 250.0,
                         top: 35.0),
                     new Positioned(
                         child: statsCircle(
-                            true, "FT", player.ftp, player.ftm, player.fta),
+                            true, "FT", player.ftp, player.fta, player.ftm),
                         left: 305.0,
                         top: 35.0),
-                    new Positioned(child: new Text(""
-                        "BLK: ${player.blocks}\t"
-                        "STL: ${player.steals}\t"
-                        "TO: ${player.turnovers}\t",
-                        style: statsStyle),
-                    top: 115.0,
-                    left: 140.0,)
+                    new Positioned(
+                      child: new Text(
+                          ""
+                          "BLK: ${player.blocks}\t"
+                          "STL: ${player.steals}\t"
+                          "TO: ${player.turnovers}\t",
+                          style: statsStyle),
+                      top: 115.0,
+                      left: 140.0,
+                    )
                   ],
                 ),
                 height: 150.0,
@@ -516,46 +523,45 @@ Widget reboundsWidget(String rebounds, String offReb, String defReb) {
 
   return new CircleAvatar(
       child: new CircleAvatar(
-          child: new Stack(
-              children: <Widget>[
-          new Positioned(
-          child: new Text("REB",
-              style:
-              new TextStyle(fontFamily: 'SignikaR', fontSize: 10.0)),
-          top: 3.0,
-          left: 15.0),
-      new Positioned(
-          child: new Text(rebounds,
-              style:
-              new TextStyle(fontFamily: 'SignikaR', fontSize: 14.0)),
-          top: 14.0,
-          left: 15.8),
-      new Positioned(
-          child: new Text("Off",
-              style:
-              new TextStyle(fontFamily: 'SignikaR', fontSize: 6.0)),
-          top: 19.0,
-          left: 3.8),
-      new Positioned(
-          child: new Text("Def",
-              style:
-              new TextStyle(fontFamily: 'SignikaR', fontSize: 6.0)),
-          top: 19.0,
-          right: 3.8),
-          new Positioned(
-      child: new Text("$offReb  |  $defReb",
-          style:
-          new TextStyle(fontFamily: 'SignikaR', fontSize: 10.0)),
-      top: 30.0,
-      left: 7.5)
-
-  ],
-  ),
-  radius: 24.0,
-  backgroundColor: new Color.fromRGBO(12, 72, 209, 1.0),
-  ),
-  radius: 25.4,
-  backgroundColor: new Color.fromRGBO(255, 215, 2, 1.0));
+        child: new Stack(
+          children: <Widget>[
+            new Positioned(
+                child: new Text("REB",
+                    style:
+                        new TextStyle(fontFamily: 'SignikaR', fontSize: 10.0)),
+                top: 3.0,
+                left: 15.0),
+            new Positioned(
+                child: new Text(rebounds,
+                    style:
+                        new TextStyle(fontFamily: 'SignikaR', fontSize: 14.0)),
+                top: 14.0,
+                left: 15.8),
+            new Positioned(
+                child: new Text("Off",
+                    style:
+                        new TextStyle(fontFamily: 'SignikaR', fontSize: 6.0)),
+                top: 19.0,
+                left: 3.8),
+            new Positioned(
+                child: new Text("Def",
+                    style:
+                        new TextStyle(fontFamily: 'SignikaR', fontSize: 6.0)),
+                top: 19.0,
+                right: 3.8),
+            new Positioned(
+                child: new Text("$offReb  |  $defReb",
+                    style:
+                        new TextStyle(fontFamily: 'SignikaR', fontSize: 10.0)),
+                top: 30.0,
+                left: 7.5)
+          ],
+        ),
+        radius: 24.0,
+        backgroundColor: new Color.fromRGBO(12, 72, 209, 1.0),
+      ),
+      radius: 25.4,
+      backgroundColor: new Color.fromRGBO(255, 215, 2, 1.0));
 }
 
 Widget statsCircle(bool isPercentage, String statName, String value,
@@ -566,7 +572,7 @@ Widget statsCircle(bool isPercentage, String statName, String value,
   }
 
   if (value == "0.0") value = "0.00";
-  if(value.length < 2) value = " $value";
+  if (value.length < 2) value = " $value";
   return new CircleAvatar(
       child: new CircleAvatar(
           child: new Stack(
@@ -580,7 +586,8 @@ Widget statsCircle(bool isPercentage, String statName, String value,
               new Positioned(
                   child: new Text((isPercentage) ? "%$value" : value,
                       style: new TextStyle(
-                          fontFamily: 'SignikaR', fontSize: (isPercentage) ? 14.0 : 20.0)),
+                          fontFamily: 'SignikaR',
+                          fontSize: (isPercentage) ? 14.0 : 20.0)),
                   top: 14.0,
                   left: (isPercentage) ? 4.5 : 12.0),
               new Positioned(

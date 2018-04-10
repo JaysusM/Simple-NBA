@@ -83,7 +83,7 @@ class Team
         _position = position,
         _tricode = tricode,
         _conference = conference,
-        _clinched = clinched,
+        _clinched = (clinched != null) ? clinched : "",
         _fullName = name,
         _gb = gb;
 

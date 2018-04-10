@@ -37,6 +37,8 @@ class MainFrameState extends State<MainFrame>
     with SingleTickerProviderStateMixin {
   TabController _mainNavigationController;
 
+  bool showClinchedInformation = false;
+
   @override
   void initState() {
     _mainNavigationController = new TabController(vsync: this, length: 2);
@@ -63,6 +65,10 @@ class MainFrameState extends State<MainFrame>
           else {
             widget._calendarData = response.data[0];
             widget._standingsWidgets = getWidgetFromStandings(response.data[1]);
+            showClinchedInformation = response.data[1][0]
+                .any((team) => team.clinchedChar != "")
+                && response.data[1][1]
+                    .any((team) => team.clinchedChar != "");
             return setInfo();
           }
         });
@@ -82,7 +88,7 @@ class MainFrameState extends State<MainFrame>
                 style:
                     new TextStyle(fontFamily: "Default", color: Colors.white))),
         actions: <Widget>[
-          (_mainNavigationController.index == 1)
+          (showClinchedInformation && _mainNavigationController.index == 1)
               ? new IconButton(
                   icon: new Icon(Icons.info_outline),
                   onPressed: () {
@@ -303,10 +309,13 @@ class CalendarTabState extends State<CalendarTab> {
           _gameDate.add(formatDate(_selectedDate), newGames);
       });
     } catch (exception) {
+
       Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(
         "No matches found",
         style: new TextStyle(fontFamily: 'Default', fontSize: 18.0),
-      )));
+      ),
+        backgroundColor: new Color.fromRGBO(0,0,0,0.4),
+      ));
       _changeDate(-offset, context);
     }
     return new Future<Null>.value();
