@@ -52,8 +52,9 @@ Future<List<String>> getPlayerNameFromId(String playerId, Database db) async {
 Future<List<String>> playerNotFoundInsertIntoDBandReturn(String playerId, Database db) async
 {
   try {
-    String players = await http.read(
-        "http://data.nba.net/prod/v1/2017/players.json");
+    String url = JSON.decode(await http.read("http://data.nba.net/10s/prod/v1/today.json"))["links"]["leagueRosterPlayers"];
+
+    String players = await http.read(url);
     var decoder = JSON.decode(players)["league"]["standard"];
     int i = 0;
 
@@ -79,7 +80,6 @@ Future<List<String>> playerNotFoundInsertIntoDBandReturn(String playerId, Databa
 
     return [decoder[i]["firstName"], decoder[i]["lastName"]];
   } catch (exception) {
-    print(exception.toString());
     return ["-", "-"];
   }
 }
@@ -183,7 +183,7 @@ class Player
 }
 
 class PlayerStats extends Player {
-  PlayerStats(List<String> fullName, this._image, String id, String teamId, this._isOnCourt, this._points, this._pos, this._min, this._fgm,
+  PlayerStats(List<String> fullName, String id, String teamId, this._isOnCourt, this._points, this._pos, this._min, this._fgm,
       this._fga, this._fgp, this._fta, this._ftm, this._ftp, this._tpm, this._tpa,
       this._tpp, this._offReb, this._defReb, this._rebounds, this._assists,
       this._pFouls, this._steals, this._turnovers, this._blocks,
@@ -193,7 +193,6 @@ class PlayerStats extends Player {
   String _pos, _min, _fgm, _fga, _fgp, _fta, _ftm, _ftp,
   _tpm, _tpa, _tpp, _offReb, _defReb,
   _pFouls, _steals, _turnovers, _blocks, _plusMinus, _points, _assists, _rebounds;
-  Widget _image;
 
   bool get isOnCourt => _isOnCourt;
   get pos => _pos;
@@ -214,12 +213,7 @@ class PlayerStats extends Player {
   get turnovers => _turnovers;
   get blocks => _blocks;
   get plusMinus => _plusMinus;
-  get image => _image;
   get points => _points;
   get assists => _assists;
   get rebounds => _rebounds;
-
-  set image(Widget value) {
-    this._image = value;
-  }
 }

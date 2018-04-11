@@ -82,6 +82,7 @@ flutter:
     - assets/teams.txt
     - assets/logo.png
     - assets/twitterIcon.png
+    - assets/noPlayer.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -250,7 +250,6 @@ class CalendarTabState extends State<CalendarTab> {
                 child: new ListView(
                       children:
                           _games.map((game) => new GameCard(game)).toList()),
-              margin: new EdgeInsets.only(top: 5.0),
               )
                   : new Center(
                       child: new Text("No games scheduled",

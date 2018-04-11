@@ -400,7 +400,9 @@ class MatchPageState extends State<MatchPage> {
             new Positioned(
               child: new Container(
                   child: new CircleAvatar(
-                    child: player.image,
+                    child: new FadeInImage(
+                        placeholder: new AssetImage("assets/noPlayer.png"),
+                        image: new NetworkImage(Player.getImage(player.id))),
                     radius: 20.0,
                     backgroundColor: new Color.fromRGBO(255, 255, 255, 0.5),
                   ),
@@ -449,7 +451,13 @@ class MatchPageState extends State<MatchPage> {
                     ),
                     new Positioned(
                       child: new Container(
-                          child: player.image, width: 120.0, height: 120.0),
+                          child: new FadeInImage(
+                              placeholder:
+                                  new AssetImage("assets/noPlayer.png"),
+                              image:
+                                  new NetworkImage(Player.getImage(player.id))),
+                          width: 120.0,
+                          height: 120.0),
                       left: 10.0,
                       top: 50.0,
                     ),
@@ -644,18 +652,8 @@ Future setNamesInPlayersList(List<Player> players, Database db) async {
 }
 
 PlayerStats getPlayerStatFromMap(Map data, Database db) {
-  Widget image;
-
-  //TODO make it work
-  try {
-    image = new Image.network(Player.getImage(data["personId"]));
-  } catch (exception) {
-    image = new Image.asset("noteam.png");
-  }
-
   return new PlayerStats(
       null,
-      image,
       data["personId"],
       data["teamId"],
       data["isOnCourt"],
