@@ -75,12 +75,48 @@ class MainFrameState extends State<MainFrame>
                 response.data[1][0].any((team) => team.clinchedChar != "") &&
                     response.data[1][1].any((team) => team.clinchedChar != "");
 
-            showPlayoffsBrackets =
-                widget._playoffsBrackets.any((bracket) => bracket.isScheduleAvailable);
+            showPlayoffsBrackets = widget._playoffsBrackets
+                .any((bracket) => bracket.isScheduleAvailable);
 
             return setInfo();
           }
         });
+  }
+
+  Widget _throwError(AsyncSnapshot response) {
+    return new Scaffold(
+        appBar: new AppBar(
+            title: new Text(
+              "Simple NBA",
+              style: new TextStyle(fontFamily: 'Default', fontSize: 22.0),
+            ),
+            backgroundColor: new Color.fromARGB(0xff, 0x18, 0x2b, 0x4a)),
+        body: new Container(
+            child: new Stack(children: <Widget>[
+          new Container(
+            child: new Center(
+                child: new Text(
+              "Error loading app, check "
+                  "your internet connection and press button to recharge it",
+              style: new TextStyle(fontFamily: 'Signika', fontSize: 18.0),
+            )),
+            padding: new EdgeInsets.all(15.0),
+          ),
+          new Container(
+            child: new Center(
+                child: new FloatingActionButton(
+              onPressed: () {
+                this.setState(() {});
+              },
+              child: new Icon(
+                Icons.refresh,
+                color: Colors.white,
+              ),
+              backgroundColor: new Color(0xff34435a),
+            )),
+            padding: new EdgeInsets.only(top: 150.0),
+          )
+        ])));
   }
 
   Widget setInfo() {
@@ -129,8 +165,8 @@ class MainFrameState extends State<MainFrame>
         children: <Widget>[
           new CalendarTab(widget._calendarData, this),
           new Container(
-            child: new StandingsWidgetView(
-                widget._standingsWidgets, showPlayoffsBrackets, widget._playoffsBrackets),
+            child: new StandingsWidgetView(widget._standingsWidgets,
+                showPlayoffsBrackets, widget._playoffsBrackets),
             color: Colors.grey,
           )
         ],
@@ -138,23 +174,6 @@ class MainFrameState extends State<MainFrame>
       ),
     );
   }
-}
-
-Widget _throwError(AsyncSnapshot response) {
-  return new Scaffold(
-      appBar: new AppBar(title: new Text("Error launching app, restart it")),
-      body: new Directionality(
-          textDirection: TextDirection.ltr,
-          child: new Container(
-              child: new Center(
-                  child: new Text(
-                      "Error loading data (check your connection): \n ${response
-                          .error
-                          .toString()}",
-                      style: new TextStyle(height: 15.0))),
-              color: Colors.grey,
-              padding:
-                  new EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0))));
 }
 
 class StandingsWidgetView extends StatefulWidget {
@@ -173,32 +192,30 @@ class StandingsWidgetViewState extends State<StandingsWidgetView>
 
   Widget build(BuildContext context) {
     TextStyle style = new TextStyle(fontFamily: 'Signika', fontSize: 17.0);
-    
+
     List<Tab> tabs = <Tab>[
-      new Tab(
-          child: new Text("EAST",
-              style: style)),
-      new Tab(
-          child: new Text("WEST",
-              style: style))
+      new Tab(child: new Text("EAST", style: style)),
+      new Tab(child: new Text("WEST", style: style))
     ];
 
     return new DefaultTabController(
         length: (!widget.showPlayoffs) ? 2 : 3,
         child: new Scaffold(
-          appBar: new AppBar(
-              title: new TabBar(
-                  tabs: (!widget.showPlayoffs) ? tabs : tabs
-                    ..add(new Tab(
-                        child: new Text("PLAYOFFS",
-                            style: style)))),
-              elevation: 0.0,
-              backgroundColor: new Color(0xff34435a)),
-          body: new Container(child: new TabBarView(children:
-    (!widget.showPlayoffs) ? widget.standings : widget.standings..add(new BidirectionalPlayoffsView(widget.PObrackets))),
-          color: new Color(0xfff1f1f1),
-          )
-        ));
+            appBar: new AppBar(
+                title: new TabBar(
+                    tabs: (!widget.showPlayoffs) ? tabs : tabs
+                      ..add(
+                          new Tab(child: new Text("PLAYOFFS", style: style)))),
+                elevation: 0.0,
+                backgroundColor: new Color(0xff34435a)),
+            body: new Container(
+              child: new TabBarView(
+                  children: (!widget.showPlayoffs)
+                      ? widget.standings
+                      : widget.standings
+                    ..add(new BidirectionalPlayoffsView(widget.PObrackets))),
+              color: new Color(0xfff1f1f1),
+            )));
   }
 }
 

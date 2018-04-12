@@ -1,4 +1,4 @@
-package com.example.simplenba;
+package com.jaysusm.simplenba;
 
 import android.os.Bundle;
 

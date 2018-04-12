@@ -637,12 +637,12 @@ Future loadMatchStats(Game game) async {
   List<PlayerStats> homePlayers = new List();
   List<PlayerStats> awayPlayers = new List();
 
-  List<String> scores = Game.formatScore(JSON.decode(content)['basicGameData']['vTeam']['score'],
-      JSON.decode(content)['basicGameData']['hTeam']['score']);
+  List<String> scores = Game.formatScore(JSON.decode(content)['basicGameData']['hTeam']['score'],
+      JSON.decode(content)['basicGameData']['vTeam']['score']);
 
   game.visitor
-      .setScore(scores[0]);
-  game.home.setScore(scores[1]);
+      .setScore(scores[1]);
+  game.home.setScore(scores[0]);
 
   decoder.forEach((player) {
     if (player["teamId"] == game.home.id)
@@ -655,12 +655,14 @@ Future loadMatchStats(Game game) async {
   await Future.wait([
     setNamesInPlayersList(homePlayers, db),
     setNamesInPlayersList(awayPlayers, db),
-    setSeasonStats(homePlayers),
-    setSeasonStats(awayPlayers)
   ]);
   db.close();
   playersStats.add(game.home.id, homePlayers);
   playersStats.add(game.visitor.id, awayPlayers);
+
+
+  setSeasonStats(homePlayers);
+  setSeasonStats(awayPlayers);
   return playersStats;
 }
 
