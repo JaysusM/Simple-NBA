@@ -8,6 +8,8 @@ import 'dictionary.dart';
 import 'loading_animation.dart';
 import 'package:flutter/services.dart';
 import 'match_card.dart';
+import 'bracket.dart';
+import 'playoffs_brackets_widget.dart';
 
 Future main() async {
   await startDB();
@@ -29,6 +31,7 @@ DateTime setHourETTime() {
 class MainFrame extends StatefulWidget {
   List<Widget> _standingsWidgets;
   List<Game> _calendarData;
+  List<Bracket> _playoffsBrackets;
 
   createState() => new MainFrameState();
 }
@@ -38,6 +41,7 @@ class MainFrameState extends State<MainFrame>
   TabController _mainNavigationController;
 
   bool showClinchedInformation = false;
+  bool showPlayoffsBrackets = false;
 
   @override
   void initState() {
@@ -65,10 +69,15 @@ class MainFrameState extends State<MainFrame>
           else {
             widget._calendarData = response.data[0];
             widget._standingsWidgets = getWidgetFromStandings(response.data[1]);
-            showClinchedInformation = response.data[1][0]
-                .any((team) => team.clinchedChar != "")
-                && response.data[1][1]
-                    .any((team) => team.clinchedChar != "");
+            widget._playoffsBrackets = response.data[2];
+
+            showClinchedInformation =
+                response.data[1][0].any((team) => team.clinchedChar != "") &&
+                    response.data[1][1].any((team) => team.clinchedChar != "");
+
+            showPlayoffsBrackets =
+                widget._playoffsBrackets.any((bracket) => bracket.isScheduleAvailable);
+
             return setInfo();
           }
         });
@@ -78,8 +87,8 @@ class MainFrameState extends State<MainFrame>
     return new Scaffold(
       appBar: new AppBar(
         flexibleSpace: new Container(
-            color: new Color.fromARGB(0xff, 0x18, 0x2b, 0x4a),
-                ),
+          color: new Color.fromARGB(0xff, 0x18, 0x2b, 0x4a),
+        ),
         title: new Title(
             color: Colors.white,
             child: new Text("Simple NBA",
@@ -93,11 +102,13 @@ class MainFrameState extends State<MainFrame>
                     showModalBottomSheet(
                         context: context,
                         builder: (BuildContext context) {
-                          return new Container(child: new Text(
-"""x - Clinched Playoff Berth\nnw - Clinched Northwest Division\nc - Clinched Central Division\no - Eliminated from Playoff contention\np - Clinched Pacific Division\nse - Clinched Southeast Division\ne - Clinched Eastern Conference\nsw - Clinched Southwest Division\nw - Clinched Western Conference\na - Clinched Atlantic Division""",
-                              style: new TextStyle(
-                                  fontSize: 14.0, fontFamily: 'Mono',
-                              color: Colors.black54)),
+                          return new Container(
+                            child: new Text(
+                                """x - Clinched Playoff Berth\nnw - Clinched Northwest Division\nc - Clinched Central Division\no - Eliminated from Playoff contention\np - Clinched Pacific Division\nse - Clinched Southeast Division\ne - Clinched Eastern Conference\nsw - Clinched Southwest Division\nw - Clinched Western Conference\na - Clinched Atlantic Division""",
+                                style: new TextStyle(
+                                    fontSize: 14.0,
+                                    fontFamily: 'Mono',
+                                    color: Colors.black54)),
                             color: Colors.white,
                             padding: new EdgeInsets.all(14.0),
                           );
@@ -112,24 +123,21 @@ class MainFrameState extends State<MainFrame>
           new Tab(child: new Icon(Icons.calendar_today, size: 35.0)),
           new Tab(icon: new Icon(Icons.assessment, size: 35.0))
         ], controller: _mainNavigationController),
-            color: new Color(0xff34435a),
+        color: new Color(0xff34435a),
       )),
       body: new TabBarView(
         children: <Widget>[
           new CalendarTab(widget._calendarData, this),
-          standingsTab(widget._standingsWidgets)
+          new Container(
+            child: new StandingsWidgetView(
+                widget._standingsWidgets, showPlayoffsBrackets, widget._playoffsBrackets),
+            color: Colors.grey,
+          )
         ],
         controller: _mainNavigationController,
       ),
     );
   }
-}
-
-Widget standingsTab(List<Widget> standings) {
-  return new Container(
-    child: new StandingsWidgetView(standings),
-    color: Colors.grey,
-  );
 }
 
 Widget _throwError(AsyncSnapshot response) {
@@ -151,8 +159,10 @@ Widget _throwError(AsyncSnapshot response) {
 
 class StandingsWidgetView extends StatefulWidget {
   final List<Widget> standings;
+  final bool showPlayoffs;
+  final List<Bracket> PObrackets;
 
-  StandingsWidgetView(this.standings);
+  StandingsWidgetView(this.standings, this.showPlayoffs, this.PObrackets);
 
   createState() => new StandingsWidgetViewState();
 }
@@ -162,17 +172,32 @@ class StandingsWidgetViewState extends State<StandingsWidgetView>
   StandingsWidgetViewState();
 
   Widget build(BuildContext context) {
+    TextStyle style = new TextStyle(fontFamily: 'Signika', fontSize: 17.0);
+    
+    List<Tab> tabs = <Tab>[
+      new Tab(
+          child: new Text("EAST",
+              style: style)),
+      new Tab(
+          child: new Text("WEST",
+              style: style))
+    ];
+
     return new DefaultTabController(
-        length: 2,
+        length: (!widget.showPlayoffs) ? 2 : 3,
         child: new Scaffold(
           appBar: new AppBar(
-              title: new TabBar(tabs: <Tab>[
-                new Tab(child: new Text("EAST", style: new TextStyle(fontFamily: 'Signika', fontSize: 17.0))),
-                new Tab(child: new Text("WEST", style: new TextStyle(fontFamily: 'Signika', fontSize: 17.0)))
-              ]),
+              title: new TabBar(
+                  tabs: (!widget.showPlayoffs) ? tabs : tabs
+                    ..add(new Tab(
+                        child: new Text("PLAYOFFS",
+                            style: style)))),
               elevation: 0.0,
-              backgroundColor:new Color(0xff34435a)),
-          body: new TabBarView(children: widget.standings),
+              backgroundColor: new Color(0xff34435a)),
+          body: new Container(child: new TabBarView(children:
+    (!widget.showPlayoffs) ? widget.standings : widget.standings..add(new BidirectionalPlayoffsView(widget.PObrackets))),
+          color: new Color(0xfff1f1f1),
+          )
         ));
   }
 }
@@ -247,14 +272,17 @@ class CalendarTabState extends State<CalendarTab> {
           child: new RefreshIndicator(
               child: (_games.isNotEmpty)
                   ? new Container(
-                child: new ListView(
-                      children:
-                          _games.map((game) => new GameCard(game)).toList()),
-              )
+                      child: new ListView(
+                          children: _games
+                              .map((game) => new GameCard(game))
+                              .toList()),
+                    )
                   : new Center(
                       child: new Text("No games scheduled",
                           style: new TextStyle(
-                              fontFamily: "Default", fontSize: 20.0, color: Colors.black))),
+                              fontFamily: "Default",
+                              fontSize: 20.0,
+                              color: Colors.black))),
               onRefresh: () async {
                 List<Game> newContent = await loadGames(_startGameDate);
                 this.setState(() {
@@ -308,13 +336,13 @@ class CalendarTabState extends State<CalendarTab> {
           _gameDate.add(formatDate(_selectedDate), newGames);
       });
     } catch (exception) {
-
-      Scaffold.of(context).showSnackBar(new SnackBar(content: new Text(
-        "No matches found",
-        style: new TextStyle(fontFamily: 'Default', fontSize: 18.0),
-      ),
-        backgroundColor: new Color.fromRGBO(0,0,0,0.4),
-      ));
+      Scaffold.of(context).showSnackBar(new SnackBar(
+            content: new Text(
+              "No matches found",
+              style: new TextStyle(fontFamily: 'Default', fontSize: 18.0),
+            ),
+            backgroundColor: new Color.fromRGBO(0, 0, 0, 0.4),
+          ));
       _changeDate(-offset, context);
     }
     return new Future<Null>.value();

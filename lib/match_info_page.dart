@@ -475,7 +475,7 @@ class MatchPageState extends State<MatchPage> {
                     ),
                     new Positioned(
                       child: new Text(
-                        "PTS: ${player.points}\tAST: ${player.assists}",
+                        "PTS: ${player.points}\tREB: ${player.rebounds}\tAST: ${player.assists}",
                         style: statsStyle,
                       ),
                       top: 93.0,
@@ -623,9 +623,12 @@ Future loadMatchStats(Game game) async {
   List<PlayerStats> homePlayers = new List();
   List<PlayerStats> awayPlayers = new List();
 
+  List<String> scores = Game.formatScore(JSON.decode(content)['basicGameData']['vTeam']['score'],
+      JSON.decode(content)['basicGameData']['hTeam']['score']);
+
   game.visitor
-      .setScore(JSON.decode(content)['basicGameData']['vTeam']['score']);
-  game.home.setScore(JSON.decode(content)['basicGameData']['hTeam']['score']);
+      .setScore(scores[0]);
+  game.home.setScore(scores[1]);
 
   decoder.forEach((player) async {
     if (player["teamId"] == game.home.id)

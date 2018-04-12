@@ -18,6 +18,7 @@ Future<List<Game>> setGames(Future<String> content) async {
     games.add(new Game(
         decodGame["gameId"],
         int.parse(decodGame["startDateEastern"]),
+        decodGame["seasonStageId"],
         decodGame["arena"]["city"],
         decodGame["arena"]["name"],
         decodGame["statusNum"],
@@ -47,10 +48,10 @@ class Game
   ScoreboardTeam visitor, home;
   bool _active;
   String _city, _arena, _hour, _period, _clock;
-  int _status, _date;
+  int _status, _date, _seasonStatus;
   String _id, _homeTwitter, _awayTwitter;
 
-  Game(this._id, this._date, this._city, this._arena,
+  Game(this._id, this._date, this._seasonStatus, this._city, this._arena,
       this._status, String period,
       String clock,
       String date,
@@ -68,7 +69,7 @@ class Game
     else
       _clock = clock;
 
-    List<String> _formatScores = format(home.score, visitor.score);
+    List<String> _formatScores = formatScore(home.score, visitor.score);
     home.setScore(_formatScores[0]);
     visitor.setScore(_formatScores[1]);
 
@@ -83,12 +84,12 @@ class Game
     }
 
     //Format score to 3 digits - 3 digits (_ _ _ - _ _ _)
-    List<String> format(String homeScore, String visitorScore)
+    static List<String> formatScore(String homeScore, String visitorScore)
     {
       if(homeScore.length < 3)
-        return format (homeScore+" ", visitorScore);
+        return formatScore (homeScore+" ", visitorScore);
       if(visitorScore.length < 3)
-        return format (homeScore, " "+visitorScore);
+        return formatScore (homeScore, " "+visitorScore);
 
       List<String> scores = new List<String>();
       scores.addAll([homeScore, visitorScore]);
@@ -106,6 +107,7 @@ class Game
   int get date => _date;
   String get homeTwitter => _homeTwitter;
   String get awayTwitter => _awayTwitter;
+  int get seasonStage => _seasonStatus;
 
   @override
   String toString() {

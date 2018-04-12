@@ -53,8 +53,7 @@ Future<List<String>> playerNotFoundInsertIntoDBandReturn(String playerId, Databa
 {
   try {
     String url = JSON.decode(await http.read("http://data.nba.net/10s/prod/v1/today.json"))["links"]["leagueRosterPlayers"];
-
-    String players = await http.read(url);
+    String players = await http.read("http://data.nba.net$url");
     var decoder = JSON.decode(players)["league"]["standard"];
     int i = 0;
 

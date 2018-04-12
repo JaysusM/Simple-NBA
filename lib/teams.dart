@@ -119,6 +119,6 @@ class Team
 
 Future<Map> getTeamFromId(String id, Database db) async {
   List<Map> team = await db.rawQuery(
-      "SELECT * FROM team WHERE team_id=$id");
+      "SELECT * FROM team WHERE team_id = $id");
   return team.first;
 }
