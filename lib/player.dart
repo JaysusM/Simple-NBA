@@ -191,7 +191,7 @@ class PlayerStats extends Player {
   bool _isOnCourt;
   String _pos, _min, _fgm, _fga, _fgp, _fta, _ftm, _ftp,
   _tpm, _tpa, _tpp, _offReb, _defReb,
-  _pFouls, _steals, _turnovers, _blocks, _plusMinus, _points, _assists, _rebounds;
+  _pFouls, _steals, _turnovers, _blocks, _plusMinus, _points, _assists, _rebounds, _ppm, _rpm, _apm;
 
   bool get isOnCourt => _isOnCourt;
   get pos => _pos;
@@ -215,4 +215,19 @@ class PlayerStats extends Player {
   get points => _points;
   get assists => _assists;
   get rebounds => _rebounds;
+  get ppm => _ppm;
+  get apm => _apm;
+  get rpm => _rpm;
+
+  set rpm(value) {
+    _rpm = value;
+  }
+
+  set apm(value) {
+    _apm = value;
+  }
+
+  set ppm(value) {
+    _ppm = value;
+  }
 }

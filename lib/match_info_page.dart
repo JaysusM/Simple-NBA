@@ -24,7 +24,8 @@ class MatchPage extends StatefulWidget {
         name: getTeamNameFromId(game.visitor.id, game.visitor.tricode),
         tricode: game.visitor.tricode);
 
-//TODO Use nicknames instead
+    //I could used nicknames from DB instead but Trail Blazers nickname is too large,
+    //so I would have to use that method too
     homeLastName = homeTeam.name.substring(homeTeam.name.lastIndexOf(" ") + 1);
     awayLastName = awayTeam.name.substring(awayTeam.name.lastIndexOf(" ") + 1);
 
@@ -393,6 +394,9 @@ class MatchPageState extends State<MatchPage> {
     TextStyle statsStyle =
         new TextStyle(fontFamily: 'SignikaB', fontSize: 18.0);
 
+    TextStyle seasonStatsStyle =
+    new TextStyle(fontFamily: 'SignikaB', fontSize: 16.0);
+
     return new GestureDetector(
       child: new Container(
         child: new Stack(
@@ -447,7 +451,7 @@ class MatchPageState extends State<MatchPage> {
                         color: Colors.white10,
                       ),
                       left: 0.0,
-                      top: 10.0,
+                      top: 20.0,
                     ),
                     new Positioned(
                       child: new Container(
@@ -456,10 +460,10 @@ class MatchPageState extends State<MatchPage> {
                                   new AssetImage("assets/noPlayer.png"),
                               image:
                                   new NetworkImage(Player.getImage(player.id))),
-                          width: 120.0,
-                          height: 120.0),
-                      left: 10.0,
-                      top: 50.0,
+                          width: 140.0,
+                          height: 140.0),
+                      left: 0.0,
+                      top: 60.0,
                     ),
                     new Positioned(
                       child: new Text("Match",
@@ -508,12 +512,22 @@ class MatchPageState extends State<MatchPage> {
                           "STL: ${player.steals}\t"
                           "TO: ${player.turnovers}\t",
                           style: statsStyle),
-                      top: 115.0,
+                      top: 110.0,
                       left: 140.0,
-                    )
+                    ),
+              new Positioned(
+              child: new Text(
+              "Season\n"
+              "PPG: ${player.ppm}  "
+              "RPG: ${player.rpm}  "
+              "APG: ${player.apm}  ",
+              style: seasonStatsStyle),
+              top: 133.0,
+              left: 140.0,
+              )
                   ],
                 ),
-                height: 150.0,
+                height: 180.0,
               );
             });
       },
@@ -630,7 +644,7 @@ Future loadMatchStats(Game game) async {
       .setScore(scores[0]);
   game.home.setScore(scores[1]);
 
-  decoder.forEach((player) async {
+  decoder.forEach((player) {
     if (player["teamId"] == game.home.id)
       homePlayers.add(getPlayerStatFromMap(player, db));
     else
@@ -640,7 +654,9 @@ Future loadMatchStats(Game game) async {
   Dictionary<String, List<PlayerStats>> playersStats = new Dictionary();
   await Future.wait([
     setNamesInPlayersList(homePlayers, db),
-    setNamesInPlayersList(awayPlayers, db)
+    setNamesInPlayersList(awayPlayers, db),
+    setSeasonStats(homePlayers),
+    setSeasonStats(awayPlayers)
   ]);
   db.close();
   playersStats.add(game.home.id, homePlayers);
@@ -654,7 +670,24 @@ Future setNamesInPlayersList(List<Player> players, Database db) async {
   });
 }
 
+Future setSeasonStats(List<PlayerStats> players) async {
+  
+  String base = JSON.decode(await http.read("http://data.nba.net/10s/prod/v1/today.json"))["links"]["playerProfile"];
+
+  for(PlayerStats p in players) {
+    String link = "http://data.nba.net${base.replaceAll("{{personId}}", p.id)}";
+    var decoder = JSON.decode(await http.read(link))["league"]["standard"]["stats"]["latest"];
+
+    p.ppm = decoder['ppg'];
+    p.rpm = decoder['rpg'];
+    p.apm = decoder['apg'];
+  }
+
+  return new Future<Null>.value();
+}
+
 PlayerStats getPlayerStatFromMap(Map data, Database db) {
+  
   return new PlayerStats(
       null,
       data["personId"],
