@@ -64,7 +64,7 @@ class MainFrameState extends State<MainFrame>
         future: loadData(setHourETTime()),
         builder: (BuildContext context, AsyncSnapshot response) {
           if (response.hasError)
-            return _throwError(response);
+            return throwError();
           else if (!response.hasData)
             return new loadingAnimation();
           else {
@@ -84,7 +84,7 @@ class MainFrameState extends State<MainFrame>
         });
   }
 
-  Widget _throwError(AsyncSnapshot response) {
+  Widget throwError() {
     return new Scaffold(
         appBar: new AppBar(
             title: new Text(
@@ -94,30 +94,30 @@ class MainFrameState extends State<MainFrame>
             backgroundColor: new Color.fromARGB(0xff, 0x18, 0x2b, 0x4a)),
         body: new Container(
             child: new Stack(children: <Widget>[
-          new Container(
-            child: new Center(
-                child: new Text(
-              "Error loading app, check "
-                  "your internet connection. Press the button to reload the app.",
-              style: new TextStyle(fontFamily: 'Signika', fontSize: 18.0),
-            )),
-            padding: new EdgeInsets.all(15.0),
-          ),
-          new Container(
-            child: new Center(
-                child: new FloatingActionButton(
-              onPressed: () {
-                this.setState(() {});
-              },
-              child: new Icon(
-                Icons.refresh,
-                color: Colors.white,
+              new Container(
+                child: new Center(
+                    child: new Text(
+                      "Error loading app, check "
+                          "your internet connection. Press the button to reload the app.",
+                      style: new TextStyle(fontFamily: 'Signika', fontSize: 18.0),
+                    )),
+                padding: new EdgeInsets.all(15.0),
               ),
-              backgroundColor: new Color(0xff34435a),
-            )),
-            padding: new EdgeInsets.only(top: 150.0),
-          )
-        ])));
+              new Container(
+                child: new Center(
+                    child: new FloatingActionButton(
+                      onPressed: () {
+                        this.setState(() {});
+                      },
+                      child: new Icon(
+                        Icons.refresh,
+                        color: Colors.white,
+                      ),
+                      backgroundColor: new Color(0xff34435a),
+                    )),
+                padding: new EdgeInsets.only(top: 150.0),
+              )
+            ])));
   }
 
   Widget setInfo() {
@@ -160,31 +160,7 @@ class MainFrameState extends State<MainFrame>
               onPressed: () {
                 Navigator.of(context).push(
                     new MaterialPageRoute(builder: (BuildContext context) {
-                  return new Scaffold(
-                      appBar: new AppBar(
-                          title: new Title(
-                    color: Colors.white,
-                    child: new Text("Players",
-                        style: new TextStyle(
-                            fontFamily: "Default", color: Colors.white)),
-                  ),
-                      backgroundColor: new Color.fromARGB(0xff, 0x18, 0x2b, 0x4a)
-                      ),
-                    body: new FutureBuilder(
-                        future: loadAllPlayers(),
-                        builder: (BuildContext context, AsyncSnapshot response) {
-                          if(response.hasError)
-                            return _throwError(response);
-                          else if(response.connectionState == ConnectionState.waiting)
-                            return new loadingAnimation();
-                          else {
-                            return new ListView(
-                              children: response.data.map((player) => new PlayerCard(player)).toList(),
-                            );
-                          }
-                        }
-                    ),
-                  );
+                  return new LeaguePlayersListWidget();
                 }));
               })
         ],

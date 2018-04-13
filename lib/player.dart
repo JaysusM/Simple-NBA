@@ -10,16 +10,16 @@ List<Player> setAllPlayers(String content) {
   List<Player> allPlayers = new List();
   List players = JSON.decode(content)["league"]["standard"];
   for(Map player in players) {
-    if(player['teams'].isNotEmpty) {
-      allPlayers.add(
+    allPlayers.add(
           new Player(
               player['personId'], player['teamId'],
               name: [player['firstName'], player['lastName']],
               generalPosition: player['pos'],
-              number: player['jersey']
+              number: player['jersey'],
+              draft: player['draft'],
+              birthDate: player['dateOfBirthUTC']
           )
       );
-    }
   }
   return allPlayers;
 }
@@ -148,15 +148,20 @@ Future<List<Player>> _loadTeamLeaders(String teamId, String url, Database db) as
 class Player
 {
   String _firstName, _lastName, _teamId, _id, _stat,
-  _generalPosition, _number;
+  _generalPosition, _number, _birthDate;
+  Map _draft;
 
-  Player(this._id, this._teamId,  {stat, name, generalPosition, number})
+  Player(this._id, this._teamId,  {stat, name, generalPosition, number, draft, birthDate})
   : this._stat = stat {
    fullName = name;
    _generalPosition = generalPosition;
    _number = number;
+   _draft = draft;
+   _birthDate = birthDate;
   }
 
+  get birthDate => _birthDate;
+  get draft => _draft;
   get id => _id;
   get stat => _stat;
   get teamId => _teamId;

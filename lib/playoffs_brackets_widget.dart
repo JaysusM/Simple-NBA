@@ -28,12 +28,14 @@ class PlayoffBracketWidget extends StatelessWidget {
                         ? new AssetImage("assets/"
                             "${bracket.confName.toUpperCase()}.png")
                         : new AssetImage("assets/finals.gif"),
-                    fit: BoxFit.contain,
+                    fit: BoxFit.cover,
                   ),
                   opacity: 0.05,
                 ),
-                padding: new EdgeInsets.symmetric(vertical: 10.0),
-              )),
+                width: 220.0,
+                padding: new EdgeInsets.symmetric(horizontal: 10.0),
+              )
+              ),
               new Positioned(
                 child: new Text(
                   (this.bracket.roundNum != "4")
