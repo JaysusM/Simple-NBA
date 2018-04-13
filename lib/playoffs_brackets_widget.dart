@@ -19,6 +19,21 @@ class PlayoffBracketWidget extends StatelessWidget {
         child: new Container(
           child: new Stack(
             children: <Widget>[
+              new Center(
+                  child: new Container(
+                child: new Opacity(
+                  child: new Image(
+                    image: (['EAST', 'WEST']
+                            .contains(bracket.confName.toUpperCase()))
+                        ? new AssetImage("assets/"
+                            "${bracket.confName.toUpperCase()}.png")
+                        : new AssetImage("assets/finals.gif"),
+                    fit: BoxFit.contain,
+                  ),
+                  opacity: 0.05,
+                ),
+                padding: new EdgeInsets.symmetric(vertical: 10.0),
+              )),
               new Positioned(
                 child: new Text(
                   (this.bracket.roundNum != "4")
@@ -76,7 +91,8 @@ class PlayoffBracketWidget extends StatelessWidget {
             ],
           ),
           decoration: new BoxDecoration(
-              border: new Border.all(width: 1.2, color: Colors.black12)),
+            border: new Border.all(width: 1.2, color: Colors.black12),
+          ),
         ),
         elevation: 1.0,
         color: color,

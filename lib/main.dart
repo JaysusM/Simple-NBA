@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'match_card.dart';
 import 'bracket.dart';
 import 'playoffs_brackets_widget.dart';
+import 'player_card.dart';
 
 Future main() async {
   await startDB();
@@ -97,7 +98,7 @@ class MainFrameState extends State<MainFrame>
             child: new Center(
                 child: new Text(
               "Error loading app, check "
-                  "your internet connection and press button to recharge it",
+                  "your internet connection. Press the button to reload the app.",
               style: new TextStyle(fontFamily: 'Signika', fontSize: 18.0),
             )),
             padding: new EdgeInsets.all(15.0),
@@ -150,7 +151,42 @@ class MainFrameState extends State<MainFrame>
                           );
                         });
                   })
-              : new Container()
+              : new Container(),
+          new IconButton(
+              icon: new Icon(
+                Icons.person,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                    new MaterialPageRoute(builder: (BuildContext context) {
+                  return new Scaffold(
+                      appBar: new AppBar(
+                          title: new Title(
+                    color: Colors.white,
+                    child: new Text("Players",
+                        style: new TextStyle(
+                            fontFamily: "Default", color: Colors.white)),
+                  ),
+                      backgroundColor: new Color.fromARGB(0xff, 0x18, 0x2b, 0x4a)
+                      ),
+                    body: new FutureBuilder(
+                        future: loadAllPlayers(),
+                        builder: (BuildContext context, AsyncSnapshot response) {
+                          if(response.hasError)
+                            return _throwError(response);
+                          else if(response.connectionState == ConnectionState.waiting)
+                            return new loadingAnimation();
+                          else {
+                            return new ListView(
+                              children: response.data.map((player) => new PlayerCard(player)).toList(),
+                            );
+                          }
+                        }
+                    ),
+                  );
+                }));
+              })
         ],
       ),
       bottomNavigationBar: new Material(

@@ -10,7 +10,7 @@ Future<List<List<Team>>> setStandingsFromDB(String response) async
 {
   Directory current = await getApplicationDocumentsDirectory();
   Database db = await openDatabase("${current.path}/db/snba.db");
-  Dictionary teamId = new Dictionary();
+  Dictionary teamMap = new Dictionary();
 
   List<List<Team>> standingList = new List<List<Team>>();
   var standings = JSON.decode(response)["league"]["standard"]["conference"];
@@ -21,7 +21,7 @@ Future<List<List<Team>>> setStandingsFromDB(String response) async
     List<Team> temporary = new List<Team>();
     for (int j in inRange(15)) {
       Map currentTeam = await getTeamFromId(conference[j]["teamId"], db);
-      teamId.add(conference[j]["teamId"], currentTeam["full_name"]);
+      teamMap.add(conference[j]["teamId"], currentTeam);
       temporary.add(new Team(conference[j]["teamId"], position: index.toString(), name: currentTeam["full_name"],
           tricode: currentTeam["tricode"], conference: currentTeam["conf_name"],
           clinched: conference[j]["clinchedPlayoffsCodeV2"],
@@ -33,7 +33,7 @@ Future<List<List<Team>>> setStandingsFromDB(String response) async
   }
 
   db.close();
-  Team.teamIdNames = teamId;
+  Team.teamMap = teamMap;
 
   return standingList;
 }
@@ -89,7 +89,7 @@ class Team
 
   String _position, _id, _fullName, _tricode, _conference, _win, _loss;
   String _clinched, _gb;
-  static Dictionary<String,String> teamIdNames;
+  static Dictionary<String,Map> teamMap;
 
   String get position => _position;
   String get id => _id;

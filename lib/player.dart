@@ -6,6 +6,24 @@ import "games.dart";
 import "package:flutter/material.dart" show Widget;
 import "package:path_provider/path_provider.dart";
 
+List<Player> setAllPlayers(String content) {
+  List<Player> allPlayers = new List();
+  List players = JSON.decode(content)["league"]["standard"];
+  for(Map player in players) {
+    if(player['teams'].isNotEmpty) {
+      allPlayers.add(
+          new Player(
+              player['personId'], player['teamId'],
+              name: [player['firstName'], player['lastName']],
+              generalPosition: player['pos'],
+              number: player['jersey']
+          )
+      );
+    }
+  }
+  return allPlayers;
+}
+
 Future<List<Player>> loadLeaders(String gameId, int gameDate) async {
   String url = "http://data.nba.net/prod/v1/$gameDate/${gameId}_boxscore.json";
   Database db = await openDatabase("${(await getApplicationDocumentsDirectory()).path}/db/snba.db");
@@ -62,20 +80,20 @@ Future<List<String>> playerNotFoundInsertIntoDBandReturn(String playerId, Databa
     }
 
     await db.rawInsert("""INSERT INTO players VALUES (${_checkNull(decoder[i]["nbaDebutYear"].toString())},
-        \"${decoder[i]["dateOfBirthUTC"]} 00:00:00\", \"${decoder[i]["heightInches"]}\",
-        \"${decoder[i]["firstName"]}\", \"${decoder[i]["heightFeet"]}\",
-        ${decoder[i]["personId"]}, \"${decoder[i]["lastName"]}\",
-        \"${_checkNull(decoder[i]["lastAffiliation"])}\", \"${decoder[i]["pos"]}\",
-        ${decoder[i]["weightKilograms"]}, ${decoder[i]["weightPounds"]},
-        ${decoder[i]["teamId"]}, 
+        \"${_checkNull(decoder[i]["dateOfBirthUTC"])}\", \"${_checkNull(decoder[i]["heightInches"])}\",
+        \"${_checkNull(decoder[i]["firstName"])}\", \"${_checkNull(decoder[i]["heightFeet"])}\",
+        ${_checkNull(decoder[i]["personId"])}, \"${_checkNull(decoder[i]["lastName"])}\",
+        \"${_checkNull(decoder[i]["lastAffiliation"])}\", \"${_checkNull(decoder[i]["pos"])}\",
+        ${_checkNull(decoder[i]["weightKilograms"])}, ${_checkNull(decoder[i]["weightPounds"])},
+        ${_checkNull(decoder[i]["teamId"])}, 
         ${_checkNull(decoder[i]["draft"]["roundNum"])},
         ${_checkNull(decoder[i]["draft"]["teamId"])},
         ${_checkNull(decoder[i]["draft"]["pickNum"])},
         ${_checkNull(decoder[i]["draft"]["seasonYear"])},
-        ${decoder[i]["jersey"]},
-        \"${decoder[i]["country"]}\", \"${_checkNull(decoder[i]["collegeName"])}\",
-        ${_checkNull(decoder[i]["yearsPro"])}, \"${decoder[i]["isActive"]}\",
-        ${decoder[i]["heightMeters"]})""");
+        ${_checkNull(decoder[i]["jersey"])},
+        \"${_checkNull(decoder[i]["country"])}\", \"${_checkNull(decoder[i]["collegeName"])}\",
+        ${_checkNull(decoder[i]["yearsPro"])}, \"${_checkNull(decoder[i]["isActive"])}\",
+        ${_checkNull(decoder[i]["heightMeters"])})""");
 
     return [decoder[i]["firstName"], decoder[i]["lastName"]];
   } catch (exception) {
@@ -129,18 +147,22 @@ Future<List<Player>> _loadTeamLeaders(String teamId, String url, Database db) as
 
 class Player
 {
-  String _firstName, _lastName, _teamId, _id;
-  String _stat;
+  String _firstName, _lastName, _teamId, _id, _stat,
+  _generalPosition, _number;
 
-  Player(this._id, this._teamId, {stat, name})
+  Player(this._id, this._teamId,  {stat, name, generalPosition, number})
   : this._stat = stat {
    fullName = name;
+   _generalPosition = generalPosition;
+   _number = number;
   }
 
   get id => _id;
   get stat => _stat;
   get teamId => _teamId;
   String get firstName => _firstName;
+  get number => _number;
+  get pos => _generalPosition;
 
   set fullName(List<String> name) {
     firstName = (name != null) ? name[0] : null;

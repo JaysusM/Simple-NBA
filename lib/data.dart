@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'games.dart';
 import 'dart:convert';
 import 'bracket.dart';
+import 'player.dart';
 
 String setCurrentStartTime(String time) {
   var startTime = DateTime.parse(time);
@@ -43,6 +44,12 @@ Future loadPlayoffsBrackets() async {
   Map linkDecoder = JSON.decode(await http.read("http://data.nba.net/10s/prod/v1/today.json"));
   String url = linkDecoder["links"]["playoffsBracket"];
   return setPlayoffsBrackets(await http.read("http://data.nba.net$url"));
+}
+
+Future loadAllPlayers() async {
+  Map linkDecoder = JSON.decode(await http.read("http://data.nba.net/10s/prod/v1/today.json"));
+  String url = linkDecoder["links"]["leagueRosterPlayers"];
+  return setAllPlayers(await http.read("http://data.nba.net$url"));
 }
 
 Future loadData(DateTime date) async {

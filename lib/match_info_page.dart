@@ -34,7 +34,7 @@ class MatchPage extends StatefulWidget {
   }
 
   String getTeamNameFromId(String id, String defaultValue) {
-    String name = Team.teamIdNames.getValue(id);
+    String name = Team.teamMap.getValue(id)["full_name"];
     return (name == null) ? defaultValue : name;
   }
 
@@ -42,10 +42,13 @@ class MatchPage extends StatefulWidget {
   State createState() => new MatchPageState();
 }
 
-class MatchPageState extends State<MatchPage> {
+class MatchPageState extends State<MatchPage>
+  with SingleTickerProviderStateMixin
+  {
   Dictionary stats;
   Timer timer;
   List<String> statLegend;
+  TabController controller;
 
   MatchPageState() {
     statLegend = [
@@ -76,6 +79,9 @@ class MatchPageState extends State<MatchPage> {
 
   @override
   void initState() {
+
+    controller = new TabController(length: 2, vsync: this);
+
     timer = new Timer.periodic(new Duration(seconds: 20), (timer) async {
       Dictionary newContent = await loadMatchStats(widget.game);
       this.setState(() {
@@ -86,9 +92,7 @@ class MatchPageState extends State<MatchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new DefaultTabController(
-        length: 2,
-        child: new Scaffold(
+    return new Scaffold(
             appBar: new AppBar(
                 leading: new Row(
                   children: <Widget>[
@@ -110,7 +114,8 @@ class MatchPageState extends State<MatchPage> {
                           style: new TextStyle(
                               fontFamily: 'Signika', fontSize: 16.0))
                     ],
-                  )),
+                  ),
+                  ),
                   new Tab(
                       child: new Column(
                     children: <Widget>[
@@ -122,7 +127,9 @@ class MatchPageState extends State<MatchPage> {
                               fontFamily: 'Signika', fontSize: 16.0))
                     ],
                   ))
-                ]),
+                ],
+                controller: controller,
+                ),
                 actions: <Widget>[
                   new IconButton(
                       icon: new Icon(Icons.refresh),
@@ -149,14 +156,16 @@ class MatchPageState extends State<MatchPage> {
                         return getWidgetFromStats(stats);
                       }
                     })
-                : getWidgetFromStats(stats)));
+                : getWidgetFromStats(stats));
   }
 
   Widget getWidgetFromStats(Dictionary stats) {
     return new TabBarView(children: <Widget>[
       teamStats(stats.getValue(widget.game.visitor.id)),
       teamStats(stats.getValue(widget.game.home.id))
-    ]);
+    ],
+    controller: controller,
+    );
   }
 
   Widget teamStats(List<PlayerStats> players) {
@@ -505,7 +514,7 @@ class MatchPageState extends State<MatchPage> {
                             true, "FT", player.ftp, player.fta, player.ftm),
                         left: 305.0,
                         top: 35.0),
-                    new Positioned(
+              new Positioned(
                       child: new Text(
                           ""
                           "BLK: ${player.blocks}\t"
@@ -517,10 +526,10 @@ class MatchPageState extends State<MatchPage> {
                     ),
               new Positioned(
               child: new Text(
-              "Season\n"
+              (player.ppm != null) ? "Season\n"
               "PPG: ${player.ppm}  "
               "RPG: ${player.rpm}  "
-              "APG: ${player.apm}  ",
+              "APG: ${player.apm}  " : "Season stats\nnot loaded yet",
               style: seasonStatsStyle),
               top: 133.0,
               left: 140.0,
@@ -528,6 +537,14 @@ class MatchPageState extends State<MatchPage> {
                   ],
                 ),
                 height: 180.0,
+                decoration: new BoxDecoration(
+                  image: new DecorationImage(image: new AssetImage("assets/${
+              (controller.index == 1) ? widget.game.home.tricode.toUpperCase()
+              : widget.game.visitor.tricode.toUpperCase()
+                  }.png"), fit: BoxFit.fitHeight,
+                  colorFilter: new ColorFilter.mode(Colors.white.withOpacity(0.1),
+                  BlendMode.dstATop))
+                ),
               );
             });
       },
