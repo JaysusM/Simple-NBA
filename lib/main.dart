@@ -11,6 +11,7 @@ import 'match_card.dart';
 import 'bracket.dart';
 import 'playoffs_brackets_widget.dart';
 import 'player_card.dart';
+import 'dart:math';
 
 Future main() async {
   await startDB();
@@ -183,6 +184,7 @@ class MainFrameState extends State<MainFrame>
           )
         ],
         controller: _mainNavigationController,
+        physics: new NeverScrollableScrollPhysics(),
       ),
     );
   }
@@ -245,6 +247,7 @@ class CalendarTabState extends State<CalendarTab> {
   List<Game> _games;
   Timer _timer;
   DateTime _selectedDate, _startGameDate;
+  bool dragLeft;
 
   //I didn't like Dart's HashMap structure so I created a new simpler one.
   //This will store all List of Games from visited dates since App was launched, will show
@@ -275,9 +278,9 @@ class CalendarTabState extends State<CalendarTab> {
                     top: 5.0),
                 new Center(
                     child: (formatDate(_selectedDate) !=
-                            formatDate(_startGameDate))
+                        formatDate(_startGameDate))
                         ? new Text(
-                            "${_selectedDate.year} - ${numberFormatTwoDigit(
+                        "${_selectedDate.year} - ${numberFormatTwoDigit(
                             _selectedDate
                                 .month.toString())} - ${numberFormatTwoDigit(
                             _selectedDate.day.toString())}")
@@ -297,21 +300,21 @@ class CalendarTabState extends State<CalendarTab> {
           elevation: 0.0,
           backgroundColor: new Color(0xff34435a),
         ),
-        body: new Container(
+        body: new GestureDetector(child: new Container(
           child: new RefreshIndicator(
               child: (_games.isNotEmpty)
                   ? new Container(
-                      child: new ListView(
-                          children: _games
-                              .map((game) => new GameCard(game))
-                              .toList()),
-                    )
+                child: new ListView(
+                    children: _games
+                        .map((game) => new GameCard(game))
+                        .toList()),
+              )
                   : new Center(
-                      child: new Text("No games scheduled",
-                          style: new TextStyle(
-                              fontFamily: "Default",
-                              fontSize: 20.0,
-                              color: Colors.black))),
+                  child: new Text("No games scheduled",
+                      style: new TextStyle(
+                          fontFamily: "Default",
+                          fontSize: 20.0,
+                          color: Colors.black))),
               onRefresh: () async {
                 List<Game> newContent = await loadGames(_startGameDate);
                 this.setState(() {
@@ -321,6 +324,14 @@ class CalendarTabState extends State<CalendarTab> {
                 });
               }),
           color: Colors.white,
+        ),
+            behavior: HitTestBehavior.opaque,
+            onHorizontalDragEnd: (DragEndDetails d) {
+              if (d.primaryVelocity > 0)
+                _changeDate(-1, context);
+              else
+                _changeDate(1, context);
+            }
         ));
   }
 
@@ -365,14 +376,13 @@ class CalendarTabState extends State<CalendarTab> {
           _gameDate.add(formatDate(_selectedDate), newGames);
       });
     } catch (exception) {
-      Scaffold.of(context).showSnackBar(new SnackBar(
-            content: new Text(
-              "No matches found",
-              style: new TextStyle(fontFamily: 'Default', fontSize: 18.0),
-            ),
-            backgroundColor: new Color.fromRGBO(0, 0, 0, 0.4),
-          ));
-      _changeDate(-offset, context);
+      //We get an exception when we receive a 404 error, then no matches
+      //are (yet) scheduled that date
+      this.setState(() {
+        _games = [];
+        if (!_gameDate.containsKey(formatDate(_selectedDate)))
+          _gameDate.add(formatDate(_selectedDate), newGames);
+      });
     }
     return new Future<Null>.value();
   }

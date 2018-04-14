@@ -162,14 +162,14 @@ class TapCard extends State<GameCard> {
                 child: new Text(
                   (widget._game.active || widget._game.status == 3)
                       ? "Game Leaders"
-                      : "Season Leaders",
+                      : "Stage Leaders",
                   style: new TextStyle(
                       fontFamily: "Default",
                       fontWeight: FontWeight.bold,
                       fontSize: 18.0),
                 ),
                 top: 105.0,
-                left: MediaQuery.of(context).size.width / 3.18 + 5.0),
+                left: MediaQuery.of(context).size.width / 3.18 + 9.0),
             new Positioned(
                 child: (widget._game.active ||
                         (!widget._game.active && widget._game.clock == "FINAL"))

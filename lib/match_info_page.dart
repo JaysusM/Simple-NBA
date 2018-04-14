@@ -24,17 +24,12 @@ class MatchPage extends StatefulWidget {
         name: getTeamNameFromId(game.visitor.id, game.visitor.tricode),
         tricode: game.visitor.tricode);
 
-    //I could used nicknames from DB instead but Trail Blazers nickname is too large,
-    //so I would have to use that method too
-    homeLastName = homeTeam.name.substring(homeTeam.name.lastIndexOf(" ") + 1);
-    awayLastName = awayTeam.name.substring(awayTeam.name.lastIndexOf(" ") + 1);
-
-    if (homeLastName.toUpperCase() == 'TIMBERWOLVES') homeLastName = 'WOLVES';
-    if (awayLastName.toUpperCase() == 'TIMBERWOLVES') awayLastName = 'WOLVES';
+    homeLastName = getTeamNameFromId(homeTeam.id, "NoName");
+    awayLastName = getTeamNameFromId(awayTeam.id, "NoName");
   }
 
   String getTeamNameFromId(String id, String defaultValue) {
-    String name = Team.teamMap.getValue(id)["full_name"];
+    String name = Team.teamMap.getValue(id)["nickname"];
     return (name == null) ? defaultValue : name;
   }
 
@@ -130,16 +125,6 @@ class MatchPageState extends State<MatchPage>
                 ],
                 controller: controller,
                 ),
-                actions: <Widget>[
-                  new IconButton(
-                      icon: new Icon(Icons.refresh),
-                      onPressed: () async {
-                        var newContent = await loadMatchStats(widget.game);
-                        this.setState(() {
-                          stats = newContent;
-                        });
-                      })
-                ],
                 flexibleSpace: new Container(
                     color: new Color.fromARGB(0xff, 0x18, 0x2b, 0x4a))),
             body: (stats == null)
@@ -678,8 +663,8 @@ Future loadMatchStats(Game game) async {
   playersStats.add(game.visitor.id, awayPlayers);
 
 
-  setSeasonStats(homePlayers);
-  setSeasonStats(awayPlayers);
+  setSeasonStatsPlayers(homePlayers);
+  setSeasonStatsPlayers(awayPlayers);
   return playersStats;
 }
 
@@ -687,22 +672,6 @@ Future setNamesInPlayersList(List<Player> players, Database db) async {
   await Future.forEach(players, (player) async {
     player.fullName = await getPlayerNameFromId(player.id, db);
   });
-}
-
-Future setSeasonStats(List<PlayerStats> players) async {
-  
-  String base = JSON.decode(await http.read("http://data.nba.net/10s/prod/v1/today.json"))["links"]["playerProfile"];
-
-  for(PlayerStats p in players) {
-    String link = "http://data.nba.net${base.replaceAll("{{personId}}", p.id)}";
-    var decoder = JSON.decode(await http.read(link))["league"]["standard"]["stats"]["latest"];
-
-    p.ppm = decoder['ppg'];
-    p.rpm = decoder['rpg'];
-    p.apm = decoder['apg'];
-  }
-
-  return new Future<Null>.value();
 }
 
 PlayerStats getPlayerStatFromMap(Map data, Database db) {

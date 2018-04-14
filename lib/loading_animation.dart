@@ -16,8 +16,6 @@ class loadingAnimationState extends State with SingleTickerProviderStateMixin {
     super.initState();
     controller = new AnimationController(duration: new Duration(milliseconds: 1500), vsync: this);
 
-    angleAnimation = new CurvedAnimation(parent: controller, curve: Curves.elasticInOut);
-
     angleAnimation = new Tween(begin: 0.0, end: 360.0).animate(controller)
       ..addListener(() {
         this.setState(() {});
