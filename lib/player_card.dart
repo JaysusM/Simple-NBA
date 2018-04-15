@@ -3,8 +3,6 @@ import 'player.dart';
 import 'teams.dart';
 import 'data.dart';
 import 'loading_animation.dart';
-import 'package:flutter/animation.dart';
-import 'dart:math';
 
 class LeaguePlayersListWidget extends StatefulWidget {
   State createState() => new LeaguePlayersListWidgetState();
@@ -199,7 +197,7 @@ class PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateMi
           ),
           new Positioned(
             child: new Text(
-              "Pos: ${widget.player.pos}\t\t${widget.player.years} Years",
+              "Pos: ${widget.player.pos}\t     ${widget.player.years} Years",
               style: style,
             ),
             left: 150.0,

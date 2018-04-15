@@ -148,13 +148,15 @@ class TapCard extends State<GameCard> {
                     (20.0 * 4 + 10.0) / 2),
             new Positioned(
                 child: new Text(
-                    "${widget._game.visitor.win}-${widget._game.visitor.loss}",
+                    formatWinLoss(widget._game.visitor.win.toString(),
+                        widget._game.visitor.loss.toString()),
                     style: new TextStyle(fontSize: 17.0, color: Colors.black)),
                 top: 98.0,
                 left: 40.0),
             new Positioned(
                 child: new Text(
-                    "${widget._game.home.win}-${widget._game.home.loss}",
+                    formatWinLoss(widget._game.home.win.toString(),
+                        widget._game.home.loss.toString()),
                     style: new TextStyle(fontSize: 17.0, color: Colors.black)),
                 top: 98.0,
                 right: 40.0),
@@ -246,4 +248,14 @@ class TapCard extends State<GameCard> {
       );
     }
   }
+
+  String formatWinLoss(String win, String loss) {
+     if(win.length < 2)
+       return formatWinLoss(" $win", loss);
+     if(loss.length < 2)
+         return " $win - $loss";
+
+     return " $win - $loss";
+  }
+
 }

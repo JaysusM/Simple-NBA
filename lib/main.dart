@@ -11,7 +11,6 @@ import 'match_card.dart';
 import 'bracket.dart';
 import 'playoffs_brackets_widget.dart';
 import 'player_card.dart';
-import 'dart:math';
 
 Future main() async {
   await startDB();

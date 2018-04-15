@@ -152,7 +152,7 @@ Future setSeasonStatsPlayers(List<PlayerStats> players) async {
 Future setSeasonStats(Player player) async {
 
   String base = JSON.decode(await http.read("http://data.nba.net/10s/prod/v1/today.json"))["links"]["playerProfile"];
-  
+
   String link = "http://data.nba.net${base.replaceAll("{{personId}}", player.id)}";
   var decoder = JSON.decode(await http.read(link))["league"]["standard"]["stats"]["regularSeason"]["season"];
 
@@ -178,7 +178,7 @@ String getArithmeticMeanForStat(String statName, List decoder) {
     }
   }
 
-  return (stat/seasonStages).toString();
+  return (stat == 0.0 && seasonStages == 0) ? (0.0).toString() : (stat/seasonStages).toString();
 }
 
 Future<List<Player>> _loadTeamLeaders(

@@ -75,6 +75,7 @@ class MatchPageState extends State<MatchPage>
   @override
   void initState() {
 
+    super.initState();
     controller = new TabController(length: 2, vsync: this);
 
     timer = new Timer.periodic(new Duration(seconds: 20), (timer) async {
