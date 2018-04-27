@@ -154,16 +154,16 @@ class TapCard extends State<GameCard> {
                     (20.0 * 4 + 10.0) / 2),
             new Positioned(
                 child: new Text(
-                    "${widget._game.visitor.win.toString()} - ${widget._game.visitor.loss.toString()}",
-                    style: new TextStyle(fontSize: 17.0, color: Colors.black)),
-                top: 98.0,
-                left: 40.0),
+                    "W/L ${widget._game.visitor.win.toString()}-${widget._game.visitor.loss.toString()}",
+                    style: new TextStyle(fontFamily: 'Default', fontSize: 17.0, color: Colors.black)),
+                top: 107.0,
+                left: 15.0),
             new Positioned(
                 child: new Text(
-                    "${widget._game.home.win.toString()} - ${widget._game.home.loss.toString()}",
-                    style: new TextStyle(fontSize: 17.0, color: Colors.black)),
-                top: 98.0,
-                right: 40.0),
+                    "${widget._game.home.win.toString()}-${widget._game.home.loss.toString()} W/L",
+                    style: new TextStyle(fontFamily: 'Default', fontSize: 17.0, color: Colors.black)),
+                top: 107.0,
+                right: 15.0),
             new Positioned(
                 child: new Text(
                   (widget._game.active || widget._game.status == 3)

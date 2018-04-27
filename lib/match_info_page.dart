@@ -10,7 +10,8 @@ import 'dart:convert';
 import 'loading_animation.dart';
 import 'package:path_provider/path_provider.dart';
 
-class MatchPage extends StatefulWidget {
+class
+MatchPage extends StatefulWidget {
   Game game;
   Team homeTeam, awayTeam;
   String homeLastName, awayLastName;
@@ -472,14 +473,15 @@ class MatchPageState extends State<MatchPage>
                       top: 5.0,
                     ),
                     new Positioned(
-                      child: new Text("(${player.min})", style: statsStyle),
+                      child: new Text("(${player.min})", style: statsStyle, softWrap: true),
                       left: 200.0,
                       top: 5.0,
                     ),
                     new Positioned(
                       child: new Text(
-                        "PTS: ${player.points}\tREB: ${player.rebounds}\tAST: ${player.assists}",
+                        "PTS: ${player.points}  REB: ${player.rebounds}  AST: ${player.assists}",
                         style: statsStyle,
+                        softWrap: true,
                       ),
                       top: 93.0,
                       left: 140.0,
@@ -507,10 +509,11 @@ class MatchPageState extends State<MatchPage>
               new Positioned(
                       child: new Text(
                           ""
-                          "BLK: ${player.blocks}\t"
-                          "STL: ${player.steals}\t"
-                          "TO: ${player.turnovers}\t",
-                          style: statsStyle),
+                          "BLK: ${player.blocks}  "
+                          "STL: ${player.steals}  "
+                          "TO: ${player.turnovers}  ",
+                          style: statsStyle,
+                      softWrap: true),
                       top: 110.0,
                       left: 140.0,
                     ),

@@ -102,8 +102,8 @@ class PlayoffBracketWidget extends StatelessWidget {
         ),
         elevation: 1.0,
         color: (bracket.roundNum == 4.toString()) ? color :
-        bracket.confName.toUpperCase() == "WEST" ? new Color.fromRGBO(255, 0, 0, 0.02)
-        : new Color.fromRGBO(0, 0, 255, 0.02),
+        bracket.confName.toUpperCase() == "WEST" ? new Color.fromRGBO(255, 0, 0, 0.2)
+        : new Color.fromRGBO(0, 0, 255, 0.2),
       ),
       height: 100.0,
       width: 220.0,

@@ -132,7 +132,7 @@ class LeaguePlayersListWidgetState extends State {
 }
 
 class PlayerCard extends StatefulWidget {
-  Player player;
+  final Player player;
 
   PlayerCard(this.player);
   
@@ -197,8 +197,9 @@ class PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateMi
           ),
           new Positioned(
             child: new Text(
-              "Pos: ${widget.player.pos}\t     ${widget.player.years} Years",
+              "Pos: ${widget.player.pos}    ${widget.player.years} Years",
               style: style,
+              softWrap: true,
             ),
             left: 150.0,
             top: 52.0,
@@ -214,9 +215,10 @@ class PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateMi
           new Positioned(
             child: new Text(
     (widget.player.draft['pickNum'].isNotEmpty)
-        ? "Draft ${widget.player.draft['seasonYear']}\tPick ${widget.player.draft['pickNum']}"
+        ? "Draft ${widget.player.draft['seasonYear']} - Pick ${widget.player.draft['pickNum']}"
         : "Undrafted",
               style: style,
+              softWrap: true,
             ),
             left: 150.0,
             top: 75.0,
