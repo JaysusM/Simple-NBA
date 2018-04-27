@@ -11,6 +11,8 @@ class PlayoffBracketWidget extends StatelessWidget {
 
   TextStyle style =
       new TextStyle(fontFamily: "Signika", fontSize: 18.0, color: Colors.black);
+  TextStyle winnerStyle =
+  new TextStyle(fontFamily: "SignikaB", fontSize: 18.0, color: Colors.black);
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +67,7 @@ class PlayoffBracketWidget extends StatelessWidget {
                     getTeamRow(
                         this.bracket.bottomRowDatabaseInfo,
                         this.bracket.bottomRowSeed,
-                        this.bracket.topRowIsSeriesWinner),
+                        this.bracket.bottomRowIsSeriesWinner),
                   ],
                   crossAxisAlignment: CrossAxisAlignment.start,
                 ),
@@ -81,12 +83,14 @@ class PlayoffBracketWidget extends StatelessWidget {
                 left: 175.0,
               ),
               new Positioned(
-                child: new Text(this.bracket.topRowWins, style: style),
+                child: new Text(this.bracket.topRowWins, style:
+    (!this.bracket.topRowIsSeriesWinner) ? style : winnerStyle),
                 left: 188.0,
                 top: 40.0,
               ),
               new Positioned(
-                child: new Text(this.bracket.bottomRowWins, style: style),
+                child: new Text(this.bracket.bottomRowWins, style:
+    (!this.bracket.bottomRowIsSeriesWinner) ? style : winnerStyle),
                 left: 188.0,
                 top: 63.0,
               )
@@ -97,7 +101,9 @@ class PlayoffBracketWidget extends StatelessWidget {
           ),
         ),
         elevation: 1.0,
-        color: color,
+        color: (bracket.roundNum == 4.toString()) ? color :
+        bracket.confName.toUpperCase() == "WEST" ? new Color.fromRGBO(255, 0, 0, 0.02)
+        : new Color.fromRGBO(0, 0, 255, 0.02),
       ),
       height: 100.0,
       width: 220.0,
@@ -108,16 +114,22 @@ class PlayoffBracketWidget extends StatelessWidget {
   Widget getTeamRow(Map team, String seed, bool isWinner) {
     TextStyle winnersStyle = new TextStyle(
         fontFamily: 'SignikaB', fontSize: 18.0, color: Colors.black);
+    TextStyle winnersStyleSeed = new TextStyle(
+        fontFamily: 'SignikaB', fontSize: 13.0, color: Colors.black);
 
     return (team == null)
         ? new Container()
         : new Row(
             children: <Widget>[
-              new Image(
-                  image: new AssetImage(
-                      "assets/${team['tricode'].toString().toUpperCase()}.png"),
-                  height: 20.0,
-                  width: 20.0),
+              new CircleAvatar(
+                child: new Image(
+                    image: new AssetImage(
+                        "assets/${team['tricode'].toString().toUpperCase()}.png"),
+                    height: 20.0,
+                    width: 20.0),
+                radius: 10.0,
+                backgroundColor: new Color.fromRGBO(255, 255, 255, 0.1),
+              ),
               new Container(
                 padding: new EdgeInsets.only(right: 6.0),
               ),
@@ -129,7 +141,7 @@ class PlayoffBracketWidget extends StatelessWidget {
               new Container(
                 child: new Text("($seed)",
                     style:
-                        new TextStyle(fontFamily: 'Signika', fontSize: 10.0)),
+    (!isWinner) ? new TextStyle(fontFamily: 'Signika', fontSize: 10.0) : winnersStyleSeed),
                 padding: new EdgeInsets.only(top: 3.0),
               )
             ],

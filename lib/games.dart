@@ -11,7 +11,7 @@ yield i;
 
 Future<List<Game>> setGames(Future<String> content) async {
   List<Game> games = new List<Game>();
-  var decod = JSON.decode(await content);
+  var decod = jsonDecode(await content);
 
   for (int i in inRange(decod["numGames"])) {
     var decodGame = decod["games"][i];

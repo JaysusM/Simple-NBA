@@ -10,10 +10,10 @@ Future<List<List<Team>>> setStandingsFromDB(String response) async
 {
   Directory current = await getApplicationDocumentsDirectory();
   Database db = await openDatabase("${current.path}/db/snba.db");
-  Dictionary teamMap = new Dictionary();
+  Dictionary<String, Map> teamMap = new Dictionary();
 
   List<List<Team>> standingList = new List<List<Team>>();
-  var standings = JSON.decode(response)["league"]["standard"]["conference"];
+  var standings = jsonDecode(response)["league"]["standard"]["conference"];
   var conference = standings["east"];
 
   for (int i in inRange(2)) {

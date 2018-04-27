@@ -216,17 +216,14 @@ class StandingsWidgetViewState extends State<StandingsWidgetView>
         child: new Scaffold(
             appBar: new AppBar(
                 title: new TabBar(
-                    tabs: (!widget.showPlayoffs) ? tabs : tabs
-                      ..add(
-                          new Tab(child: new Text("PLAYOFFS", style: style)))),
+                    tabs: (!widget.showPlayoffs) ? tabs : [new Tab(child: new Text("PLAYOFFS", style: style))]..addAll(tabs)),
                 elevation: 0.0,
                 backgroundColor: new Color(0xff34435a)),
             body: new Container(
               child: new TabBarView(
                   children: (!widget.showPlayoffs)
                       ? widget.standings
-                      : widget.standings
-                    ..add(new BidirectionalPlayoffsView(widget.PObrackets))),
+                      : [new BidirectionalPlayoffsView(widget.PObrackets)]..addAll(widget.standings)),
               color: new Color(0xfff1f1f1),
             )));
   }

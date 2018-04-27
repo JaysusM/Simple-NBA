@@ -30,29 +30,29 @@ String numberFormatTwoDigit(String number)
   return (number.startsWith("0") || int.parse(number) > 9) ? number : "0$number";
 }
 
-Future loadGames(DateTime selectedDate) async {
+Future<List<Game>> loadGames(DateTime selectedDate) async {
   String url = "http://data.nba.net/prod/v1/${formatDate(selectedDate)}/scoreboard.json";
   return setGames(http.read(url));
 }
 
-Future loadStandings() async {
+Future<List<List<Team>>> loadStandings() async {
   var url = "http://data.nba.net/prod/v1/current/standings_conference.json";
   return setStandingsFromDB(await http.read(url));
 }
 
-Future loadPlayoffsBrackets() async {
-  Map linkDecoder = JSON.decode(await http.read("http://data.nba.net/10s/prod/v1/today.json"));
+Future<List<Bracket>> loadPlayoffsBrackets() async {
+  Map linkDecoder = jsonDecode(await http.read("http://data.nba.net/10s/prod/v1/today.json"));
   String url = linkDecoder["links"]["playoffsBracket"];
   return setPlayoffsBrackets(await http.read("http://data.nba.net$url"));
 }
 
-Future loadAllPlayers() async {
-  Map linkDecoder = JSON.decode(await http.read("http://data.nba.net/10s/prod/v1/today.json"));
+Future<List<Player>> loadAllPlayers() async {
+  Map linkDecoder = jsonDecode(await http.read("http://data.nba.net/10s/prod/v1/today.json"));
   String url = linkDecoder["links"]["leagueRosterPlayers"];
   return setAllPlayers(await http.read("http://data.nba.net$url"));
 }
 
-Future loadData(DateTime date) async {
+Future<dynamic> loadData(DateTime date) async {
   List data = new List();
   data.insert(0, await loadGames(date));
   data.insert(1, await loadStandings());

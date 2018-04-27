@@ -29,8 +29,6 @@ class Dictionary<K,V>
 
   V getValue(K key)
   {
-    if(!_nodes.contains(new Node(key, null)))
-      return null;
     return _getNodeFromKey(key).value;
   }
 
@@ -55,7 +53,7 @@ class Dictionary<K,V>
 
   @override
   String toString() {
-    return 'HashMap{nodes: $_nodes}';
+    return 'Dictionary{nodes: $_nodes}';
   }
 }
 

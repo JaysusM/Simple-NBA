@@ -7,7 +7,7 @@ import 'teams.dart';
 const int PLAYOFFS_MATCHES = 15;
 
 Future<List<Bracket>> setPlayoffsBrackets(String content) async {
-  List decoder = JSON.decode(content)['series'];
+  List decoder = jsonDecode(content)['series'];
   List<Bracket> brackets = new List();
   Map seriesDecoder;
 
@@ -31,7 +31,6 @@ Future<List<Bracket>> setPlayoffsBrackets(String content) async {
   }
 
   db.close();
-
   return brackets;
 }
 

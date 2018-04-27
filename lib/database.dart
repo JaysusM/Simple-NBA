@@ -40,10 +40,8 @@ startDB() async {
             )""");
           });
 
-      await db.inTransaction(() async {
-        db.rawInsert(await rootBundle.loadString('assets/teams.txt'));
-        db.rawInsert(await rootBundle.loadString('assets/players.txt'));
-      });
+      db.rawInsert(await rootBundle.loadString('assets/teams.txt'));
+      db.rawInsert(await rootBundle.loadString('assets/players.txt'));
 
       db.close();
     }

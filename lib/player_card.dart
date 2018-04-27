@@ -23,7 +23,7 @@ class LeaguePlayersListWidgetState extends State {
     super.initState();
   }
 
-  Widget throwError() {
+  Widget throwError(String s) {
     return new Scaffold(
         appBar: new AppBar(
             title: new Text(
@@ -36,7 +36,7 @@ class LeaguePlayersListWidgetState extends State {
               new Container(
                 child: new Center(
                     child: new Text(
-                      "Error loading app, check "
+                      "$s Error loading app, check "
                           "your internet connection. Press the button to reload the app.",
                       style: new TextStyle(fontFamily: 'Signika', fontSize: 18.0),
                     )),
@@ -94,7 +94,7 @@ class LeaguePlayersListWidgetState extends State {
           future: loadAllPlayers(),
           builder: (BuildContext context, AsyncSnapshot response) {
             if (response.hasError)
-              return throwError();
+              return throwError(response.error.toString());
             else if (response.connectionState == ConnectionState.waiting)
               return new loadingAnimation();
             else {

@@ -110,7 +110,7 @@ String getTwitter(String id) {
 
 class twitterButton extends StatelessWidget {
 
-  String url;
+  final String url;
 
   twitterButton(this.url);
 

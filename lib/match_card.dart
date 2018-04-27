@@ -131,9 +131,12 @@ class TapCard extends State<GameCard> {
                       fontFamily: 'Mono',
                       fontSize: 24.0,
                       color:
-                          (widget._game.active) ? Colors.red : Colors.black)),
+                      (widget._game.active) ? Colors.red : Colors.black)),
               top: 34.0,
-              left: MediaQuery.of(context).size.width / 2 -
+              left: MediaQuery
+                  .of(context)
+                  .size
+                  .width / 2 -
                   (((20.0 * 4) / 2) + 12.0),
             ),
             new Positioned(
@@ -141,22 +144,23 @@ class TapCard extends State<GameCard> {
                     style: new TextStyle(
                         fontSize: 20.0,
                         color:
-                            (widget._game.active) ? Colors.red : Colors.black,
+                        (widget._game.active) ? Colors.red : Colors.black,
                         fontFamily: 'Mono')),
                 top: 70.0,
-                left: MediaQuery.of(context).size.width / 2 -
+                left: MediaQuery
+                    .of(context)
+                    .size
+                    .width / 2 -
                     (20.0 * 4 + 10.0) / 2),
             new Positioned(
                 child: new Text(
-                    formatWinLoss(widget._game.visitor.win.toString(),
-                        widget._game.visitor.loss.toString()),
+                    "${widget._game.visitor.win.toString()} - ${widget._game.visitor.loss.toString()}",
                     style: new TextStyle(fontSize: 17.0, color: Colors.black)),
                 top: 98.0,
                 left: 40.0),
             new Positioned(
                 child: new Text(
-                    formatWinLoss(widget._game.home.win.toString(),
-                        widget._game.home.loss.toString()),
+                    "${widget._game.home.win.toString()} - ${widget._game.home.loss.toString()}",
                     style: new TextStyle(fontSize: 17.0, color: Colors.black)),
                 top: 98.0,
                 right: 40.0),
@@ -171,91 +175,101 @@ class TapCard extends State<GameCard> {
                       fontSize: 18.0),
                 ),
                 top: 105.0,
-                left: MediaQuery.of(context).size.width / 3.18 + 9.0),
+                left: MediaQuery
+                    .of(context)
+                    .size
+                    .width / 3.18 + 9.0),
             new Positioned(
                 child: (widget._game.active ||
-                        (!widget._game.active && widget._game.clock == "FINAL"))
+                    (!widget._game.active && widget._game.clock == "FINAL"))
                     ? new MaterialButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (context) =>
-                                      new MatchPage(widget._game)));
-                        },
-                        child: new Chip(label: new Text("Stats")
-                        ),
-                      )
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) =>
+                            new MatchPage(widget._game)));
+                  },
+                  child: new Chip(label: new Text("Stats")
+                  ),
+                )
                     : new Text(" ${widget._game.time}",
-                        style: new TextStyle(
-                            fontSize: 17.0,
-                            color: Colors.black,
-                            fontFamily: "Mono")),
+                    style: new TextStyle(
+                        fontSize: 17.0,
+                        color: Colors.black,
+                        fontFamily: "Mono")),
                 top: 0.0,
                 left:
-                    MediaQuery.of(context).size.width / 2 - ((20.0 * 4.5) / 2)),
+                MediaQuery
+                    .of(context)
+                    .size
+                    .width / 2 - ((20.0 * 4.5) / 2)),
             new Positioned(
                 child: new Container(
                     child: (widget.leaders != null)
                         ? getWidgetFromPlayer(10, widget.leaders, context)
                         : (widget._game.status != 1)
-                            ? new FutureBuilder(
-                                future: loadLeaders(
-                                    widget._game.id, widget._game.date),
-                                builder:
-                                    (BuildContext c, AsyncSnapshot response) {
-                                  if (response.hasError)
-                                    return new Text("\nData is not available yet", textAlign: TextAlign.center);
-                                  else if (!response.hasData)
-                                    return new Container(
-                                        child: new Text("Loading...",
-                                            style:
-                                                new TextStyle(fontSize: 16.0)),
-                                        margin: new EdgeInsets.only(
-                                            left: MediaQuery.of(c).size.width /
-                                                2.5));
-                                  else {
-                                    widget.leaders = response.data;
-                                    return getWidgetFromPlayer(
-                                        12, response.data, context);
-                                  }
-                                })
-                            : new FutureBuilder(
-                                future: loadTeamsLeaders(widget._game),
-                                builder:
-                                    (BuildContext c, AsyncSnapshot response) {
-                                  if (response.hasError)
-                                    return new Center(child: new Text("ERROR"));
-                                  else if (!response.hasData)
-                                    return new Container(
-                                        child: new Text("Loading...",
-                                            style:
-                                                new TextStyle(fontSize: 16.0)),
-                                        margin: new EdgeInsets.only(
-                                            left: MediaQuery.of(c).size.width /
-                                                2.5));
-                                  else {
-                                    widget.leaders = response.data;
-                                    return getWidgetFromPlayer(
-                                        10, response.data, context);
-                                  }
-                                }),
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width),
+                        ? new FutureBuilder(
+                        future: loadLeaders(
+                            widget._game.id, widget._game.date),
+                        builder:
+                            (BuildContext c, AsyncSnapshot response) {
+                          if (response.hasError)
+                            return new Text("\nData is not available yet",
+                                textAlign: TextAlign.center);
+                          else if (!response.hasData)
+                            return new Container(
+                                child: new Text("Loading...",
+                                    style:
+                                    new TextStyle(fontSize: 16.0)),
+                                margin: new EdgeInsets.only(
+                                    left: MediaQuery
+                                        .of(c)
+                                        .size
+                                        .width /
+                                        2.5));
+                          else {
+                            widget.leaders = response.data;
+                            return getWidgetFromPlayer(
+                                12, response.data, context);
+                          }
+                        })
+                        : new FutureBuilder(
+                        future: loadTeamsLeaders(widget._game),
+                        builder:
+                            (BuildContext c, AsyncSnapshot response) {
+                          if (response.hasError)
+                            return new Center(child: new Text("ERROR"));
+                          else if (!response.hasData)
+                            return new Container(
+                                child: new Text("Loading...",
+                                    style:
+                                    new TextStyle(fontSize: 16.0)),
+                                margin: new EdgeInsets.only(
+                                    left: MediaQuery
+                                        .of(c)
+                                        .size
+                                        .width /
+                                        2.5));
+                          else {
+                            widget.leaders = response.data;
+                            return getWidgetFromPlayer(
+                                10, response.data, context);
+                          }
+                        }),
+                    height: MediaQuery
+                        .of(context)
+                        .size
+                        .height,
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width),
                 top: 135.0),
           ],
         ),
       );
     }
-  }
-
-  String formatWinLoss(String win, String loss) {
-     if(win.length < 2)
-       return formatWinLoss(" $win", loss);
-     if(loss.length < 2)
-         return " $win - $loss";
-
-     return " $win - $loss";
   }
 
 }

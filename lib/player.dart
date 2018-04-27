@@ -8,11 +8,11 @@ import "package:path_provider/path_provider.dart";
 
 List<Player> setAllPlayers(String content) {
   List<Player> allPlayers = new List();
-  List players = JSON.decode(content)["league"]["standard"];
+  List players = jsonDecode(content)["league"]["standard"];
   for (Map player in players) {
     if (Team.teamMap.containsKey(player['teamId']))
       allPlayers.add(new Player(player['personId'], player['teamId'],
-          name: [player['firstName'], player['lastName']],
+          name: <String>[player['firstName'], player['lastName']],
           generalPosition: player['pos'],
           number: player['jersey'],
           draft: player['draft'],
@@ -26,7 +26,7 @@ Future<List<Player>> loadLeaders(String gameId, int gameDate) async {
   Database db = await openDatabase(
       "${(await getApplicationDocumentsDirectory()).path}/db/snba.db");
 
-  var decodJSON = JSON.decode(await http.read(url))["stats"];
+  var decodJSON = jsonDecode(await http.read(url))["stats"];
   List<Player> leaders = new List<Player>();
   leaders.add(await _getLeader(decodJSON, "points", "hTeam", db));
   leaders.add(await _getLeader(decodJSON, "rebounds", "hTeam", db));
@@ -71,11 +71,11 @@ Future<List<String>> getPlayerNameFromId(String playerId, Database db) async {
 Future<List<String>> playerNotFoundInsertIntoDBandReturn(
     String playerId, Database db) async {
   try {
-    String url = JSON.decode(await http
+    String url = jsonDecode(await http
             .read("http://data.nba.net/10s/prod/v1/today.json"))["links"]
         ["leagueRosterPlayers"];
     String players = await http.read("http://data.nba.net$url");
-    var decoder = JSON.decode(players)["league"]["standard"];
+    var decoder = jsonDecode(players)["league"]["standard"];
     int i = 0;
 
     while (decoder[i]["personId"] != playerId) {
@@ -124,7 +124,7 @@ Future<List<Player>> loadTeamsLeaders(Game game) async {
   String prefix = "http://data.nba.net";
   String url = "$prefix/10s/prod/v1/today.json";
 
-  var decodJSON = JSON.decode(await http.read(url));
+  var decodJSON = jsonDecode(await http.read(url));
   url = "$prefix${decodJSON["links"]["teamLeaders2"]}";
   leaders.addAll(await _loadTeamLeaders(game.home.id.toString(), url, db));
   leaders.addAll(await _loadTeamLeaders(game.visitor.id.toString(), url, db));
@@ -135,11 +135,11 @@ Future<List<Player>> loadTeamsLeaders(Game game) async {
 
 Future setSeasonStatsPlayers(List<PlayerStats> players) async {
 
-  String base = JSON.decode(await http.read("http://data.nba.net/10s/prod/v1/today.json"))["links"]["playerProfile"];
+  String base = jsonDecode(await http.read("http://data.nba.net/10s/prod/v1/today.json"))["links"]["playerProfile"];
 
   for(PlayerStats p in players) {
     String link = "http://data.nba.net${base.replaceAll("{{personId}}", p.id)}";
-    var decoder = JSON.decode(await http.read(link))["league"]["standard"]["stats"]["regularSeason"]["season"];
+    var decoder = jsonDecode(await http.read(link))["league"]["standard"]["stats"]["regularSeason"]["season"];
 
     p.ppm = getArithmeticMeanForStat("ppg", decoder);
     p.rpm = getArithmeticMeanForStat("rpg", decoder);
@@ -151,10 +151,10 @@ Future setSeasonStatsPlayers(List<PlayerStats> players) async {
 
 Future setSeasonStats(Player player) async {
 
-  String base = JSON.decode(await http.read("http://data.nba.net/10s/prod/v1/today.json"))["links"]["playerProfile"];
+  String base = jsonDecode(await http.read("http://data.nba.net/10s/prod/v1/today.json"))["links"]["playerProfile"];
 
   String link = "http://data.nba.net${base.replaceAll("{{personId}}", player.id)}";
-  var decoder = JSON.decode(await http.read(link))["league"]["standard"]["stats"]["regularSeason"]["season"];
+  var decoder = jsonDecode(await http.read(link))["league"]["standard"]["stats"]["regularSeason"]["season"];
 
   player.ppg = getArithmeticMeanForStat("ppg", decoder);
   player.rpg = getArithmeticMeanForStat("rpg", decoder);
@@ -185,7 +185,7 @@ Future<List<Player>> _loadTeamLeaders(
     String teamId, String url, Database db) async {
   String link = url.replaceAll("{{teamId}}", teamId);
 
-  var decodJSON = JSON.decode(await http.read(link));
+  var decodJSON = jsonDecode(await http.read(link));
 
   List<Player> leaders = new List<Player>();
 

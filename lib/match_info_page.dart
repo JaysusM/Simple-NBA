@@ -173,7 +173,7 @@ class MatchPageState extends State<MatchPage>
                         new Row(children: getStatRow(players, style)),
                       ],
                     ),
-                    margin: new EdgeInsets.only(top: 36.0),
+                    margin: new EdgeInsets.only(top: 32.0),
                   ),
                   new Positioned(
                       child: new Container(
@@ -245,8 +245,8 @@ class MatchPageState extends State<MatchPage>
           ),
           color: Colors.black87,
           width: MediaQuery.of(context).size.width,
-          //27.0 from the top bar with legend
-          height: MediaQuery.of(context).size.height - 27.0,
+          //From the top bar with legend and margin
+          height: MediaQuery.of(context).size.height - 80.0,
         ),
         left: 0.0,
         top: 0.0,
@@ -262,87 +262,87 @@ class MatchPageState extends State<MatchPage>
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.pos, style))
+              .map((player) => _getPlayerStatRow(2.0, player.pos, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.points, style))
+              .map((player) => _getPlayerStatRow(2.0, player.points, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.rebounds, style))
+              .map((player) => _getPlayerStatRow(2.0, player.rebounds, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.assists, style))
+              .map((player) => _getPlayerStatRow(2.0, player.assists, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.steals, style))
+              .map((player) => _getPlayerStatRow(2.0, player.steals, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.blocks, style))
+              .map((player) => _getPlayerStatRow(2.0, player.blocks, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.turnovers, style))
+              .map((player) => _getPlayerStatRow(2.0, player.turnovers, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.pFouls, style))
+              .map((player) => _getPlayerStatRow(2.0, player.pFouls, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.offReb, style))
+              .map((player) => _getPlayerStatRow(2.0, player.offReb, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.defReb, style))
+              .map((player) => _getPlayerStatRow(2.0, player.defReb, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.fgm, style))
+              .map((player) => _getPlayerStatRow(2.0, player.fgm, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.fga, style))
+              .map((player) => _getPlayerStatRow(2.0, player.fga, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(4, player.fgp, style))
+              .map((player) => _getPlayerStatRow(2.9, player.fgp, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.tpm, style))
+              .map((player) => _getPlayerStatRow(2.0, player.tpm, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.tpa, style))
+              .map((player) => _getPlayerStatRow(2.0, player.tpa, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(4, player.tpp, style))
+              .map((player) => _getPlayerStatRow(2.9, player.tpp, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.ftm, style))
+              .map((player) => _getPlayerStatRow(2.0, player.ftm, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2, player.fta, style))
+              .map((player) => _getPlayerStatRow(2.0, player.fta, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(4, player.ftp, style))
+              .map((player) => _getPlayerStatRow(2.9, player.ftp, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(5, player.min, style))
+              .map((player) => _getPlayerStatRow(3.3, player.min, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(3, player.plusMinus, style))
+              .map((player) => _getPlayerStatRow(2.3, player.plusMinus, style))
               .toList()),
     ];
   }
@@ -368,9 +368,11 @@ class MatchPageState extends State<MatchPage>
             color: new Color.fromARGB(0xff, 0x36, 0x41, 0x56)));
   }
 
-  Widget _getPlayerStatRow(int length, String stat, TextStyle style) {
+  Widget _getPlayerStatRow(double multiplyFactor, String stat, TextStyle style) {
     return new Container(
-      child: new Text(_formatStat(length, stat), style: style),
+      child: new Text(_formatStat(multiplyFactor.floor(), stat), style: style),
+      height: 52.0,
+      width: 24.5*multiplyFactor,
       padding: new EdgeInsets.all(14.0),
       decoration: new BoxDecoration(
           border: new Border(
@@ -378,6 +380,7 @@ class MatchPageState extends State<MatchPage>
                   width: 2.0,
                   color: new Color.fromARGB(0xff, 0xdf, 0xf8, 0xeb))),
           color: new Color.fromARGB(0x1a, 0xcd, 0xcd, 0xcd)),
+      margin: new EdgeInsets.only(top: 0.0),
     );
   }
 
@@ -415,6 +418,7 @@ class MatchPageState extends State<MatchPage>
           ],
         ),
         width: 200.0,
+        height: 52.0,
         padding: new EdgeInsets.all(5.0),
         decoration: new BoxDecoration(
             border: new Border(
@@ -636,12 +640,12 @@ Future loadMatchStats(Game game) async {
   String url = "http://data.nba.net/prod/v1/${game.date}/${game
       .id}_boxscore.json";
   String content = await http.read(url);
-  List decoder = JSON.decode(content)["stats"]["activePlayers"];
+  List decoder = jsonDecode(content)["stats"]["activePlayers"];
   List<PlayerStats> homePlayers = new List();
   List<PlayerStats> awayPlayers = new List();
 
-  List<String> scores = Game.formatScore(JSON.decode(content)['basicGameData']['hTeam']['score'],
-      JSON.decode(content)['basicGameData']['vTeam']['score']);
+  List<String> scores = Game.formatScore(jsonDecode(content)['basicGameData']['hTeam']['score'],
+      jsonDecode(content)['basicGameData']['vTeam']['score']);
 
   game.visitor
       .setScore(scores[1]);
