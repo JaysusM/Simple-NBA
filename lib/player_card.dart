@@ -304,7 +304,8 @@ class PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateMi
 
   Widget statsText(TextStyle style) {
     return new Text(
-      "PPG: ${widget.player.ppg}\tRPG: ${widget.player.rpg}\nAPG: ${widget.player.apg}",
+      "PPG: ${widget.player.ppg}  RPG: ${widget.player.rpg}\nAPG: ${widget.player.apg}",
+      softwrap: true,
       style: style,
     );
   }
