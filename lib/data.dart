@@ -59,3 +59,10 @@ Future<dynamic> loadData(DateTime date) async {
   data.insert(2, await loadPlayoffsBrackets());
   return data;
 }
+
+Future<dynamic> loadDataNoCalendar() async {
+  List data = new List();
+  data.insert(0, await loadStandings());
+  data.insert(1, await loadPlayoffsBrackets());
+  return data;
+}

@@ -63,7 +63,34 @@ class MainFrameState extends State<MainFrame>
     return new FutureBuilder(
         future: loadData(setHourETTime()),
         builder: (BuildContext context, AsyncSnapshot response) {
-          if (response.hasError)
+          if (response.hasError && response.error.toString().endsWith("404: Not Found.")) {
+            widget._calendarData = [];
+
+            return new FutureBuilder(
+              future: loadDataNoCalendar(),
+              builder: (_, AsyncSnapshot response) {
+                if(response.hasError)
+                  return throwError();
+                else if(!response.hasData)
+                  return new loadingAnimation();
+                else if(response.hasData) {
+                  widget._standingsWidgets =
+                      getWidgetFromStandings(response.data[0]);
+                  widget._playoffsBrackets = response.data[1];
+
+                  showClinchedInformation =
+                      response.data[0][0].any((team) =>
+                      team.clinchedChar != "") &&
+                          response.data[0][1].any((team) =>
+                          team.clinchedChar != "");
+
+                  showPlayoffsBrackets = widget._playoffsBrackets
+                      .any((bracket) => bracket.isScheduleAvailable);
+                  return setInfo();
+                }
+            });
+          }
+          else if(response.hasError)
             return throwError();
           else if (!response.hasData)
             return new loadingAnimation();
@@ -377,7 +404,7 @@ class CalendarTabState extends State<CalendarTab> {
       this.setState(() {
         _games = [];
         if (!_gameDate.containsKey(formatDate(_selectedDate)))
-          _gameDate.add(formatDate(_selectedDate), newGames);
+          _gameDate.add(formatDate(_selectedDate), _games);
       });
     }
     return new Future<Null>.value();
