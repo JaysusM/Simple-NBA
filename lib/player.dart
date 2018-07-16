@@ -70,12 +70,15 @@ Future<List<String>> getPlayerNameFromId(String playerId, Database db) async {
 
 Future<List<String>> playerNotFoundInsertIntoDBandReturn(
     String playerId, Database db) async {
+
   try {
     String url = jsonDecode(await http
             .read("http://data.nba.net/10s/prod/v1/today.json"))["links"]
         ["leagueRosterPlayers"];
     String players = await http.read("http://data.nba.net$url");
-    var decoder = jsonDecode(players)["league"]["standard"];
+    Map decod = jsonDecode(players)["league"];
+    List decoder = new List();
+    decod.forEach((key, value) => decoder.addAll(value));
     int i = 0;
 
     while (decoder[i]["personId"] != playerId) {
@@ -102,8 +105,7 @@ Future<List<String>> playerNotFoundInsertIntoDBandReturn(
         ${_checkNull(decoder[i]["jersey"])},
         \"${_checkNull(decoder[i]["country"])}\", \"${_checkNull(
         decoder[i]["collegeName"])}\",
-        ${_checkNull(decoder[i]["yearsPro"])}, \"${_checkNull(
-        decoder[i]["isActive"])}\",
+        ${_checkNull(decoder[i]["yearsPro"])}, "true",
         ${_checkNull(decoder[i]["heightMeters"])})""");
 
     return [decoder[i]["firstName"], decoder[i]["lastName"]];
