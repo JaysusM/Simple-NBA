@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 import 'package:flutter/animation.dart';
 
 class loadingAnimation extends StatefulWidget {
@@ -36,7 +35,7 @@ class loadingAnimationState extends State with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return new Scaffold(
         body: new Transform.rotate(
-            angle: angleAnimation.value / 360 * 2 * PI,
+            angle: angleAnimation.value / 360 * 2 * 3.141516,
             child: new Center(child: new Container(
               decoration: new BoxDecoration(image: new DecorationImage(image: new AssetImage("assets/logo.png"))),
               padding: new EdgeInsets.all(100.0),

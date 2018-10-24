@@ -1,15 +1,13 @@
 import 'dart:convert';
 import 'games.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 import 'dart:async';
 import 'dictionary.dart';
+import 'database.dart';
 
 Future<List<List<Team>>> setStandingsFromDB(String response) async
 {
-  Directory current = await getApplicationDocumentsDirectory();
-  Database db = await openDatabase("${current.path}/db/snba.db");
+  Database db = database.dbConnection;
   Dictionary<String, Map> teamMap = new Dictionary();
 
   List<List<Team>> standingList = new List<List<Team>>();
@@ -32,7 +30,6 @@ Future<List<List<Team>>> setStandingsFromDB(String response) async
     standingList.add(temporary);
   }
 
-  db.close();
   Team.teamMap = teamMap;
 
   return standingList;
@@ -78,8 +75,8 @@ class Team
   Team(this._id,
       {String win, String loss, String position, String tricode, String conference,
       String clinched, String name, String gb})
-      : _win = win,
-        _loss = loss,
+      : _win = (int.parse(win) < 10) ? " "+win : win,
+        _loss = (int.parse(loss) < 10) ? loss+" " : loss,
         _position = position,
         _tricode = tricode,
         _conference = conference,
@@ -96,8 +93,9 @@ class Team
   String get name => _fullName;
   String get tricode => _tricode;
   String get conference => _conference;
-  String get winLoss => _win + "-" + _loss + "  " +
-      (double.parse(_win)/(double.parse(_loss)+double.parse(_win))).toStringAsPrecision(3);
+  String get winLoss => (double.parse(_win)+double.parse(_loss) > 0.0) ? _win + "-" + _loss + "  " +
+      (double.parse(_win)/(double.parse(_loss)+double.parse(_win))).toStringAsPrecision(3)
+  : "0.00";
   String get clinchedChar => _clinched;
   String get gb => _gb;
 

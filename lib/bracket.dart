@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
 import 'teams.dart';
+import 'database.dart';
 
 const int PLAYOFFS_MATCHES = 15;
 
@@ -11,7 +11,7 @@ Future<List<Bracket>> setPlayoffsBrackets(String content) async {
   List<Bracket> brackets = new List();
   Map seriesDecoder;
 
-  Database db = await openDatabase("${(await getApplicationDocumentsDirectory()).path}/db/snba.db");
+  Database db = database.dbConnection;
 
   for(int i = 0; i < PLAYOFFS_MATCHES; i++) {
       seriesDecoder = decoder[i];
@@ -29,8 +29,6 @@ Future<List<Bracket>> setPlayoffsBrackets(String content) async {
             (bottomRowId == "") ? null : await getTeamFromId(bottomRowId, db))
       );
   }
-
-  db.close();
   return brackets;
 }
 

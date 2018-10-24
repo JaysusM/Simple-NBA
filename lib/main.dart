@@ -13,7 +13,7 @@ import 'playoffs_brackets_widget.dart';
 import 'player_card.dart';
 
 Future main() async {
-  await startDB();
+  await database.startDB();
 
   //That will disable screen rotation
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -56,6 +56,7 @@ class MainFrameState extends State<MainFrame>
   @override
   void dispose() {
     _mainNavigationController.dispose();
+    database.dbConnection.close();
     super.dispose();
   }
 
@@ -70,7 +71,7 @@ class MainFrameState extends State<MainFrame>
               future: loadDataNoCalendar(),
               builder: (_, AsyncSnapshot response) {
                 if(response.hasError)
-                  return throwError();
+                  return throwError(response.error);
                 else if(!response.hasData)
                   return new loadingAnimation();
                 else if(response.hasData) {
@@ -84,14 +85,14 @@ class MainFrameState extends State<MainFrame>
                           response.data[0][1].any((team) =>
                           team.clinchedChar != "");
 
-                  showPlayoffsBrackets = widget._playoffsBrackets
+                  showPlayoffsBrackets = showClinchedInformation && widget._playoffsBrackets
                       .any((bracket) => bracket.isScheduleAvailable);
                   return setInfo();
                 }
             });
           }
           else if(response.hasError)
-            return throwError();
+            return throwError(response.error);
           else if (!response.hasData)
             return new loadingAnimation();
           else {
@@ -103,7 +104,7 @@ class MainFrameState extends State<MainFrame>
                 response.data[1][0].any((team) => team.clinchedChar != "") &&
                     response.data[1][1].any((team) => team.clinchedChar != "");
 
-            showPlayoffsBrackets = widget._playoffsBrackets
+            showPlayoffsBrackets = showClinchedInformation && widget._playoffsBrackets
                 .any((bracket) => bracket.isScheduleAvailable);
 
             return setInfo();
@@ -111,7 +112,7 @@ class MainFrameState extends State<MainFrame>
         });
   }
 
-  Widget throwError() {
+  Widget throwError(Object error) {
     return new Scaffold(
         appBar: new AppBar(
             title: new Text(
@@ -124,7 +125,7 @@ class MainFrameState extends State<MainFrame>
               new Container(
                 child: new Center(
                     child: new Text(
-                      "Error loading app, check "
+                      "$error Error loading app, check "
                           "your internet connection. Press the button to reload the app.",
                       style: new TextStyle(fontFamily: 'Signika', fontSize: 18.0),
                     )),
@@ -243,14 +244,15 @@ class StandingsWidgetViewState extends State<StandingsWidgetView>
         child: new Scaffold(
             appBar: new AppBar(
                 title: new TabBar(
-                    tabs: (!widget.showPlayoffs) ? tabs : [new Tab(child: new Text("PLAYOFFS", style: style))]..addAll(tabs)),
+                    tabs: (!widget.showPlayoffs) ? tabs : (tabs..insert(0, new Tab(child: new Text("PLAYOFFS", style: style))))),
                 elevation: 0.0,
                 backgroundColor: new Color(0xff34435a)),
             body: new Container(
               child: new TabBarView(
                   children: (!widget.showPlayoffs)
                       ? widget.standings
-                      : [new BidirectionalPlayoffsView(widget.PObrackets)]..addAll(widget.standings)),
+                      : (widget.standings..insert(0, new BidirectionalPlayoffsView(widget.PObrackets)))
+              ),
               color: new Color(0xfff1f1f1),
             )));
   }

@@ -5,6 +5,7 @@ import "package:sqflite/sqflite.dart";
 import "games.dart";
 import 'teams.dart';
 import "package:path_provider/path_provider.dart";
+import 'database.dart';
 
 List<Player> setAllPlayers(String content) {
   List<Player> allPlayers = new List();
@@ -23,8 +24,7 @@ List<Player> setAllPlayers(String content) {
 
 Future<List<Player>> loadLeaders(String gameId, int gameDate) async {
   String url = "http://data.nba.net/prod/v1/$gameDate/${gameId}_boxscore.json";
-  Database db = await openDatabase(
-      "${(await getApplicationDocumentsDirectory()).path}/db/snba.db");
+  Database db = database.dbConnection;
 
   var decodJSON = jsonDecode(await http.read(url))["stats"];
   List<Player> leaders = new List<Player>();
@@ -35,7 +35,6 @@ Future<List<Player>> loadLeaders(String gameId, int gameDate) async {
   leaders.add(await _getLeader(decodJSON, "rebounds", "vTeam", db));
   leaders.add(await _getLeader(decodJSON, "assists", "vTeam", db));
 
-  db.close();
   return leaders;
 }
 

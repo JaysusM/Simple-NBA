@@ -8,7 +8,7 @@ import 'dictionary.dart';
 import 'player.dart';
 import 'dart:convert';
 import 'loading_animation.dart';
-import 'package:path_provider/path_provider.dart';
+import 'database.dart';
 
 class
 MatchPage extends StatefulWidget {
@@ -637,8 +637,7 @@ Widget statsCircle(bool isPercentage, String statName, String value,
 }
 
 Future loadMatchStats(Game game) async {
-  Database db = await openDatabase(
-      "${(await getApplicationDocumentsDirectory()).path}/db/snba.db");
+  Database db = database.dbConnection;
 
   String url = "http://data.nba.net/prod/v1/${game.date}/${game
       .id}_boxscore.json";
@@ -666,7 +665,6 @@ Future loadMatchStats(Game game) async {
     setNamesInPlayersList(homePlayers, db),
     setNamesInPlayersList(awayPlayers, db),
   ]);
-  db.close();
   playersStats.add(game.home.id, homePlayers);
   playersStats.add(game.visitor.id, awayPlayers);
 
