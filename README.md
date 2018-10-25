@@ -1,6 +1,6 @@
 # Simple NBA
 
-v1.0.2 APK available [here](https://github.com/JaysusM/Simple-NBA/releases/download/1.0.2/Simple_NBA.apk)
+v1.0.3 APK available [here](https://github.com/JaysusM/Simple-NBA/releases/download/1.0.3/SimpleNBAv1.0.3.apk)
 
 Is a flutter-made app. It will show statistics and scoreboard for all NBA matches.
 That information will be taken from a JSON file provided by [data.nba.net](http://data.nba.net/) website.
