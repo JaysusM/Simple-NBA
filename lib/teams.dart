@@ -75,8 +75,8 @@ class Team
   Team(this._id,
       {String win, String loss, String position, String tricode, String conference,
       String clinched, String name, String gb})
-      : _win = (int.parse(win) < 10) ? " "+win : win,
-        _loss = (int.parse(loss) < 10) ? loss+" " : loss,
+      : _win = (win != null) ? (int.parse(win) < 10) ? " "+win : win : null,
+        _loss = (loss != null) ? (int.parse(loss) < 10) ? loss+" " : loss : null,
         _position = position,
         _tricode = tricode,
         _conference = conference,

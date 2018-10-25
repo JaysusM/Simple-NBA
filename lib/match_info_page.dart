@@ -165,7 +165,7 @@ class MatchPageState extends State<MatchPage>
           child: new SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: new SizedBox(
-              width: 1335.0,
+              width: 1341.0,
               child: new Stack(
                 children: <Widget>[
                   new Container(
@@ -234,10 +234,10 @@ class MatchPageState extends State<MatchPage>
                       child: _getStatLegendRow("FTP", style, 70.0),
                       left: 1124.0),
                   new Positioned(
-                      child: _getStatLegendRow("MIN", style, 81.0),
+                      child: _getStatLegendRow("MIN", style, 84.0),
                       left: 1194.0),
                   new Positioned(
-                    child: _getStatLegendRow("+/-", style, 60.0),
+                    child: _getStatLegendRow("+/-", style, 63.0),
                     left: 1275.0,
                   )
                 ],
@@ -339,11 +339,11 @@ class MatchPageState extends State<MatchPage>
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(3.3, player.min, style))
+              .map((player) => _getPlayerStatRow(3.4, player.min, style))
               .toList()),
       new Column(
           children: players
-              .map((player) => _getPlayerStatRow(2.3, player.plusMinus, style))
+              .map((player) => _getPlayerStatRow(2.45, player.plusMinus, style))
               .toList()),
     ];
   }
