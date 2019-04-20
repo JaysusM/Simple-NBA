@@ -1,3 +1,5 @@
+:warning: This project was created with learning purposes, it has lots of spaghetti code. It was also made with Flutter Alpha version, but, it is still functional :warning:
+
 # Simple NBA
 
 v1.0.3 APK available [here](https://github.com/JaysusM/Simple-NBA/releases/download/1.0.3/SimpleNBAv1.0.3.apk)
