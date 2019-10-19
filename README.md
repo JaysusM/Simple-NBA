@@ -1,5 +1,7 @@
 :warning: This project was created with learning purposes, it has lots of spaghetti code. It was also made with Flutter Alpha version, but, it is still functional :warning:
 
+<h3>I am currently working on a new ground-up version of this app, you can take look <a href="https://github.com/JaysusM/NBA-Go">here</a>.</h3>
+
 # Simple NBA
 
 v1.0.3 APK available [here](https://github.com/JaysusM/Simple-NBA/releases/download/1.0.3/SimpleNBAv1.0.3.apk)
